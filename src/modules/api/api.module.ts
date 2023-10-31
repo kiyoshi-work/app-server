@@ -9,6 +9,7 @@ import { configFirebase } from '@/modules/api/configs';
 import { SyncUserGoal3Service } from './services/sync-user-goal3.service';
 import { OnesignalModule } from '../onesignal/onesignal.module';
 import { NotificationService } from './services/notification.service';
+import { HealthController } from './controllers/health.controller';
 
 const services = [SyncUserGoal3Service, AuthService, NotificationService];
 @Module({
@@ -28,7 +29,7 @@ const services = [SyncUserGoal3Service, AuthService, NotificationService];
       load: [configFirebase],
     }),
   ],
-  controllers: [AuthController, NotificationController],
+  controllers: [AuthController, NotificationController, HealthController],
   providers: [...services],
 })
 export class ApiModule implements OnApplicationBootstrap {

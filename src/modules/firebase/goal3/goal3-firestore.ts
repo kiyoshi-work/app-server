@@ -222,11 +222,8 @@ export class Goal3Firestore {
     const users = await this.firestore
       .collection(`space/${this.goal3Config.spaceId}/${USER_COLL}`)
       .orderBy('created_at', 'asc')
-      .limit(1)
+      .limit(3)
       .get();
-    console.log(
-      '🚀 ~ file: goal3-firestore.ts:221 ~ Goal3Firestore ~ testConnection ~ users:',
-      users.docs.map((user) => user.data()),
-    );
+    return users.docs.map((user) => user.data());
   }
 }
