@@ -8,6 +8,7 @@ import {
   DeleteDateColumn,
 } from 'typeorm';
 
+export type TAdminConfigData = { from?: string | number; to?: string | number };
 @Entity('admin-configs')
 export class AdminConfigEntity {
   @PrimaryGeneratedColumn('uuid')
@@ -21,7 +22,7 @@ export class AdminConfigEntity {
   value: string;
 
   @Column({ type: 'simple-json', default: {} })
-  data: object;
+  data: TAdminConfigData;
 
   @CreateDateColumn()
   created_at: Date;

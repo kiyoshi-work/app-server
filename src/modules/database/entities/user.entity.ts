@@ -14,6 +14,9 @@ import {
 import { ClientEntity } from './client.entity';
 import { UserNotificationEntity } from './user-notification.entity';
 
+export type TUserMetadata = {
+  profile_image_url?: string;
+};
 @Entity('users')
 @Unique(['client_uid', 'client_id'])
 export class UserEntity {
@@ -33,7 +36,7 @@ export class UserEntity {
   client_uid: string;
 
   @Column('simple-json', { nullable: true })
-  metadata?: object;
+  metadata?: TUserMetadata;
 
   @Column({ nullable: true })
   username?: string;

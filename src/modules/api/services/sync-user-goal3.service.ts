@@ -1,7 +1,12 @@
 import { Inject, Injectable } from '@nestjs/common';
-import { ClientRepository, UserRepository } from '@/database/repositories';
+import {
+  AdminConfigRepository,
+  ClientRepository,
+  UserRepository,
+} from '@/database/repositories';
 import { Goal3Firestore } from '@/modules/firebase';
 import { validateEtherAddress } from '@/shared/utils';
+import { Cron, CronExpression } from '@nestjs/schedule';
 
 interface IUserFireStore {
   id: string;
@@ -9,6 +14,8 @@ interface IUserFireStore {
   created_at?: Date | string | number;
   profile_image_url?: string;
 }
+
+const isRunSchedule = Boolean(Number(process.env.IS_SCHEDULER || 0));
 @Injectable()
 export class SyncUserGoal3Service {
   @Inject('GOAL3_FIRESTORE')
@@ -17,6 +24,7 @@ export class SyncUserGoal3Service {
   constructor(
     private readonly userRepository: UserRepository,
     private readonly clientRepository: ClientRepository,
+    private readonly adminConfigRepository: AdminConfigRepository,
   ) {}
   async onApplicationBootstrap() {
     await this.initialize();
@@ -110,5 +118,21 @@ export class SyncUserGoal3Service {
     }
   }
 
-  // @Cron(CronExpression.EVERY_MINUTE)
+  @Cron(CronExpression.EVERY_MINUTE)
+  async runSyncUser() {
+    if (!isRunSchedule) return;
+    const config = await this.adminConfigRepository.findOneBy({
+      key: 'update_share_price',
+    });
+    if (config.value == 'start') {
+      await this.adminConfigRepository.save({
+        ...config,
+        value: 'end',
+      });
+      await this._syncUser(
+        new Date(config?.data?.from || new Date()),
+        new Date(config?.data?.to || new Date()),
+      );
+    }
+  }
 }
