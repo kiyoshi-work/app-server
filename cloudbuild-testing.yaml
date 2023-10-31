@@ -18,6 +18,8 @@ steps:
         '--build-arg',
         'DB_DATABASE',
         '--build-arg',
+        'DB_SYNC',
+        '--build-arg',
         'FIREBASE_PRIVATE_KEY',
         '--build-arg',
         'FIREBASE_CLIENT_EMAIL',
@@ -41,6 +43,7 @@ steps:
         'DB_USERNAME',
         'DB_PASSWORD',
         'DB_DATABASE',
+        'DB_SYNC',
         'FIREBASE_PRIVATE_KEY',
         'FIREBASE_CLIENT_EMAIL',
         'FIREBASE_PROJECT_ID',
@@ -93,6 +96,8 @@ availableSecrets:
       env: DB_PASSWORD
     - versionName: projects/${PROJECT_ID}/secrets/NOTIFICATION_DB_DATABASE/versions/latest
       env: DB_DATABASE
+    - versionName: projects/${PROJECT_ID}/secrets/NOTIFICATION_DB_SYNC/versions/latest
+      env: DB_SYNC
     - versionName: projects/${PROJECT_ID}/secrets/TEST_SPORTBOOK_JOB_FIREBASE_PROJECT_ID/versions/latest
       env: FIREBASE_PROJECT_ID
     - versionName: projects/${PROJECT_ID}/secrets/TEST_SPORTBOOK_JOB_FIREBASE_PRIVATE_KEY/versions/latest
