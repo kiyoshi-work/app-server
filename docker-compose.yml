@@ -1,0 +1,58 @@
+version: "3.8"
+services:
+  app:
+    image: app-notification-server:1.0.0-dev
+    container_name: app-notification-server-dev
+    build:
+      context: .
+      dockerfile: docker/nest/dev.dockerfile
+    working_dir: /home/node/workspace
+    command: npm run start:debug
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - .:/home/node/workspace
+      - /home/node/workspace/node_modules
+    networks:
+      -  app-notification-network
+    env_file:
+      - .env.dev
+    ports:
+      - '8003:8003'
+
+  redis:
+    container_name: app-notification-redis
+    image: redis
+    restart: unless-stopped
+    ports:
+      - 6380:6379
+    command: redis-server --save 20 1 --loglevel warning
+    networks:
+      - app-notification-network
+    volumes:
+      - app-notification-redis:/data
+
+  database:
+    container_name: app-notification-database
+    image: postgres:14.1
+    restart: unless-stopped
+    volumes:
+      - app-notification-database:/var/lib/postgres
+      - ./docker/postgres:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123456
+    ports:
+      - 5432:5432
+    networks:
+      - app-notification-network
+
+networks:
+  app-notification-network:
+    driver: bridge
+
+volumes:
+  app-notification-redis:
+    driver: local
+  app-notification-database:
+    driver: local

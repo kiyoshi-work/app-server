@@ -1,0 +1,56 @@
+{
+  "compilerOptions": {
+    "module": "commonjs",
+    "declaration": true,
+    "removeComments": true,
+    "emitDecoratorMetadata": true,
+    "experimentalDecorators": true,
+    "allowSyntheticDefaultImports": true,
+    "target": "es2017",
+    "sourceMap": true,
+    "outDir": "./dist",
+    "baseUrl": "./src",
+    "incremental": true,
+    "skipLibCheck": true,
+    "strictNullChecks": false,
+    "noImplicitAny": false,
+    "strictBindCallApply": false,
+    "forceConsistentCasingInFileNames": false,
+    "noFallthroughCasesInSwitch": false,
+    "esModuleInterop": true,
+    "resolveJsonModule": true,
+    "paths": {
+      "@/modules/*": ["modules/*"],
+      "@/database": [
+        "modules/database/index"
+      ],
+      "@/database/*": [
+        "modules/database/*"
+      ],
+      "@/api": [
+        "modules/api/index"
+      ],
+      "@/api/*": [
+        "modules/api/*"
+      ],
+      "@/logger": [
+        "modules/logger/index"
+      ],
+      "@/logger/*": [
+        "modules/logger/*"
+      ],
+      "@/shared/*": [
+        "shared/*"
+      ],
+      "@/onesignal": [
+        "modules/onesignal"
+      ],
+      "@/onesignal/*": [
+        "modules/onesignal/*"
+      ]
+    }
+  },
+  "include": [
+    "src"
+, "src/shared/common"  ]
+}

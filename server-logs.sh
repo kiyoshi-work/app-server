@@ -1,0 +1,1 @@
+docker logs -f --tail 2000 app-notification-server-dev

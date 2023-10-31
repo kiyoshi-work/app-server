@@ -1,0 +1,24 @@
+version: "3.8"
+services:
+  app:
+    image: app-notification-server:1.0.0-dev
+    container_name: app-notification-server-dev
+    build:
+      context: .
+      dockerfile: docker/nest/dev.dockerfile
+    working_dir: /home/node/workspace
+    command: npm run start:debug
+    restart: unless-stopped
+    tty: true
+    volumes:
+      - .:/home/node/workspace
+      - /home/node/workspace/node_modules
+    networks:
+      -  fantech-server_fantech-network
+    env_file:
+      - .env.dev
+    ports:
+      - '8010:8003'
+networks:
+  fantech-server_fantech-network:
+    external: true
