@@ -12,7 +12,7 @@ export class HealthController {
 
   @Get('/firebase')
   async healthCheck() {
-    const res = this.goal3Firestore.testConnection();
+    const res = await this.goal3Firestore.testConnection();
     return {
       statusCode: HttpStatus.OK,
       data: res,
