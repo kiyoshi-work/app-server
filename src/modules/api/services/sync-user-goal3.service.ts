@@ -52,7 +52,7 @@ export class SyncUserGoal3Service {
         snapshot.forEach(async (change) => {
           // if (change.type === 'added') {
           const newUser = change.data() as IUserFireStore;
-          console.log('🚀 ~ UPDATED GOAL3 USER', newUser);
+          console.log('🚀 ~ UPDATED GOAL3 USER', newUser?.id);
           await this._saveUser([newUser]);
           // }
         });
@@ -109,4 +109,6 @@ export class SyncUserGoal3Service {
       console.log(`TIME: ${_ed - _st}`);
     }
   }
+
+  // @Cron(CronExpression.EVERY_MINUTE)
 }

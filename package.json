@@ -28,6 +28,7 @@
     "@nestjs/throttler": "^4.2.1",
     "@nestjs/platform-express": "^10.0.0",
     "ethers": "5.7.1",
+    "@nestjs/schedule": "^3.0.1",
     "@nestjs/swagger": "^7.0.4",
     "class-validator": "^0.14.0",
     "class-transformer": "^0.5.1",

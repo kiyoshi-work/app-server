@@ -1,7 +1,4 @@
-import {
-  MAX_EXTERNAL_IDS_SEND_NOTIFICATION,
-  getAppId,
-} from '@/onesignal/constant';
+import { MAX_EXTERNAL_IDS_SEND_NOTIFICATION } from '@/onesignal/constant';
 import { RateLimitExternalIdsException } from '@/onesignal/exceptions/api-v1.exception';
 import {
   IPBodySendNotificationByExternalIds,
@@ -36,7 +33,7 @@ export class Notification extends HttpClient {
     }
 
     const data: IPBodySendNotificationByExternalIds = {
-      app_id: getAppId(),
+      app_id: params.onesignalAppId,
       contents: {
         en: params.content,
       },
@@ -52,20 +49,37 @@ export class Notification extends HttpClient {
     if (params.launchUrl) {
       data.url = params.launchUrl;
     }
-
-    const response =
-      await this.getHttpClient().post<IResponseSendNotificationByTags>(
-        this.getFullApiV1EndPoint(params.onesignalAppId),
-        data,
-        {
-          headers: this.getClientHeaders(params.onesignalApiKey),
-        },
+    try {
+      const response =
+        await this.getHttpClient().post<IResponseSendNotificationByTags>(
+          this.getFullApiV1EndPoint(params.onesignalAppId),
+          data,
+          {
+            headers: this.getClientHeaders(params.onesignalApiKey),
+          },
+        );
+      console.log(
+        '🚀 ~ file: notification.ts:128 ~ Notification ~ sendByExternalIds ~ response:',
+        response.data,
       );
-
-    console.log(
-      '🚀 ~ file: notification.ts:128 ~ Notification ~ sendByExternalIds ~ response:',
-      response.data,
-    );
-    return response.data?.id;
+      return response.data?.id;
+    } catch (error) {
+      // Handle errors here
+      if (error.response) {
+        // The request was made and the server responded with a status code
+        // that falls out of the range of 2xx
+        console.error('Response Error Data: ', error.response.data);
+        console.error('Response Error Status: ', error.response.status);
+        throw error.response.data;
+      } else if (error.request) {
+        // The request was made but no response was received
+        console.error('Request Error: ', error.request);
+        throw error.request;
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        console.error('Error Message: ', error.message);
+        throw error.message;
+      }
+    }
   }
 }

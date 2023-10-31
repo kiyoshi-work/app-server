@@ -23,10 +23,12 @@ export class NotificationController {
 
   @Post()
   async pushNotification(@Body() body: PushNotificationDto) {
-    await this.notificationService.pushNotification(body);
+    const { res, error } =
+      await this.notificationService.pushNotification(body);
     return {
       statusCode: HttpStatus.OK,
-      // data: result,
+      data: res,
+      ...(res && { message: error }),
     };
   }
 

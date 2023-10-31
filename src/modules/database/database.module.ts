@@ -2,8 +2,9 @@ import { Module } from '@nestjs/common';
 import { configDb } from './configs';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { TypeOrmModule } from '@nestjs/typeorm';
-import { UserEntity } from '@/database/entities';
+import { AdminConfigEntity, UserEntity } from '@/database/entities';
 import {
+  AdminConfigRepository,
   ClientRepository,
   NotificationRepository,
   UserRepository,
@@ -20,6 +21,7 @@ const repositories = [
   ClientRepository,
   NotificationRepository,
   UserNotificationRepository,
+  AdminConfigRepository,
 ];
 
 const entities = [
@@ -27,6 +29,7 @@ const entities = [
   ClientEntity,
   NotificationEntity,
   UserNotificationEntity,
+  AdminConfigEntity,
 ];
 
 @Module({

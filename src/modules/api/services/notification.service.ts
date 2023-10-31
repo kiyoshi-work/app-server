@@ -51,7 +51,12 @@ export class NotificationService {
       launchUrl: body.launch_url,
       content: body.content,
     };
-    const notification = await this.notificationRepository.logToDatabase(data);
+    let notification;
+    if (body.is_logged_db) {
+      notification = await this.notificationRepository.logToDatabase(data);
+    }
+    let res = false;
+    let error;
     for (const _receivers of receiveIdsChunked) {
       try {
         await this.oneSignalNotification.sendByExternalIds({
@@ -60,17 +65,22 @@ export class NotificationService {
           onesignalAppId: client?.onesignal_app_id,
           onesignalApiKey: client?.onesignal_api_key,
         });
-        await this.userNotificationRepository.logToDatabase(
-          _receivers.map((_receiver) => ({
-            receiverId: _receiver.id,
-            notificationId: notification.id,
-            status: ENotificationStatus.Sent,
-          })),
-        );
+        if (body.is_logged_db) {
+          await this.userNotificationRepository.logToDatabase(
+            _receivers.map((_receiver) => ({
+              receiverId: _receiver.id,
+              notificationId: notification?.id,
+              status: ENotificationStatus.Sent,
+            })),
+          );
+        }
+        res = true;
       } catch (error) {
+        error = error;
         console.log('send noti event error: ', _receivers, error);
       }
     }
+    return { res, error };
   }
 
   async getNotifications(query: GetNotificationDTO) {
