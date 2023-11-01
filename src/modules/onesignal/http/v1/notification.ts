@@ -45,11 +45,6 @@ export class Notification extends HttpClient {
     if (params.launchUrl) {
       data.url = params.launchUrl;
     }
-    console.log(
-      '🚀 ~ file: notification.ts:47 ~ Notification ~ sendToAll ~ data:',
-      data,
-    );
-
     try {
       const response =
         await this.getHttpClient().post<IResponseSendNotificationByTags>(

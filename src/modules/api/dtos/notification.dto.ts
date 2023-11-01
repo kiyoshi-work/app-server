@@ -66,7 +66,6 @@ export class PushNotificationAllDto {
   launch_url?: string;
 }
 
-
 export class GetNotificationDTO extends PaginateDto {
   @ApiProperty()
   @IsUUID()

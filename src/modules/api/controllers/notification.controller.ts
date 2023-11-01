@@ -12,6 +12,7 @@ import {
 import { ApiTags } from '@nestjs/swagger';
 import {
   GetNotificationDTO,
+  PushNotificationAllDto,
   PushNotificationDto,
 } from '../dtos/notification.dto';
 import { NotificationService } from '../services/notification.service';
@@ -33,7 +34,7 @@ export class NotificationController {
   }
 
   @Post('/all')
-  async pushNotificationAll(@Body() body: PushNotificationDto) {
+  async pushNotificationAll(@Body() body: PushNotificationAllDto) {
     const { res, error } =
       await this.notificationService.pushNotificationAll(body);
     return {
