@@ -6,6 +6,7 @@ import {
 } from '@/database/repositories';
 import {
   GetNotificationDTO,
+  PushNotificationAllDto,
   PushNotificationDto,
 } from '../dtos/notification.dto';
 import { chunk, getOffset } from '@/shared/utils';
@@ -27,6 +28,37 @@ export class NotificationService {
     private readonly notificationRepository: NotificationRepository,
     private readonly userNotificationRepository: UserNotificationRepository,
   ) {}
+
+  async pushNotificationAll(body: PushNotificationAllDto) {
+    const client = await this.clientRepository.findOneBy({
+      id: body.client_id,
+    });
+    if (!(client?.onesignal_app_id && client?.onesignal_api_key)) {
+      throw new InternalServerErrorException(
+        'Not found client or onesignal key',
+      );
+    }
+
+    let res = false;
+    let error;
+    try {
+      const data = {
+        title: body.title,
+        launchUrl: body.launch_url,
+        content: body.content,
+      };
+      await this.oneSignalNotification.sendToAll({
+        ...data,
+        onesignalAppId: client?.onesignal_app_id,
+        onesignalApiKey: client?.onesignal_api_key,
+      });
+
+      res = true;
+    } catch (error) {
+      error = error;
+    }
+    return { res, error };
+  }
   async pushNotification(body: PushNotificationDto) {
     const client = await this.clientRepository.findOneBy({
       id: body.client_id,

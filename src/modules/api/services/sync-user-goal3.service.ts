@@ -5,7 +5,7 @@ import {
   UserRepository,
 } from '@/database/repositories';
 import { Goal3Firestore } from '@/modules/firebase';
-import { validateEtherAddress } from '@/shared/utils';
+import { validateDate, validateEtherAddress } from '@/shared/utils';
 import { Cron, CronExpression } from '@nestjs/schedule';
 
 interface IUserFireStore {
@@ -70,7 +70,13 @@ export class SyncUserGoal3Service {
   private async _saveUser(data: IUserFireStore[]) {
     try {
       const saveUsers = data
-        .filter((user) => user && user.id && validateEtherAddress(user.id))
+        .filter(
+          (user) =>
+            user &&
+            user.id &&
+            validateEtherAddress(user.id) &&
+            validateDate(user.created_at),
+        )
         .map((user) => ({
           client_uid: user.id,
           client_id: this._clientId,
@@ -86,10 +92,7 @@ export class SyncUserGoal3Service {
         });
       }
     } catch (error) {
-      console.log(
-        '🚀 ~ file: sync-user-goal3.service.ts:81 ~ SyncUserGoal3Service ~ _saveUser ~ error:',
-        error,
-      );
+      console.log('🚀 ~ save to db fail:', error.message);
     }
   }
 

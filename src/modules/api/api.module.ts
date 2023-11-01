@@ -10,6 +10,7 @@ import { SyncUserGoal3Service } from './services/sync-user-goal3.service';
 import { OnesignalModule } from '../onesignal/onesignal.module';
 import { NotificationService } from './services/notification.service';
 import { HealthController } from './controllers/health.controller';
+import { Notification } from '@/onesignal/http/v1/notification';
 
 const services = [SyncUserGoal3Service, AuthService, NotificationService];
 @Module({
@@ -36,9 +37,17 @@ export class ApiModule implements OnApplicationBootstrap {
   constructor(
     @Inject('GOAL3_FIRESTORE')
     private goal3Firestore: Goal3Firestore,
+    private readonly oneSignalNotification: Notification,
   ) {}
 
   async onApplicationBootstrap() {
     // await this.goal3Firestore.testConnection();
+    // await this.oneSignalNotification.sendToAll({
+    //   title: 'testnoti',
+    //   launchUrl: '/ccccc',
+    //   content: 'casca',
+    //   onesignalAppId: '611f78ab-1f2b-40e0-9e7b-c5eef7ce8ca0',
+    //   onesignalApiKey: 'YzE4NmRmNDUtY2NkOC00OGVkLWIxODktNTk3YTgxM2FhYmJm',
+    // });
   }
 }

@@ -32,6 +32,17 @@ export class NotificationController {
     };
   }
 
+  @Post('/all')
+  async pushNotificationAll(@Body() body: PushNotificationDto) {
+    const { res, error } =
+      await this.notificationService.pushNotificationAll(body);
+    return {
+      statusCode: HttpStatus.OK,
+      data: res,
+      ...(res && { message: error }),
+    };
+  }
+
   @Get()
   async getNotification(@Query() query: GetNotificationDTO) {
     const result = await this.notificationService.getNotifications(query);

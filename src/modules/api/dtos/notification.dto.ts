@@ -47,6 +47,26 @@ export class PushNotificationDto {
   recipients: string[];
 }
 
+export class PushNotificationAllDto {
+  @ApiProperty()
+  @IsUUID()
+  client_id: string;
+
+  @ApiProperty()
+  @IsString()
+  content: string;
+
+  @ApiProperty()
+  @IsString()
+  title: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  launch_url?: string;
+}
+
+
 export class GetNotificationDTO extends PaginateDto {
   @ApiProperty()
   @IsUUID()

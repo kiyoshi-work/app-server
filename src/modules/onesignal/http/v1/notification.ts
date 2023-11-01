@@ -2,7 +2,9 @@ import { MAX_EXTERNAL_IDS_SEND_NOTIFICATION } from '@/onesignal/constant';
 import { RateLimitExternalIdsException } from '@/onesignal/exceptions/api-v1.exception';
 import {
   IPBodySendNotificationByExternalIds,
+  IPBodySendToAll,
   IParamsSendNotificationByExternalIds,
+  IParamsSendToAll,
   IResponseSendNotificationByTags,
 } from '@/onesignal/interfaces/http-v1.interface';
 import { Injectable } from '@nestjs/common';
@@ -25,6 +27,56 @@ export class Notification extends HttpClient {
         apiKey ? apiKey : process.env.ONESIGNAL_REST_API_KEY
       }`,
     };
+  }
+
+  async sendToAll(params: IParamsSendToAll) {
+    const data: IPBodySendToAll = {
+      app_id: params.onesignalAppId,
+      contents: {
+        en: params.content,
+      },
+      headings: {
+        en: params.title,
+      },
+      target_channel: 'push',
+      included_segments: ['All'],
+    };
+
+    if (params.launchUrl) {
+      data.url = params.launchUrl;
+    }
+    console.log(
+      '🚀 ~ file: notification.ts:47 ~ Notification ~ sendToAll ~ data:',
+      data,
+    );
+
+    try {
+      const response =
+        await this.getHttpClient().post<IResponseSendNotificationByTags>(
+          this.getFullApiV1EndPoint(),
+          data,
+          {
+            headers: this.getClientHeaders(params.onesignalApiKey),
+          },
+        );
+      console.log(
+        '🚀 ~ file: notification.ts:51 ~ Notification ~ sendToAll ~ response:',
+        response.data,
+      );
+      return response.data?.id;
+    } catch (error) {
+      if (error.response) {
+        console.error('Response Error Data: ', error.response.data);
+        console.error('Response Error Status: ', error.response.status);
+        throw error.response.data;
+      } else if (error.request) {
+        console.error('Request Error: ', error.request);
+        throw error.request;
+      } else {
+        console.error('Error Message: ', error.message);
+        throw error.message;
+      }
+    }
   }
 
   async sendByExternalIds(params: IParamsSendNotificationByExternalIds) {

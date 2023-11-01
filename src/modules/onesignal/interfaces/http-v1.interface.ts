@@ -78,15 +78,17 @@ export interface IResponseSendNotificationByTags {
   id: string;
 }
 
-export interface IParamsSendNotificationByExternalIds {
-  onesignalAppId: string;
-  onesignalApiKey: string;
+export interface IParamsSendNotificationByExternalIds extends IOnesignalConfig {
   externalIds: string[];
   title: string;
   content: string;
   launchUrl?: string;
 }
 
+export interface IOnesignalConfig {
+  onesignalAppId: string;
+  onesignalApiKey: string;
+}
 export interface IPBodySendNotificationByExternalIds {
   app_id: string;
   contents: {
@@ -102,7 +104,7 @@ export interface IPBodySendNotificationByExternalIds {
   url?: string;
 }
 
-export interface IParamsSendToAll {
+export interface IParamsSendToAll extends IOnesignalConfig {
   title: string;
   content: string;
   launchUrl?: string;

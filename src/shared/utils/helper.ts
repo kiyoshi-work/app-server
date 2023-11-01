@@ -13,6 +13,10 @@ export const validateEtherAddress = (address: string) => {
   return /^(0x){1}[0-9a-fA-F]{40}$/i.test(address);
 };
 
+export const validateDate = (date: string | number | Date) => {
+  return !isNaN(new Date(date).getDate());
+};
+
 export function getOffset(take: number = PAGINATION_TAKEN, page?: number) {
   if (page && page > 0) {
     return take * page - take;
