@@ -29,8 +29,8 @@ export class SyncUserGoal3Service {
   async onApplicationBootstrap() {
     if (isRunSchedule) {
       this._clientId = 'cd3a5797-737c-4375-be6f-549caa49bc8d';
-      // await this.initialize();
-      await this._syncUser(new Date('2023-07-10'), new Date());
+      await this.initialize();
+      // await this._syncUser(new Date('2023-07-10'), new Date());
     }
   }
 
