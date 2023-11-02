@@ -29,7 +29,7 @@ export class SyncUserGoal3Service {
   async onApplicationBootstrap() {
     if (isRunSchedule) {
       // await this.initialize();
-      await this._syncUser(new Date('2023-05-21'), new Date());
+      await this._syncUser(new Date('2023-07-10'), new Date());
     }
   }
 
