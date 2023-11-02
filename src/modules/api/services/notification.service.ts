@@ -1,4 +1,8 @@
-import { Injectable, InternalServerErrorException } from '@nestjs/common';
+import {
+  Inject,
+  Injectable,
+  InternalServerErrorException,
+} from '@nestjs/common';
 import {
   ClientRepository,
   NotificationRepository,
@@ -9,23 +13,23 @@ import {
   PushNotificationAllDto,
   PushNotificationDto,
 } from '../dtos/notification.dto';
-import { chunk, getOffset } from '@/shared/utils';
-import { MAX_EXTERNAL_IDS_SEND_NOTIFICATION } from '@/modules/onesignal/constant';
-import { In } from 'typeorm';
+import { getOffset } from '@/shared/utils';
 import { Notification } from '@/onesignal/http/v1/notification';
 import { UserNotificationRepository } from '@/modules/database/repositories/user-notification.repository';
 import { ENotificationStatus } from '@/shared/constants/enums';
 import { PAGINATION_TAKEN } from '@/shared/constants/constants';
-import { UserNotificationEntity } from '@/modules/database/entities/user-notification.entity';
-import { UserEntity } from '@/modules/database/entities';
+import { EventManager } from '@/modules/event/event.manager';
+import { UserReadNotiEvent } from '@/modules/event/impls/user-read-noti.event';
+import { SendNotiExternalEvent } from '@/modules/event/impls/sent-noti-external.event';
 
 @Injectable()
 export class NotificationService {
+  @Inject(EventManager)
+  private readonly eventManager: EventManager;
+
   constructor(
     private readonly oneSignalNotification: Notification,
-    private readonly userRepository: UserRepository,
     private readonly clientRepository: ClientRepository,
-    private readonly notificationRepository: NotificationRepository,
     private readonly userNotificationRepository: UserNotificationRepository,
   ) {}
 
@@ -38,7 +42,6 @@ export class NotificationService {
         'Not found client or onesignal key',
       );
     }
-
     let res = false;
     let error;
     try {
@@ -68,55 +71,21 @@ export class NotificationService {
         'Not found client or onesignal key',
       );
     }
-    const users = await this.userRepository.find({
-      where: {
-        client_id: body.client_id,
-        client_uid: In(body.recipients),
-      },
-    });
-    const receiveIdsChunked = chunk(
-      users.map((user) => ({ id: user.id, external_id: user.client_uid })),
-      MAX_EXTERNAL_IDS_SEND_NOTIFICATION,
+    this.eventManager.publish(
+      new SendNotiExternalEvent(
+        client.onesignal_app_id,
+        client.onesignal_api_key,
+        body.client_id,
+        body.recipients,
+        body.title,
+        body.content,
+        body.launch_url,
+        body.content_html,
+        body.is_logged_db,
+        body.type,
+      ),
     );
-    const data = {
-      title: body.title,
-      launchUrl: body.launch_url,
-      content: body.content,
-      content_html: body.content_html ? body.content_html : body.content,
-    };
-    let notification;
-    if (body.is_logged_db) {
-      notification = await this.notificationRepository.logToDatabase({
-        ...data,
-        type: body.type,
-      });
-    }
-    let res = false;
-    let error;
-    for (const _receivers of receiveIdsChunked) {
-      try {
-        await this.oneSignalNotification.sendByExternalIds({
-          ...data,
-          externalIds: _receivers.map((_receiver) => _receiver.external_id),
-          onesignalAppId: client?.onesignal_app_id,
-          onesignalApiKey: client?.onesignal_api_key,
-        });
-        if (body.is_logged_db) {
-          await this.userNotificationRepository.logToDatabase(
-            _receivers.map((_receiver) => ({
-              receiverId: _receiver.id,
-              notificationId: notification?.id,
-              status: ENotificationStatus.Sent,
-            })),
-          );
-        }
-        res = true;
-      } catch (error) {
-        error = error;
-        console.log('send noti event error: ', _receivers, error);
-      }
-    }
-    return { res, error };
+    return true;
   }
 
   async getNotifications(query: GetNotificationDTO) {
@@ -136,56 +105,10 @@ export class NotificationService {
       relations: ['notification'],
       order: { created_at: 'DESC' },
     });
-
-    const notiHistoryIds = await this.userNotificationRepository.find({
-      where: {
-        receiver: {
-          client_uid: query.recipient_id,
-          client_id: query.client_id,
-        },
-        notification: {
-          type: query?.type,
-        },
-        status: ENotificationStatus.Sent,
-      },
-      relations: ['notification', 'receiver'],
-      select: ['id'],
-    });
-    await this.userNotificationRepository.update(
-      {
-        id: In(notiHistoryIds.map((noti) => noti.id)),
-      },
-      { status: ENotificationStatus.Read },
+    this.eventManager.publish(
+      new UserReadNotiEvent(query.recipient_id, query.client_id, query.type),
     );
-
-    // await this.userNotificationRepository
-    //   .createQueryBuilder('user-noti')
-    //   .leftJoinAndMapOne(
-    //     'user-noti.receiver',
-    //     UserEntity,
-    //     'receiver',
-    //     'user-noti.receiver_id = receiver.id',
-    //   )
-    //   .where('receiver.client_id = :client_id', {
-    //     client_id: query.client_id,
-    //   })
-    //   .andWhere('receiver.client_uid = :client_uid', {
-    //     client_uid: query.recipient_id,
-    //   })
-    //   .update(UserNotificationEntity)
-    //   .set({
-    //     status: ENotificationStatus.Read,
-    //   })
-    //   .execute();
     return notiHistory;
-    // .map((noti) => ({
-    //   ...noti.notification,
-    //   status: noti.status,
-    // }));
-
-    // this.eventManager.publish(
-    //   new UserReadNotiEvent(userId, query.category, query.type),
-    // );
   }
 
   async clickNoti(user_notification_id: string) {
@@ -206,9 +129,11 @@ export class NotificationService {
           client_uid: query.recipient_id,
           client_id: query.client_id,
         },
-        notification: {
-          type: query?.type,
-        },
+        ...(query?.type && {
+          notification: {
+            type: query?.type,
+          },
+        }),
         status: ENotificationStatus.Sent,
       })
       .getRawOne();

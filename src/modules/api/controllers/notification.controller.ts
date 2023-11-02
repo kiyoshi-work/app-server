@@ -8,6 +8,7 @@ import {
   Post,
   Put,
   Query,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 import {
@@ -16,6 +17,8 @@ import {
   PushNotificationDto,
 } from '../dtos/notification.dto';
 import { NotificationService } from '../services/notification.service';
+import { CacheTTL } from '@nestjs/cache-manager';
+import { HttpCacheInterceptor } from '../cache';
 
 @ApiTags('Notification')
 @Controller('/notification')
@@ -24,12 +27,11 @@ export class NotificationController {
 
   @Post()
   async pushNotification(@Body() body: PushNotificationDto) {
-    const { res, error } =
-      await this.notificationService.pushNotification(body);
+    const res = await this.notificationService.pushNotification(body);
     return {
       statusCode: HttpStatus.OK,
       data: res,
-      ...(res && { message: error }),
+      // ...(res && { message: error }),
     };
   }
 
@@ -44,6 +46,8 @@ export class NotificationController {
     };
   }
 
+  @UseInterceptors(HttpCacheInterceptor)
+  @CacheTTL(3000)
   @Get()
   async getNotification(@Query() query: GetNotificationDTO) {
     const result = await this.notificationService.getNotifications(query);
@@ -53,6 +57,8 @@ export class NotificationController {
     };
   }
 
+  @UseInterceptors(HttpCacheInterceptor)
+  @CacheTTL(2000)
   @Get('/unread-count')
   async countNotificationUnread(@Query() query: GetNotificationDTO) {
     const result =

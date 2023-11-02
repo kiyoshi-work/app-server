@@ -5,12 +5,14 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from '@/api/services';
 import { LoggerModule } from '@/logger';
 import { FirebaseModule, Goal3Firestore } from '@/modules/firebase';
-import { configFirebase } from '@/modules/api/configs';
+import { configCache, configFirebase } from '@/modules/api/configs';
 import { SyncUserGoal3Service } from './services/sync-user-goal3.service';
 import { OnesignalModule } from '../onesignal/onesignal.module';
 import { NotificationService } from './services/notification.service';
 import { HealthController } from './controllers/health.controller';
 import { Notification } from '@/onesignal/http/v1/notification';
+import { EventModule } from '@/modules/event/event.module';
+import { CacheModule } from '@nestjs/cache-manager';
 
 const services = [SyncUserGoal3Service, AuthService, NotificationService];
 @Module({
@@ -18,6 +20,7 @@ const services = [SyncUserGoal3Service, AuthService, NotificationService];
     LoggerModule,
     DatabaseModule,
     OnesignalModule,
+    EventModule,
     FirebaseModule.registerAsync({
       isGlobal: true,
       imports: [ConfigModule],
@@ -27,7 +30,14 @@ const services = [SyncUserGoal3Service, AuthService, NotificationService];
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
-      load: [configFirebase],
+      load: [configFirebase, configCache],
+    }),
+    CacheModule.registerAsync({
+      imports: [ConfigModule],
+      useFactory: async (configService: ConfigService) => ({
+        ttl: configService.get('cache.api.cache_ttl'),
+      }),
+      inject: [ConfigService],
     }),
   ],
   controllers: [AuthController, NotificationController, HealthController],
