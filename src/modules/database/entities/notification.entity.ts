@@ -21,6 +21,9 @@ export class NotificationEntity {
   content?: string;
 
   @Column({ nullable: true })
+  content_html?: string;
+
+  @Column({ nullable: true })
   launch_url?: string;
 
   @Column({ nullable: true })

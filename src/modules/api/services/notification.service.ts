@@ -82,6 +82,7 @@ export class NotificationService {
       title: body.title,
       launchUrl: body.launch_url,
       content: body.content,
+      content_html: body.content_html ? body.content_html : body.content,
     };
     let notification;
     if (body.is_logged_db) {

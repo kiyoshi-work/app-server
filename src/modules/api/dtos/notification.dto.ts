@@ -27,6 +27,11 @@ export class PushNotificationDto {
   @ApiPropertyOptional()
   @IsString()
   @IsOptional()
+  content_html?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
   launch_url?: string;
 
   @ApiPropertyOptional()
