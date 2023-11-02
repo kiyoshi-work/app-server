@@ -45,6 +45,13 @@ export class PushNotificationDto {
     example: ['2'],
   })
   recipients: string[];
+
+  @ApiPropertyOptional({
+    example: ['system'],
+  })
+  @IsString()
+  @IsOptional()
+  type?: string;
 }
 
 export class PushNotificationAllDto {
@@ -64,6 +71,13 @@ export class PushNotificationAllDto {
   @IsString()
   @IsOptional()
   launch_url?: string;
+
+  @ApiPropertyOptional({
+    example: ['system'],
+  })
+  @IsString()
+  @IsOptional()
+  type?: string;
 }
 
 export class GetNotificationDTO extends PaginateDto {
@@ -74,4 +88,11 @@ export class GetNotificationDTO extends PaginateDto {
   @ApiProperty()
   @IsString()
   recipient_id: string;
+
+  @ApiPropertyOptional({
+    example: ['system'],
+  })
+  @IsString()
+  @IsOptional()
+  type?: string;
 }

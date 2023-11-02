@@ -85,7 +85,10 @@ export class NotificationService {
     };
     let notification;
     if (body.is_logged_db) {
-      notification = await this.notificationRepository.logToDatabase(data);
+      notification = await this.notificationRepository.logToDatabase({
+        ...data,
+        type: body.type,
+      });
     }
     let res = false;
     let error;
@@ -123,10 +126,13 @@ export class NotificationService {
           client_uid: query.recipient_id,
           client_id: query.client_id,
         },
+        notification: {
+          type: query?.type,
+        },
       },
       take: take,
       skip: getOffset(take, query?.page || 0),
-      relations: ['notification'],
+      relations: ['notification', 'receiver'],
       order: { created_at: 'DESC' },
     });
 
@@ -136,9 +142,12 @@ export class NotificationService {
           client_uid: query.recipient_id,
           client_id: query.client_id,
         },
+        notification: {
+          type: query?.type,
+        },
         status: ENotificationStatus.Sent,
       },
-      relations: ['receiver'],
+      relations: ['notification', 'receiver'],
       select: ['id'],
     });
     await this.userNotificationRepository.update(
@@ -195,6 +204,9 @@ export class NotificationService {
         receiver: {
           client_uid: query.recipient_id,
           client_id: query.client_id,
+        },
+        notification: {
+          type: query?.type,
         },
         status: ENotificationStatus.Sent,
       })

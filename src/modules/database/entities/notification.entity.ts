@@ -23,6 +23,9 @@ export class NotificationEntity {
   @Column({ nullable: true })
   launch_url?: string;
 
+  @Column({ nullable: true })
+  type?: string;
+
   @OneToMany(() => UserNotificationEntity, (entity) => entity.notification)
   receivers: UserNotificationEntity[];
 

@@ -6,6 +6,7 @@ export interface IParamsNoti {
   title?: string;
   content?: string;
   launchUrl?: string;
+  type?: string;
 }
 
 export class NotificationRepository extends Repository<NotificationEntity> {
@@ -18,6 +19,7 @@ export class NotificationRepository extends Repository<NotificationEntity> {
       content: data.content,
       title: data.title,
       launch_url: data.launchUrl,
+      type: data.type,
     });
   }
 }

@@ -27,7 +27,9 @@ export class SyncUserGoal3Service {
     private readonly adminConfigRepository: AdminConfigRepository,
   ) {}
   async onApplicationBootstrap() {
-    await this.initialize();
+    if (isRunSchedule) {
+      await this.initialize();
+    }
   }
 
   private _fromTime: Date;

@@ -53,7 +53,7 @@ export class NotificationController {
     };
   }
 
-  @Get('/unread-count/user_id')
+  @Get('/unread-count')
   async countNotificationUnread(@Query() query: GetNotificationDTO) {
     const result =
       await this.notificationService.countNotificationUnread(query);
