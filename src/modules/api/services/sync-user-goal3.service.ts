@@ -29,6 +29,7 @@ export class SyncUserGoal3Service {
   async onApplicationBootstrap() {
     if (isRunSchedule) {
       await this.initialize();
+      await this._syncUser(new Date('2022-10-01'), new Date());
     }
   }
 
@@ -57,11 +58,9 @@ export class SyncUserGoal3Service {
 
   private async _updateUserSnapshot(from: Date) {
     const userCollectionRef = this.goal3Firestore.getUserCollRef();
-    console.log(userCollectionRef, 'bbbbbb');
     userCollectionRef
       .where('created_at', '>=', from.toISOString().substring(0, 19) + 'Z')
       .onSnapshot((snapshot) => {
-        console.log(snapshot, 'aaaaaa');
         snapshot.forEach(async (change) => {
           // if (change.type === 'added') {
           const newUser = change.data() as IUserFireStore;
@@ -128,7 +127,6 @@ export class SyncUserGoal3Service {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async runSyncUser() {
-    console.log('11111');
     if (!isRunSchedule) return;
     console.log(
       '🚀 ~ file: sync-user-goal3.service.ts:128 ~ SyncUserGoal3Service ~ runSyncUser ~ runSyncUser:',
