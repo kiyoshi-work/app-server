@@ -3,11 +3,7 @@ import {
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import {
-  ClientRepository,
-  NotificationRepository,
-  UserRepository,
-} from '@/database/repositories';
+import { ClientRepository } from '@/database/repositories';
 import {
   GetNotificationDTO,
   PushNotificationAllDto,
