@@ -28,8 +28,8 @@ export class SyncUserGoal3Service {
   ) {}
   async onApplicationBootstrap() {
     if (isRunSchedule) {
-      await this.initialize();
-      await this._syncUser(new Date('2023-05-22'), new Date());
+      // await this.initialize();
+      await this._syncUser(new Date('2023-05-21'), new Date());
     }
   }
 
@@ -103,7 +103,7 @@ export class SyncUserGoal3Service {
     while (from <= to) {
       const _st = new Date().getTime();
       const end = new Date(from);
-      const duration = 24 * 60 * 60 * 1000;
+      const duration = 6 * 60 * 60 * 1000;
       end.setTime(end.getTime() + duration);
       console.log(
         '🚀 ~ file: 001_create_order_outcomes.ts:13 ~ seed ~ day:',
