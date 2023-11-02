@@ -50,15 +50,18 @@ export class SyncUserGoal3Service {
       lastUser,
     );
     this._fromTime = new Date(lastUser?.created_at || '2023-03-25');
+    console.log(this._fromTime, 'sssss');
     // await this._syncUser(this._fromTime, new Date());
     await this._updateUserSnapshot(this._fromTime);
   };
 
   private async _updateUserSnapshot(from: Date) {
     const userCollectionRef = this.goal3Firestore.getUserCollRef();
+    console.log(userCollectionRef, 'bbbbbb');
     userCollectionRef
       .where('created_at', '>=', from.toISOString().substring(0, 19) + 'Z')
       .onSnapshot((snapshot) => {
+        console.log(snapshot, 'aaaaaa');
         snapshot.forEach(async (change) => {
           // if (change.type === 'added') {
           const newUser = change.data() as IUserFireStore;
@@ -125,6 +128,7 @@ export class SyncUserGoal3Service {
 
   @Cron(CronExpression.EVERY_MINUTE)
   async runSyncUser() {
+    console.log('11111');
     if (!isRunSchedule) return;
     console.log(
       '🚀 ~ file: sync-user-goal3.service.ts:128 ~ SyncUserGoal3Service ~ runSyncUser ~ runSyncUser:',
