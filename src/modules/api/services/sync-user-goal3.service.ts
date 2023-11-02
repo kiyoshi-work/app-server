@@ -126,6 +126,9 @@ export class SyncUserGoal3Service {
   @Cron(CronExpression.EVERY_MINUTE)
   async runSyncUser() {
     if (!isRunSchedule) return;
+    console.log(
+      '🚀 ~ file: sync-user-goal3.service.ts:128 ~ SyncUserGoal3Service ~ runSyncUser ~ runSyncUser:',
+    );
     const config = await this.adminConfigRepository.findOneBy({
       key: 'update_share_price',
     });
