@@ -5,6 +5,7 @@ import { NotificationEntity } from '../entities/notification.entity';
 export interface IParamsNoti {
   title?: string;
   content?: string;
+  content_html?: string;
   launchUrl?: string;
   type?: string;
 }
@@ -19,6 +20,7 @@ export class NotificationRepository extends Repository<NotificationEntity> {
       content: data.content,
       title: data.title,
       launch_url: data.launchUrl,
+      content_html: data.content_html,
       type: data.type,
     });
   }
