@@ -118,7 +118,7 @@ export class SyncUserGoal3Service {
         users.length,
       );
       await this._saveUser(users);
-      users = [];
+      // users = [];
       from.setTime(from.getTime() + duration);
       const _ed = new Date().getTime();
       console.log(`TIME: ${_ed - _st}`);
