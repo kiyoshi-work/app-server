@@ -103,13 +103,13 @@ export class SyncUserGoal3Service {
     while (from <= to) {
       const _st = new Date().getTime();
       const end = new Date(from);
-      const duration = 6 * 60 * 60 * 1000;
+      const duration = 4 * 60 * 60 * 1000;
       end.setTime(end.getTime() + duration);
       console.log(
         '🚀 ~ file: 001_create_order_outcomes.ts:13 ~ seed ~ day:',
         end,
       );
-      const users = (await this.goal3Firestore.getUsersByTime(
+      let users = (await this.goal3Firestore.getUsersByTime(
         new Date(from),
         end,
       )) as any;
@@ -118,6 +118,7 @@ export class SyncUserGoal3Service {
         users.length,
       );
       await this._saveUser(users);
+      users = [];
       from.setTime(from.getTime() + duration);
       const _ed = new Date().getTime();
       console.log(`TIME: ${_ed - _st}`);
