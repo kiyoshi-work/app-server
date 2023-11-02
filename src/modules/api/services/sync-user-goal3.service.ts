@@ -29,7 +29,7 @@ export class SyncUserGoal3Service {
   async onApplicationBootstrap() {
     if (isRunSchedule) {
       await this.initialize();
-      await this._syncUser(new Date('2022-10-01'), new Date());
+      await this._syncUser(new Date('2023-05-22'), new Date());
     }
   }
 
@@ -51,7 +51,6 @@ export class SyncUserGoal3Service {
       lastUser,
     );
     this._fromTime = new Date(lastUser?.created_at || '2023-03-25');
-    console.log(this._fromTime, 'sssss');
     // await this._syncUser(this._fromTime, new Date());
     await this._updateUserSnapshot(this._fromTime);
   };
