@@ -132,7 +132,7 @@ export class NotificationService {
       },
       take: take,
       skip: getOffset(take, query?.page || 0),
-      relations: ['notification', 'receiver'],
+      relations: ['notification'],
       order: { created_at: 'DESC' },
     });
 

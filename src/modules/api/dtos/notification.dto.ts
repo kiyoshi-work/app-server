@@ -47,7 +47,7 @@ export class PushNotificationDto {
   recipients: string[];
 
   @ApiPropertyOptional({
-    example: ['system'],
+    example: 'system',
   })
   @IsString()
   @IsOptional()
@@ -73,7 +73,7 @@ export class PushNotificationAllDto {
   launch_url?: string;
 
   @ApiPropertyOptional({
-    example: ['system'],
+    example: 'system',
   })
   @IsString()
   @IsOptional()
@@ -90,7 +90,7 @@ export class GetNotificationDTO extends PaginateDto {
   recipient_id: string;
 
   @ApiPropertyOptional({
-    example: ['system'],
+    example: 'system',
   })
   @IsString()
   @IsOptional()
