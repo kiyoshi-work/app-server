@@ -28,7 +28,9 @@ export class SyncUserGoal3Service {
   ) {}
   async onApplicationBootstrap() {
     if (isRunSchedule) {
+      this._clientId = 'cd3a5797-737c-4375-be6f-549caa49bc8d';
       await this.initialize();
+      // await this._syncUser(new Date('2023-07-10'), new Date());
     }
   }
 
@@ -36,7 +38,6 @@ export class SyncUserGoal3Service {
   private _clientId: string;
 
   private initialize = async () => {
-    this._clientId = 'cd3a5797-737c-4375-be6f-549caa49bc8d';
     if (
       !(await this.clientRepository.exist({ where: { id: this._clientId } }))
     ) {
@@ -102,13 +103,13 @@ export class SyncUserGoal3Service {
     while (from <= to) {
       const _st = new Date().getTime();
       const end = new Date(from);
-      const duration = 24 * 60 * 60 * 1000;
+      const duration = 4 * 60 * 60 * 1000;
       end.setTime(end.getTime() + duration);
       console.log(
         '🚀 ~ file: 001_create_order_outcomes.ts:13 ~ seed ~ day:',
         end,
       );
-      const users = (await this.goal3Firestore.getUsersByTime(
+      let users = (await this.goal3Firestore.getUsersByTime(
         new Date(from),
         end,
       )) as any;
@@ -117,6 +118,7 @@ export class SyncUserGoal3Service {
         users.length,
       );
       await this._saveUser(users);
+      // users = [];
       from.setTime(from.getTime() + duration);
       const _ed = new Date().getTime();
       console.log(`TIME: ${_ed - _st}`);
