@@ -13,6 +13,7 @@ import { HealthController } from './controllers/health.controller';
 import { Notification } from '@/onesignal/http/v1/notification';
 import { EventModule } from '@/modules/event/event.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { ScheduleModule } from '@nestjs/schedule';
 
 const services = [SyncUserGoal3Service, AuthService, NotificationService];
 @Module({
@@ -21,6 +22,7 @@ const services = [SyncUserGoal3Service, AuthService, NotificationService];
     DatabaseModule,
     OnesignalModule,
     EventModule,
+    ScheduleModule.forRoot(),
     FirebaseModule.registerAsync({
       isGlobal: true,
       imports: [ConfigModule],
