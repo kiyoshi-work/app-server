@@ -13,7 +13,7 @@ import {
 import { ClientEntity } from './client.entity';
 
 @Entity('segments')
-// @Unique(['client_id', 'segment_cid'])
+@Unique(['client_id', 'name'])
 export class SegmentEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -30,8 +30,8 @@ export class SegmentEntity {
   @JoinColumn({ name: 'client_id' })
   client: ClientEntity;
 
-  @Column({ nullable: true })
-  name?: string;
+  @Column({ nullable: false })
+  name: string;
 
   @CreateDateColumn()
   created_at: Date;

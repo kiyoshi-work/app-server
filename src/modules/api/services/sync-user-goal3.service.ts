@@ -125,7 +125,7 @@ export class SyncUserGoal3Service {
             },
           });
           if (user) {
-            await this.userSegmentRepository.addAllUserSegment(user.id);
+            await this.userSegmentRepository.updateWhenUserAdded(user.id);
           }
         }
       }

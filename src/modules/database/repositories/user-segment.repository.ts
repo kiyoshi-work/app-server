@@ -29,7 +29,7 @@ export class UserSegmentRepository extends Repository<UserSegmentEntity> {
       .getOne();
   }
 
-  async addAllUserSegment(userId: string) {
+  async updateWhenUserAdded(userId: string) {
     const user = await this.userRepository.findOneUserById(userId);
     if (user && user.client_id) {
       const segments = await this.segmentRepository.findSegmentsByClient(
@@ -39,6 +39,28 @@ export class UserSegmentRepository extends Repository<UserSegmentEntity> {
         segments.map((segment) => ({
           segment_id: segment.id,
           user_id: user.id,
+        })),
+        { conflictPaths: ['user_id', 'segment_id'] },
+      );
+    }
+  }
+
+  async updateWhenSegmentAdded(segmentId: string) {
+    const segment = await this.segmentRepository.findOneSegmentById(segmentId);
+    if (segment && segment.client_id) {
+      const users = await this.createQueryBuilder('user-segment')
+        .leftJoin('user-segment.segment', 'segment')
+        .where({
+          segment: {
+            client_id: segment.client_id,
+          },
+        })
+        .select('DISTINCT user-segment.user_id', 'user_id')
+        .getRawMany();
+      await this.upsert(
+        users.map((user) => ({
+          segment_id: segment.id,
+          user_id: user.user_id,
         })),
         { conflictPaths: ['user_id', 'segment_id'] },
       );

@@ -12,4 +12,11 @@ export class SegmentRepository extends Repository<SegmentEntity> {
       where: { client_id },
     });
   }
+
+  async findOneSegmentById(id: string): Promise<SegmentEntity> {
+    return this.createQueryBuilder('segment')
+      .where('segment.id = :id', { id })
+      .limit(1)
+      .getOne();
+  }
 }

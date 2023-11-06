@@ -4,7 +4,7 @@ import {
   UserRepository,
   UserSegmentRepository,
 } from '@/database/repositories';
-import { GetSegmentDTO } from '../dtos/segment.dto';
+import { AddSegmentDTO, GetSegmentDTO } from '../dtos/segment.dto';
 import { ESegmentStatus } from '@/shared/constants/enums';
 
 @Injectable()
@@ -15,6 +15,38 @@ export class SegmentService {
     private readonly segmentRepository: SegmentRepository,
   ) {}
 
+  async addNotiSegment(body: AddSegmentDTO) {
+    if (
+      await this.segmentRepository.exist({
+        where: { client_id: body.client_id, name: body.name },
+      })
+    ) {
+      throw new BadRequestException(`segment ${body.name} existed`);
+    } else {
+      const segment = await this.segmentRepository.save({
+        client_id: body.client_id,
+        name: body.name,
+      });
+      const users = await this.userSegmentRepository
+        .createQueryBuilder('user-segment')
+        .leftJoin('user-segment.segment', 'segment')
+        .where({
+          segment: {
+            client_id: segment.client_id,
+          },
+        })
+        .select('DISTINCT user-segment.user_id', 'user_id')
+        .getRawMany();
+      await this.userSegmentRepository.upsert(
+        users.map((user) => ({
+          segment_id: segment.id,
+          user_id: user.user_id,
+        })),
+        { conflictPaths: ['user_id', 'segment_id'] },
+      );
+      return segment;
+    }
+  }
   async getNotiSegment(query: GetSegmentDTO) {
     const user = await this.userRepository.findOneUserByClient(
       query.client_id,

@@ -5,11 +5,12 @@ import {
   HttpStatus,
   Param,
   ParseUUIDPipe,
+  Post,
   Put,
   Query,
 } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
-import { GetSegmentDTO } from '../dtos/segment.dto';
+import { AddSegmentDTO, GetSegmentDTO } from '../dtos/segment.dto';
 import { SegmentService } from '../services/segment.service';
 
 @ApiTags('Segment')
@@ -23,6 +24,15 @@ export class SegmentController {
     return {
       statusCode: HttpStatus.OK,
       data: result,
+    };
+  }
+
+  @Post()
+  async addNotiSegment(@Body() body: AddSegmentDTO) {
+    const res = await this.segmentService.addNotiSegment(body);
+    return {
+      statusCode: HttpStatus.OK,
+      data: res,
     };
   }
 
