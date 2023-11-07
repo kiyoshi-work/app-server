@@ -18,5 +18,9 @@ export class AddSegmentDTO {
 
   @ApiProperty()
   @IsString()
+  segment_cid: string;
+
+  @ApiProperty()
+  @IsString()
   name: string;
 }

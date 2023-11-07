@@ -15,16 +15,27 @@ export class SegmentService {
     private readonly segmentRepository: SegmentRepository,
   ) {}
 
+  async triggerUserJoin(body: GetSegmentDTO) {
+    const user = await this.userRepository.findOneUserByClient(
+      body.client_id,
+      body.client_uid,
+    );
+    if (user) {
+      await this.userSegmentRepository.updateWhenUserAdded(user.id);
+    }
+  }
+
   async addNotiSegment(body: AddSegmentDTO) {
     if (
       await this.segmentRepository.exist({
-        where: { client_id: body.client_id, name: body.name },
+        where: { client_id: body.client_id, segment_cid: body.segment_cid },
       })
     ) {
-      throw new BadRequestException(`segment ${body.name} existed`);
+      throw new BadRequestException(`segment ${body.segment_cid} existed`);
     } else {
       const segment = await this.segmentRepository.save({
         client_id: body.client_id,
+        segment_cid: body.segment_cid,
         name: body.name,
       });
       const users = await this.userSegmentRepository

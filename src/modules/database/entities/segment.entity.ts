@@ -13,7 +13,7 @@ import {
 import { ClientEntity } from './client.entity';
 
 @Entity('segments')
-@Unique(['client_id', 'name'])
+@Unique(['client_id', 'segment_cid'])
 export class SegmentEntity {
   @PrimaryGeneratedColumn('uuid')
   id: string;
@@ -22,9 +22,9 @@ export class SegmentEntity {
   @Index()
   client_id: string;
 
-  // @Column({ nullable: false })
-  // @Index()
-  // segment_cid: string;
+  @Column({ nullable: false })
+  @Index()
+  segment_cid: string;
 
   @ManyToOne(() => ClientEntity, (entity) => entity.users)
   @JoinColumn({ name: 'client_id' })

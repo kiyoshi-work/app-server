@@ -30,18 +30,20 @@ export class UserSegmentRepository extends Repository<UserSegmentEntity> {
   }
 
   async updateWhenUserAdded(userId: string) {
-    const user = await this.userRepository.findOneUserById(userId);
-    if (user && user.client_id) {
-      const segments = await this.segmentRepository.findSegmentsByClient(
-        user.client_id,
-      );
-      await this.upsert(
-        segments.map((segment) => ({
-          segment_id: segment.id,
-          user_id: user.id,
-        })),
-        { conflictPaths: ['user_id', 'segment_id'] },
-      );
+    if (!(await this.exist({ where: { user_id: userId } }))) {
+      const user = await this.userRepository.findOneUserById(userId);
+      if (user && user.client_id) {
+        const segments = await this.segmentRepository.findSegmentsByClient(
+          user.client_id,
+        );
+        await this.upsert(
+          segments.map((segment) => ({
+            segment_id: segment.id,
+            user_id: user.id,
+          })),
+          { conflictPaths: ['user_id', 'segment_id'] },
+        );
+      }
     }
   }
 

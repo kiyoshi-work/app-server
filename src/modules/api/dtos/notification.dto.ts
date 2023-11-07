@@ -85,6 +85,49 @@ export class PushNotificationAllDto {
   type?: string;
 }
 
+export class PushNotificationSegmentDto {
+  @ApiProperty()
+  @IsUUID()
+  client_id: string;
+
+  @ApiProperty()
+  @IsString()
+  segment_cid: string;
+
+  @ApiProperty()
+  @IsString()
+  content: string;
+
+  @ApiProperty()
+  @IsString()
+  title: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  launch_url?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Transform(({ value }) => {
+    return [true, 'enabled', 'true', '1', 1].indexOf(value) > -1;
+  })
+  @IsBoolean()
+  is_logged_db?: boolean;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  content_html?: string;
+
+  @ApiPropertyOptional({
+    example: 'system',
+  })
+  @IsString()
+  @IsOptional()
+  type?: string;
+}
+
 export class GetNotificationDTO extends PaginateDto {
   @ApiProperty()
   @IsUUID()

@@ -36,6 +36,15 @@ export class SegmentController {
     };
   }
 
+  @Post('/trigger-user')
+  async triggerUserJoin(@Body() body: GetSegmentDTO) {
+    const res = await this.segmentService.triggerUserJoin(body);
+    return {
+      statusCode: HttpStatus.OK,
+      data: res,
+    };
+  }
+
   @Put('/:segment_id/switch')
   async switchSegment(
     @Param('segment_id', ParseUUIDPipe) segmentId: string,
