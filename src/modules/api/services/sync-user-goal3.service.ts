@@ -167,7 +167,7 @@ export class SyncUserGoal3Service {
   async runSyncUser() {
     if (!isRunSchedule) return;
     const config = await this.adminConfigRepository.findOneBy({
-      key: 'update_share_price',
+      key: 'run_sync_user',
     });
     if (config?.value == 'start') {
       await this.adminConfigRepository.save({
