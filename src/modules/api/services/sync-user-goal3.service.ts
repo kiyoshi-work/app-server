@@ -169,7 +169,7 @@ export class SyncUserGoal3Service {
     const config = await this.adminConfigRepository.findOneBy({
       key: 'update_share_price',
     });
-    if (config.value == 'start') {
+    if (config?.value == 'start') {
       await this.adminConfigRepository.save({
         ...config,
         value: 'end',
