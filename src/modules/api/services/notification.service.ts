@@ -1,13 +1,15 @@
 import {
+  BadRequestException,
   Inject,
   Injectable,
   InternalServerErrorException,
 } from '@nestjs/common';
-import { ClientRepository } from '@/database/repositories';
+import { ClientRepository, SegmentRepository } from '@/database/repositories';
 import {
   GetNotificationDTO,
   PushNotificationAllDto,
   PushNotificationDto,
+  PushNotificationSegmentDto,
 } from '../dtos/notification.dto';
 import { getOffset } from '@/shared/utils';
 import { Notification } from '@/onesignal/http/v1/notification';
@@ -17,6 +19,7 @@ import { PAGINATION_TAKEN } from '@/shared/constants/constants';
 import { EventManager } from '@/modules/event/event.manager';
 import { UserReadNotiEvent } from '@/modules/event/impls/user-read-noti.event';
 import { SendNotiExternalEvent } from '@/modules/event/impls/sent-noti-external.event';
+import { SendNotiBySegmentEvent } from '@/modules/event/impls/sent-noti-by-segment.event';
 
 @Injectable()
 export class NotificationService {
@@ -27,6 +30,7 @@ export class NotificationService {
     private readonly oneSignalNotification: Notification,
     private readonly clientRepository: ClientRepository,
     private readonly userNotificationRepository: UserNotificationRepository,
+    private readonly segmentRepository: SegmentRepository,
   ) {}
 
   async pushNotificationAll(body: PushNotificationAllDto) {
@@ -73,6 +77,37 @@ export class NotificationService {
         client.onesignal_api_key,
         body.client_id,
         body.recipients,
+        body.title,
+        body.content,
+        body.launch_url,
+        body.content_html,
+        body.is_logged_db,
+        body.type,
+      ),
+    );
+    return true;
+  }
+
+  async pushNotificationSegment(body: PushNotificationSegmentDto) {
+    const segment = await this.segmentRepository.findSegmentByClient(
+      body.client_id,
+      body.segment_cid,
+    );
+    if (!segment) {
+      throw new BadRequestException('Not found segment');
+    }
+    if (
+      !(segment?.client?.onesignal_app_id && segment?.client?.onesignal_api_key)
+    ) {
+      throw new InternalServerErrorException(
+        'Not found client or onesignal key',
+      );
+    }
+    this.eventManager.publish(
+      new SendNotiBySegmentEvent(
+        segment?.client?.onesignal_app_id,
+        segment?.client?.onesignal_api_key,
+        segment?.id,
         body.title,
         body.content,
         body.launch_url,

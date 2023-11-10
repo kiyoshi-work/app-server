@@ -5,3 +5,8 @@ export enum ENotificationStatus {
   Clicked = 'clicked',
   Read = 'read',
 }
+
+export enum ESegmentStatus {
+  Active = 'active',
+  Inactive = 'inactive',
+}

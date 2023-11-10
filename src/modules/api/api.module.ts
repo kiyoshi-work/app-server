@@ -13,14 +13,23 @@ import { HealthController } from './controllers/health.controller';
 import { Notification } from '@/onesignal/http/v1/notification';
 import { EventModule } from '@/modules/event/event.module';
 import { CacheModule } from '@nestjs/cache-manager';
+import { ScheduleModule } from '@nestjs/schedule';
+import { SegmentService } from './services/segment.service';
+import { SegmentController } from './controllers/segment.controller';
 
-const services = [SyncUserGoal3Service, AuthService, NotificationService];
+const services = [
+  SyncUserGoal3Service,
+  AuthService,
+  NotificationService,
+  SegmentService,
+];
 @Module({
   imports: [
     LoggerModule,
     DatabaseModule,
     OnesignalModule,
     EventModule,
+    ScheduleModule.forRoot(),
     FirebaseModule.registerAsync({
       isGlobal: true,
       imports: [ConfigModule],
@@ -40,7 +49,12 @@ const services = [SyncUserGoal3Service, AuthService, NotificationService];
       inject: [ConfigService],
     }),
   ],
-  controllers: [AuthController, NotificationController, HealthController],
+  controllers: [
+    AuthController,
+    NotificationController,
+    HealthController,
+    SegmentController,
+  ],
   providers: [...services],
 })
 export class ApiModule implements OnApplicationBootstrap {

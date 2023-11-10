@@ -3,6 +3,7 @@ import {
   AdminConfigRepository,
   ClientRepository,
   UserRepository,
+  UserSegmentRepository,
 } from '@/database/repositories';
 import { Goal3Firestore } from '@/modules/firebase';
 import { validateDate, validateEtherAddress } from '@/shared/utils';
@@ -23,6 +24,7 @@ export class SyncUserGoal3Service {
 
   constructor(
     private readonly userRepository: UserRepository,
+    private readonly userSegmentRepository: UserSegmentRepository,
     private readonly clientRepository: ClientRepository,
     private readonly adminConfigRepository: AdminConfigRepository,
   ) {}
@@ -64,13 +66,13 @@ export class SyncUserGoal3Service {
           // if (change.type === 'added') {
           const newUser = change.data() as IUserFireStore;
           console.log('🚀 ~ UPDATED GOAL3 USER', newUser?.id);
-          await this._saveUser([newUser]);
+          await this._saveUser(newUser);
           // }
         });
       });
   }
 
-  private async _saveUser(data: IUserFireStore[]) {
+  private async _saveUsers(data: IUserFireStore[]) {
     try {
       const saveUsers = data
         .filter(
@@ -99,6 +101,42 @@ export class SyncUserGoal3Service {
     }
   }
 
+  private async _saveUser(data: IUserFireStore) {
+    try {
+      if (
+        data.id &&
+        validateEtherAddress(data.id) &&
+        validateDate(data.created_at)
+      ) {
+        if (
+          !(await this.userRepository.exist({
+            where: { client_id: this._clientId, client_uid: data.id },
+          }))
+        ) {
+          const user = await this.userRepository.save({
+            client_uid: data.id,
+            client_id: this._clientId,
+            username: data.username,
+            created_at: data.created_at
+              ? new Date(data.created_at)
+              : new Date(),
+            metadata: {
+              profile_image_url: data.profile_image_url,
+            },
+          });
+          if (user) {
+            await this.userSegmentRepository.updateWhenUserAdded(user.id);
+          }
+        }
+      }
+    } catch (error) {
+      console.log(
+        '🚀 ~ file: sync-user-goal3.service.ts:128 ~ SyncUserGoal3Service ~ _saveUser ~ error:',
+        error.message,
+      );
+    }
+  }
+
   private async _syncUser(from: Date, to: Date) {
     while (from <= to) {
       const _st = new Date().getTime();
@@ -109,7 +147,7 @@ export class SyncUserGoal3Service {
         '🚀 ~ file: 001_create_order_outcomes.ts:13 ~ seed ~ day:',
         end,
       );
-      let users = (await this.goal3Firestore.getUsersByTime(
+      const users = (await this.goal3Firestore.getUsersByTime(
         new Date(from),
         end,
       )) as any;
@@ -117,7 +155,7 @@ export class SyncUserGoal3Service {
         '🚀 ~ file: sync-user-goal3.service.ts:41 ~ SyncUserGoal3Service ~ _syncUser ~ users:',
         users.length,
       );
-      await this._saveUser(users);
+      await this._saveUsers(users);
       // users = [];
       from.setTime(from.getTime() + duration);
       const _ed = new Date().getTime();
@@ -128,13 +166,10 @@ export class SyncUserGoal3Service {
   @Cron(CronExpression.EVERY_MINUTE)
   async runSyncUser() {
     if (!isRunSchedule) return;
-    console.log(
-      '🚀 ~ file: sync-user-goal3.service.ts:128 ~ SyncUserGoal3Service ~ runSyncUser ~ runSyncUser:',
-    );
     const config = await this.adminConfigRepository.findOneBy({
-      key: 'update_share_price',
+      key: 'run_sync_user',
     });
-    if (config.value == 'start') {
+    if (config?.value == 'start') {
       await this.adminConfigRepository.save({
         ...config,
         value: 'end',

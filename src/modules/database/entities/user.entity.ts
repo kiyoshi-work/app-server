@@ -13,6 +13,7 @@ import {
 } from 'typeorm';
 import { ClientEntity } from './client.entity';
 import { UserNotificationEntity } from './user-notification.entity';
+import { UserSegmentEntity } from './user-segment.entity';
 
 export type TUserMetadata = {
   profile_image_url?: string;
@@ -43,6 +44,9 @@ export class UserEntity {
 
   @OneToMany(() => UserNotificationEntity, (entity) => entity.receiver)
   notifications: UserNotificationEntity[];
+
+  @OneToMany(() => UserSegmentEntity, (entity) => entity.user)
+  segments: UserNotificationEntity[];
 
   @CreateDateColumn()
   created_at: Date;

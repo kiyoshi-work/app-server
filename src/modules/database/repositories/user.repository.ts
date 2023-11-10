@@ -13,4 +13,22 @@ export class UserRepository extends Repository<UserEntity> {
       order: { created_at: 'desc' },
     });
   }
+
+  async findOneUserByClient(
+    client_id: string,
+    client_uid: string,
+  ): Promise<UserEntity> {
+    return this.createQueryBuilder('user')
+      .where('user.client_id = :client_id', { client_id })
+      .andWhere('user.client_uid = :client_uid', { client_uid })
+      .limit(1)
+      .getOne();
+  }
+
+  async findOneUserById(id: string): Promise<UserEntity> {
+    return this.createQueryBuilder('user')
+      .where('user.id = :id', { id })
+      .limit(1)
+      .getOne();
+  }
 }

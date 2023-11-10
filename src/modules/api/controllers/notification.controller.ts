@@ -15,6 +15,7 @@ import {
   GetNotificationDTO,
   PushNotificationAllDto,
   PushNotificationDto,
+  PushNotificationSegmentDto,
 } from '../dtos/notification.dto';
 import { NotificationService } from '../services/notification.service';
 import { CacheTTL } from '@nestjs/cache-manager';
@@ -32,6 +33,15 @@ export class NotificationController {
       statusCode: HttpStatus.OK,
       data: res,
       // ...(res && { message: error }),
+    };
+  }
+
+  @Post('/segment')
+  async pushNotificationSegment(@Body() body: PushNotificationSegmentDto) {
+    const res = await this.notificationService.pushNotificationSegment(body);
+    return {
+      statusCode: HttpStatus.OK,
+      data: res,
     };
   }
 
