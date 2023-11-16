@@ -83,6 +83,19 @@ export class PushNotificationAllDto {
   @IsString()
   @IsOptional()
   type?: string;
+
+  @ApiPropertyOptional()
+  @IsString()
+  @IsOptional()
+  content_html?: string;
+
+  @ApiPropertyOptional()
+  @IsOptional()
+  @Transform(({ value }) => {
+    return [true, 'enabled', 'true', '1', 1].indexOf(value) > -1;
+  })
+  @IsBoolean()
+  is_logged_db?: boolean;
 }
 
 export class PushNotificationSegmentDto {

@@ -20,6 +20,7 @@ import { EventManager } from '@/modules/event/event.manager';
 import { UserReadNotiEvent } from '@/modules/event/impls/user-read-noti.event';
 import { SendNotiExternalEvent } from '@/modules/event/impls/sent-noti-external.event';
 import { SendNotiBySegmentEvent } from '@/modules/event/impls/sent-noti-by-segment.event';
+import { SendNotiAllEvent } from '@/modules/event/impls/sent-noti-all.event';
 
 @Injectable()
 export class NotificationService {
@@ -55,7 +56,19 @@ export class NotificationService {
         onesignalAppId: client?.onesignal_app_id,
         onesignalApiKey: client?.onesignal_api_key,
       });
-
+      this.eventManager.publish(
+        new SendNotiAllEvent(
+          client.onesignal_app_id,
+          client.onesignal_api_key,
+          body.client_id,
+          body.title,
+          body.content,
+          body.launch_url,
+          body.content_html,
+          body.is_logged_db,
+          body.type,
+        ),
+      );
       res = true;
     } catch (error) {
       error = error;
