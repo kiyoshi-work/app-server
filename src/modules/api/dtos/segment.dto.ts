@@ -11,6 +11,12 @@ export class GetSegmentDTO {
   client_uid: string;
 }
 
+export class GetAllSegmentDTO {
+  @ApiProperty()
+  @IsUUID()
+  client_id: string;
+}
+
 export class AddSegmentDTO {
   @ApiProperty()
   @IsUUID()

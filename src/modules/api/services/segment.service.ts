@@ -4,7 +4,11 @@ import {
   UserRepository,
   UserSegmentRepository,
 } from '@/database/repositories';
-import { AddSegmentDTO, GetSegmentDTO } from '../dtos/segment.dto';
+import {
+  AddSegmentDTO,
+  GetAllSegmentDTO,
+  GetSegmentDTO,
+} from '../dtos/segment.dto';
 import { ESegmentStatus } from '@/shared/constants/enums';
 
 @Injectable()
@@ -58,6 +62,14 @@ export class SegmentService {
       return segment;
     }
   }
+
+  async getAllNotiSegment(query: GetAllSegmentDTO) {
+    return this.segmentRepository.find({
+      where: { client_id: query.client_id },
+      select: ['segment_cid', 'id', 'name'],
+    });
+  }
+
   async getNotiSegment(query: GetSegmentDTO) {
     const user = await this.userRepository.findOneUserByClient(
       query.client_id,

@@ -1,3 +1,4 @@
+import { BigNumber } from 'ethers';
 import { PAGINATION_TAKEN } from '../constants/constants';
 
 export function chunk<T>(array: T[], chunkSize: number): T[][] {
@@ -23,3 +24,7 @@ export function getOffset(take: number = PAGINATION_TAKEN, page?: number) {
   }
   return 0;
 }
+
+export const genEventIdFromOutcomeId = (outcomeId: string): string => {
+  return BigNumber.from(outcomeId).shr(64).toString();
+};
