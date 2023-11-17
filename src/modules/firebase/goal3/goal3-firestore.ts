@@ -13,6 +13,7 @@ import {
 } from '@/modules/firebase/constants';
 import { IBookmakerConfigDB } from '@/modules/firebase/interfaces/database';
 import Firestore = firestore.Firestore;
+import { formatDate } from '@/modules/onesignal/util';
 // import { SocialLoginDto, SocialType } from 'dtos/bookmaker/login.dto';
 
 export interface UserData {
@@ -219,15 +220,62 @@ export class Goal3Firestore {
     // );
     // return leagueMap;
 
-    const users = await this.firestore
-      .collection(`space/${this.goal3Config.spaceId}/${USER_COLL}`)
-      .orderBy('created_at', 'asc')
-      .limit(2)
+    // const users = await this.firestore
+    //   .collection(`space/${this.goal3Config.spaceId}/${USER_COLL}`)
+    //   .orderBy('created_at', 'asc')
+    //   .limit(2)
+    //   .get();
+    // console.log(
+    //   '🚀 ~ file: goal3-firestore.ts:227 ~ Goal3Firestore ~ testConnection ~ users:',
+    //   users.docs,
+    // );
+    // return users.docs.map((user) => user.data());
+
+    const x = await this.firestore
+      .collection(`space/${this.goal3Config.spaceId}/smc_transactions`)
+      .where(
+        'txhash',
+        '==',
+        '0x36c13b074abb2f5ee7ead16cd3a3a441dd85e17806f5ff11dbaa12e52a7906d9',
+      )
       .get();
     console.log(
-      '🚀 ~ file: goal3-firestore.ts:227 ~ Goal3Firestore ~ testConnection ~ users:',
-      users.docs,
+      '🚀 ~ file: goal3-firestore.ts:238 ~ Goal3Firestore ~ testConnection ~ x:',
+      x.docs[0].data(),
     );
-    return users.docs.map((user) => user.data());
+
+    // const _d = formatDate(
+    //   new Date(new Date().setDate(new Date().getDate() - 30)),
+    // );
+    // const t = await this.firestore
+    //   .collection(`space/${this.goal3Config.spaceId}/smc_transactions`)
+    //   .where('contractName', '==', 'Wager')
+    //   .where('eventName', '==', 'Redeem')
+    //   // .orderBy('time', 'desc')
+    //   // .where('time', '>=', `${_d}T23:59:59Z`)
+    //   // .limit(2)
+    //   .get();
+    // const p = [];
+    // for (const _m of t.docs) {
+    //   const _y = new Set(_m.data().values.wagerIds);
+    //   _y.delete('0x0000000000000000000000000000000000000000000000000000000000000000');
+    //   const _x = _m
+    //     .data()
+    //     .values.wagerIds.filter(
+    //       (_v) => _v !== '0x0000000000000000000000000000000000000000000000000000000000000000',
+    //     );
+    //   if (_y.size !== _x.length) {
+    //     p.push({
+    //       t: String(_y.size) + '-' + _x.length,
+    //       user: _m.data().values.user,
+    //       id: _m.id,
+    //     });
+    //   }
+    // }
+    // console.log(
+    //   '🚀 ~ file: goal3-firestore.ts:236 ~ Goal3Firestore ~ testConnection ~ t:',
+    //   JSON.stringify(p),
+    //   p.length,
+    // );
   }
 }

@@ -3,13 +3,13 @@ import { Inject } from '@nestjs/common';
 import { UserNotificationRepository } from '@/modules/database/repositories/user-notification.repository';
 import { ENotificationStatus } from '@/shared/constants/enums';
 import { Notification } from '@/onesignal/http/v1/notification';
-import { chunk } from '@/shared/utils';
-import { MAX_BATCH_INSERT } from '@/modules/onesignal/constant';
 import {
   NotificationRepository,
   UserRepository,
 } from '@/modules/database/repositories';
 import { SendNotiAllEvent } from '../impls/sent-noti-all.event';
+import { User } from '@/modules/onesignal/http/v1/user';
+import { In } from 'typeorm';
 
 @EventsHandler(SendNotiAllEvent)
 export class SendNotiAllEventHandler
@@ -27,17 +27,10 @@ export class SendNotiAllEventHandler
   @Inject(Notification)
   private readonly oneSignalNotification: Notification;
 
+  @Inject(User)
+  private readonly oneSignalUser: User;
+
   async handle(event: SendNotiAllEvent) {
-    const users = await this.userRepository.find({
-      where: {
-        client_id: event.client_id,
-      },
-      select: ['id'],
-    });
-    const receiveIdsChunked = chunk(
-      users.map((user) => ({ id: user.id })),
-      MAX_BATCH_INSERT,
-    );
     const data = {
       title: event.title,
       launchUrl: event.launch_url,
@@ -50,23 +43,45 @@ export class SendNotiAllEventHandler
       onesignalApiKey: event?.onesignalApiKey,
     });
 
-    let notification;
     if (event.is_logged_db) {
-      notification = await this.notificationRepository.logToDatabase({
+      const notification = await this.notificationRepository.logToDatabase({
         ...data,
         type: event.type,
       });
-      for (const _receivers of receiveIdsChunked) {
+      let _currCount = 0;
+      const _currOffset = 0;
+      while (true) {
+        const response: any = await this.oneSignalUser.listUsers({
+          appId: event?.onesignalAppId,
+          apiKey: event?.onesignalApiKey,
+          limit: 200,
+          offset: _currOffset,
+        });
+        const _tmpUser = new Set();
+        (response.players || []).map((player) =>
+          _tmpUser.add(player.external_user_id),
+        );
+        const users = await this.userRepository.find({
+          where: {
+            client_id: event.client_id,
+            client_uid: In([..._tmpUser]),
+          },
+          select: ['id'],
+        });
         try {
           await this.userNotificationRepository.logToDatabase(
-            _receivers.map((_receiver) => ({
+            users.map((_receiver) => ({
               receiverId: _receiver.id,
               notificationId: notification?.id,
               status: ENotificationStatus.Sent,
             })),
           );
         } catch (error) {
-          console.log('send noti all error: ', _receivers, error);
+          console.log('send noti all error: ', error);
+        }
+        _currCount += Number(response.limit);
+        if (_currCount >= Number(response.total_count || 0)) {
+          break;
         }
       }
     }

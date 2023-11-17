@@ -1,6 +1,14 @@
 export type ITags = Record<string, string | number>;
 
 // ============= USER =============
+
+export interface IParamsGetUsers {
+  appId: string;
+  apiKey: string;
+  limit: number;
+  offset?: number;
+}
+
 export interface IParamsCreateUser {
   userId: string;
   tags: string[];
