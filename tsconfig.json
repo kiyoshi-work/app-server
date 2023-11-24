@@ -39,6 +39,12 @@
       "@/websocket/*": [
         "modules/websocket/*"
       ],
+      "@/telegram-bot": [
+        "modules/telegram-bot/index"
+      ],
+      "@/telegram-bot/*": [
+        "modules/telegram-bot/*"
+      ],
       "@/blockchain": [
         "modules/blockchain/index"
       ],

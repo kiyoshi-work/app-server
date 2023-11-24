@@ -21,17 +21,17 @@ services:
       - '8016:8003'
       - '80:80'
 
-  # redis:
-  #   container_name: app-redis
-  #   image: redis
-  #   restart: unless-stopped
-  #   ports:
-  #     - 6380:6379
-  #   command: redis-server --save 20 1 --loglevel warning
-  #   networks:
-  #     - app-server-network
-  #   volumes:
-  #     - app-redis:/data
+  redis:
+    container_name: app-redis
+    image: redis
+    restart: unless-stopped
+    ports:
+      - 6383:6379
+    command: redis-server --save 20 1 --loglevel warning
+    networks:
+      - app-server-network
+    volumes:
+      - app-redis:/data
 
   database:
     container_name: app-database
