@@ -19,6 +19,7 @@ import { SegmentController } from './controllers/segment.controller';
 import { TimescaleDBModule } from '@/modules/timescale-db';
 import { QueueModule } from '@/queue/queue.module';
 import { QueueService } from '@/queue/services/queue.service';
+import { UploadFileModule } from '../upload-file/upload-file.module';
 
 const services = [
   SyncUserGoal3Service,
@@ -34,6 +35,7 @@ const services = [
     EventModule,
     TimescaleDBModule,
     QueueModule,
+    UploadFileModule,
     ScheduleModule.forRoot(),
     FirebaseModule.registerAsync({
       isGlobal: true,
@@ -73,7 +75,7 @@ export class ApiModule implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap() {
-    await this.queueService.testUserQueue("test")
+    await this.queueService.testUserQueue("test");
     // await this.goal3Firestore.testConnection();
     // await this.oneSignalNotification.sendToAll({
     //   title: 'testnoti',
