@@ -1,0 +1,14 @@
+{
+  "writeKey": "",
+  "readKey": "",
+  "upload": {
+    "type": "json",
+    "files": "src/i18n/telebot/*/*.json"
+  },
+  "download": {
+    "files": "src/i18n/telebot/${lang}/${file}",
+    "includeSourceLang": true
+  },
+  "conversion": {},
+  "transformations": []
+}

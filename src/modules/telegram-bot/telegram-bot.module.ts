@@ -8,6 +8,9 @@ import { HandlerService } from '@/telegram-bot/services/handler.service';
 import { ComingSoonHandler, StartHandler } from '@/telegram-bot/handlers';
 import { BlockchainModule } from '@/blockchain';
 import { configBlockchain } from './configs/blockchain';
+import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
+import * as path from 'path';
+
 const handlers = [HandlerService, StartHandler, ComingSoonHandler];
 
 @Module({
@@ -23,6 +26,17 @@ const handlers = [HandlerService, StartHandler, ComingSoonHandler];
       isGlobal: true,
       expandVariables: true,
       load: [configTelegram, configBlockchain],
+    }),
+    I18nModule.forRoot({
+      fallbackLanguage: 'en',
+      loaderOptions: {
+        path: path.join(__dirname, '../../i18n/telebot'),
+        watch: true,
+      },
+      resolvers: [
+        { use: QueryResolver, options: ['lang'] },
+        AcceptLanguageResolver,
+      ],
     }),
   ],
   controllers: [],
