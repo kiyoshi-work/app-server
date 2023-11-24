@@ -17,6 +17,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { SegmentService } from './services/segment.service';
 import { SegmentController } from './controllers/segment.controller';
 import { TimescaleDBModule } from '@/modules/timescale-db';
+import { QueueModule } from '@/queue/queue.module';
+import { QueueService } from '@/queue/services/queue.service';
 
 const services = [
   SyncUserGoal3Service,
@@ -31,6 +33,7 @@ const services = [
     OnesignalModule,
     EventModule,
     TimescaleDBModule,
+    QueueModule,
     ScheduleModule.forRoot(),
     FirebaseModule.registerAsync({
       isGlobal: true,
@@ -64,9 +67,13 @@ export class ApiModule implements OnApplicationBootstrap {
     @Inject('GOAL3_FIRESTORE')
     private goal3Firestore: Goal3Firestore,
     private readonly oneSignalNotification: Notification,
+
+    @Inject(QueueService)
+    private queueService: QueueService,
   ) {}
 
   async onApplicationBootstrap() {
+    await this.queueService.testUserQueue("test")
     // await this.goal3Firestore.testConnection();
     // await this.oneSignalNotification.sendToAll({
     //   title: 'testnoti',

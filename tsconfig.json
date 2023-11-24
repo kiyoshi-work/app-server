@@ -63,6 +63,12 @@
       "@/logger/*": [
         "modules/logger/*"
       ],
+      "@/queue": [
+        "modules/queue/index"
+      ],
+      "@/queue/*": [
+        "modules/queue/*"
+      ],
       "@/shared/*": [
         "shared/*"
       ],
