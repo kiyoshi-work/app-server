@@ -16,7 +16,7 @@ interface IUserFireStore {
   profile_image_url?: string;
 }
 
-const isRunSchedule = Boolean(Number(process.env.IS_SCHEDULER || 0));
+const isRunSchedule = false;
 @Injectable()
 export class SyncUserGoal3Service {
   @Inject('GOAL3_FIRESTORE')

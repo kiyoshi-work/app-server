@@ -16,6 +16,7 @@ import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import { SegmentService } from './services/segment.service';
 import { SegmentController } from './controllers/segment.controller';
+import { TimescaleDBModule } from '@/modules/timescale-db';
 
 const services = [
   SyncUserGoal3Service,
@@ -29,6 +30,7 @@ const services = [
     DatabaseModule,
     OnesignalModule,
     EventModule,
+    TimescaleDBModule,
     ScheduleModule.forRoot(),
     FirebaseModule.registerAsync({
       isGlobal: true,

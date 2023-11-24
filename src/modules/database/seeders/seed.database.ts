@@ -14,10 +14,10 @@ export class SeedDatabase implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap() {
-    // await this.clientRepository.upsert(
-    //   { id: 'cd3a5797-737c-4375-be6f-549caa49bc8d', name: 'Goal3' },
-    //   { conflictPaths: ['id'] },
-    // );
+    await this.clientRepository.upsert(
+      { id: 'cd3a5797-737c-4375-be6f-549caa49bc8d', name: 'Goal3' },
+      { conflictPaths: ['id'] },
+    );
 
     const runSyncUserConfig = {
       id: '988d53bb-a471-4500-99f1-16a653c7b51c',

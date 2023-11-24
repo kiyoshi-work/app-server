@@ -27,6 +27,24 @@
       "@/database/*": [
         "modules/database/*"
       ],
+      "@/timescale-db": [
+        "modules/timescale-db/index"
+      ],
+      "@/timescale-db/*": [
+        "modules/timescale-db/*"
+      ],
+      "@/websocket": [
+        "modules/websocket/index"
+      ],
+      "@/websocket/*": [
+        "modules/websocket/*"
+      ],
+      "@/blockchain": [
+        "modules/blockchain/index"
+      ],
+      "@/blockchain/*": [
+        "modules/blockchain/*"
+      ],
       "@/api": [
         "modules/api/index"
       ],

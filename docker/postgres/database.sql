@@ -1,1 +1,1 @@
-CREATE DATABASE app_notification;
+CREATE DATABASE app_server_database;
