@@ -4,9 +4,8 @@ import { AuthController, NotificationController } from '@/api/controllers';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from '@/api/services';
 import { LoggerModule } from '@/logger';
-import { FirebaseModule, Goal3Firestore } from '@/modules/firebase';
+import { AppFirestoreRepository, FirebaseModule } from '@/modules/firebase';
 import { configCache, configFirebase } from '@/modules/api/configs';
-import { SyncUserGoal3Service } from './services/sync-user-goal3.service';
 import { OnesignalModule } from '../onesignal/onesignal.module';
 import { NotificationService } from './services/notification.service';
 import { HealthController } from './controllers/health.controller';
@@ -14,19 +13,12 @@ import { Notification } from '@/onesignal/http/v1/notification';
 import { EventModule } from '@/modules/event/event.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
-import { SegmentService } from './services/segment.service';
-import { SegmentController } from './controllers/segment.controller';
 import { TimescaleDBModule } from '@/modules/timescale-db';
 import { QueueModule } from '@/queue/queue.module';
 import { QueueService } from '@/queue/services/queue.service';
 import { UploadFileModule } from '../upload-file/upload-file.module';
 
-const services = [
-  SyncUserGoal3Service,
-  AuthService,
-  NotificationService,
-  SegmentService,
-];
+const services = [AuthService, NotificationService];
 @Module({
   imports: [
     LoggerModule,
@@ -56,27 +48,22 @@ const services = [
       inject: [ConfigService],
     }),
   ],
-  controllers: [
-    AuthController,
-    NotificationController,
-    HealthController,
-    SegmentController,
-  ],
+  controllers: [AuthController, NotificationController, HealthController],
   providers: [...services],
 })
 export class ApiModule implements OnApplicationBootstrap {
   constructor(
-    @Inject('GOAL3_FIRESTORE')
-    private goal3Firestore: Goal3Firestore,
+    @Inject('APP_FIRESTORE')
+    private appFirestoreRepository: AppFirestoreRepository,
     private readonly oneSignalNotification: Notification,
 
     @Inject(QueueService)
     private queueService: QueueService,
-  ) {}
+  ) { }
 
   async onApplicationBootstrap() {
-    await this.queueService.testUserQueue("test");
-    // await this.goal3Firestore.testConnection();
+    await this.queueService.testUserQueue('test');
+    await this.appFirestoreRepository.testConnection();
     // await this.oneSignalNotification.sendToAll({
     //   title: 'testnoti',
     //   launchUrl: '/ccccc',

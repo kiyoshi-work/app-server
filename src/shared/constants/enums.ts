@@ -6,11 +6,6 @@ export enum ENotificationStatus {
   Read = 'read',
 }
 
-export enum ESegmentStatus {
-  Active = 'active',
-  Inactive = 'inactive',
-}
-
 export enum EOrderStatus {
   Placed = 'PLACED',
   Filled = 'FILLED',

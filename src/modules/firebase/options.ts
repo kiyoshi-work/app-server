@@ -1,6 +1,6 @@
 import { ModuleMetadata, Type } from '@nestjs/common';
 
-export interface Goal3FirestoreConfig {
+export interface AppFirestoreConfig {
   spaceId: string;
 }
 
@@ -9,7 +9,7 @@ export interface FirebaseOptions {
   projectId: string;
   privateKey: string;
   clientEmail: string;
-  goal3FireStore: Goal3FirestoreConfig;
+  appFireStore: AppFirestoreConfig;
 }
 
 export interface FirebaseAsyncOptions extends Pick<ModuleMetadata, 'imports'> {

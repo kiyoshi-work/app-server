@@ -1,1 +1,1 @@
-export * from './goal3-firestore';
+export * from './app-firestore';

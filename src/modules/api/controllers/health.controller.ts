@@ -1,4 +1,4 @@
-import { Goal3Firestore } from '@/modules/firebase';
+import { AppFirestoreRepository } from '@/modules/firebase';
 import { Controller, Get, HttpStatus, Inject } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
 
@@ -6,13 +6,13 @@ import { ApiTags } from '@nestjs/swagger';
 @Controller('/health')
 export class HealthController {
   constructor(
-    @Inject('GOAL3_FIRESTORE')
-    private goal3Firestore: Goal3Firestore,
-  ) {}
+    @Inject('APP_FIRESTORE')
+    private appFirestoreRepository: AppFirestoreRepository,
+  ) { }
 
   @Get('/firebase')
   async healthCheck() {
-    const res = await this.goal3Firestore.testConnection();
+    const res = await this.appFirestoreRepository.testConnection();
     return {
       statusCode: HttpStatus.OK,
       data: res,

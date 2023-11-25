@@ -7,9 +7,7 @@ import {
   AdminConfigRepository,
   ClientRepository,
   NotificationRepository,
-  SegmentRepository,
   UserRepository,
-  UserSegmentRepository,
 } from './repositories';
 import { LoggerModule } from '@/logger';
 import { ClientEntity } from './entities/client.entity';
@@ -17,8 +15,6 @@ import { SeedDatabase } from './seeders/seed.database';
 import { NotificationEntity } from './entities/notification.entity';
 import { UserNotificationEntity } from './entities/user-notification.entity';
 import { UserNotificationRepository } from './repositories/user-notification.repository';
-import { UserSegmentEntity } from './entities/user-segment.entity';
-import { SegmentEntity } from './entities/segment.entity';
 
 const repositories = [
   UserRepository,
@@ -26,8 +22,6 @@ const repositories = [
   NotificationRepository,
   UserNotificationRepository,
   AdminConfigRepository,
-  SegmentRepository,
-  UserSegmentRepository,
 ];
 
 const entities = [
@@ -36,8 +30,6 @@ const entities = [
   NotificationEntity,
   UserNotificationEntity,
   AdminConfigEntity,
-  SegmentEntity,
-  UserSegmentEntity,
 ];
 
 @Module({
@@ -58,4 +50,4 @@ const entities = [
   providers: [...repositories, SeedDatabase],
   exports: [...repositories, SeedDatabase],
 })
-export class DatabaseModule {}
+export class DatabaseModule { }

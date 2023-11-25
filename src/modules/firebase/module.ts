@@ -6,7 +6,7 @@ import {
   FirebaseOptions,
 } from './options';
 import * as admin from 'firebase-admin';
-import { Goal3Firestore } from '@/modules/firebase/goal3/goal3-firestore';
+import { AppFirestoreRepository } from '@/modules/firebase/repositories/app-firestore.repository';
 
 @Module({
   imports: [],
@@ -27,8 +27,8 @@ export class FirebaseModule {
         this.createConnectionProvider(options),
         ...this.createProviders(options),
         {
-          provide: 'GOAL3_FIRESTORE',
-          useClass: Goal3Firestore,
+          provide: 'APP_FIRESTORE',
+          useClass: AppFirestoreRepository,
         },
       ],
       exports: [
@@ -37,7 +37,7 @@ export class FirebaseModule {
         'FIREBASE_FIRESTORE',
         'FIREBASE_MESSAGING',
         'FIREBASE_STORAGE',
-        'GOAL3_FIRESTORE',
+        'APP_FIRESTORE',
       ],
     };
   }
@@ -82,10 +82,10 @@ export class FirebaseModule {
     if (options.useFactory) {
       providers = [
         {
-          provide: 'GOAL3_FIRESTORE_CONFIG',
+          provide: 'APP_FIRESTORE_CONFIG',
           useFactory: async (inject: any[]) => {
             const firebaseOptions = await options.useFactory(inject);
-            return firebaseOptions.goal3FireStore;
+            return firebaseOptions.appFireStore;
           },
           inject: options.inject || [],
         },
@@ -95,10 +95,10 @@ export class FirebaseModule {
 
       providers = [
         {
-          provide: 'GOAL3_FIRESTORE_CONFIG',
+          provide: 'APP_FIRESTORE_CONFIG',
           useFactory: async (optionsFactory: FirebaseAsyncOptionsFactory) => {
             const firebaseOptions = await optionsFactory.createOptions();
-            return firebaseOptions.goal3FireStore;
+            return firebaseOptions.appFireStore;
           },
           inject,
         },
