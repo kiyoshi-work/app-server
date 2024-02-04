@@ -7,7 +7,6 @@ import Redis from 'ioredis';
 import { HandlerService } from '@/telegram-bot/services/handler.service';
 import { ComingSoonHandler, StartHandler } from '@/telegram-bot/handlers';
 import { BlockchainModule } from '@/blockchain';
-import { configBlockchain } from './configs/blockchain';
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import * as path from 'path';
 
@@ -16,16 +15,11 @@ const handlers = [HandlerService, StartHandler, ComingSoonHandler];
 @Module({
   imports: [
     DatabaseModule,
-    BlockchainModule.registerAsync({
-      isGlobal: true,
-      imports: [ConfigModule],
-      useFactory: (config: ConfigService) => config.get('blockchain'),
-      inject: [ConfigService],
-    }),
+    BlockchainModule,
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
-      load: [configTelegram, configBlockchain],
+      load: [configTelegram],
     }),
     I18nModule.forRoot({
       fallbackLanguage: 'en',
@@ -68,7 +62,7 @@ export class TelegramBotModule implements OnApplicationBootstrap {
   constructor(
     private telegramBot: TelegramBot,
     private handlerService: HandlerService,
-  ) {}
+  ) { }
 
   async onApplicationBootstrap() {
     const handlers = this.handlerService.getHandlers();

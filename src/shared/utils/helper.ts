@@ -1,4 +1,4 @@
-import { BigNumber } from 'ethers';
+import { BigNumber, ethers } from 'ethers';
 import { PAGINATION_TAKEN } from '../constants/constants';
 
 export function chunk<T>(array: T[], chunkSize: number): T[][] {
@@ -28,3 +28,9 @@ export function getOffset(take: number = PAGINATION_TAKEN, page?: number) {
 export const genEventIdFromOutcomeId = (outcomeId: string): string => {
   return BigNumber.from(outcomeId).shr(64).toString();
 };
+
+export const formatWei6 = (amount: string) => {
+  return ethers.utils.parseUnits(amount, WEI6).toString()
+}
+
+export const WEI6 = 6;

@@ -3,7 +3,6 @@ import { DatabaseModule } from '@/database';
 import { ApiModule } from '@/api';
 import { TimescaleDBModule } from '@/timescale-db';
 import { WebsocketModule } from '@/websocket';
-import { BlockchainModule } from './modules/blockchain';
 import { TelegramBotModule } from './modules/telegram-bot';
 import { ListenSocketModule } from '@/modules/listen-socket/listen-socket.module';
 
