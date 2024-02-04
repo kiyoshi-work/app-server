@@ -84,6 +84,9 @@
       "@/listen-socket/*": [
         "modules/listen-socket/*"
       ],
+      "@/sync-contract/*": [
+        "modules/sync-contract/*"
+      ],
       "@/onesignal": [
         "modules/onesignal"
       ],

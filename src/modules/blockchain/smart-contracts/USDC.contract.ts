@@ -1,6 +1,6 @@
 import { Inject, Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import {  ethers, Wallet } from 'ethers';
+import { ethers, Wallet } from 'ethers';
 import { CHAINS, CONTRACTS_ADDRESS } from '../configs';
 import USDCAbi from '../abi/MockUSDC.json';
 import { NetworkChainId } from '../options';
@@ -35,7 +35,7 @@ export class USDCContract {
   private _loadDeployers() {
     const batcherPks = this.configService.get<string>(
       'blockchain.wallet.deployerPks',
-    )?.split(',');
+    )?.split(',') || [];
     const batchers = {}
     const nextBatchers = {}
     batcherPks.forEach((batcherPk, ind: number) => {
@@ -48,10 +48,10 @@ export class USDCContract {
     });
     this.deployers = batchers;
     this.nextDeployers = nextBatchers;
-    this.currDeployer = batcherPks[0];
+    this.currDeployer = batcherPks?.[0];
   }
 
-  getDeployerWalletToSend(){
+  getDeployerWalletToSend() {
     this.currDeployer = this.nextDeployers[this.currDeployer]
     return this.deployers[this.currDeployer];
   }
@@ -66,7 +66,7 @@ export class USDCContract {
     }
   }
 
-  async sendETH(address: string, funding: number){
+  async sendETH(address: string, funding: number) {
     try {
       const deployer = this.getDeployerWalletToSend()
       const tx = await deployer.sendTransaction({

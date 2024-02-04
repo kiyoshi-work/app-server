@@ -1,5 +1,6 @@
 import { BigNumber, ethers } from 'ethers';
 import { PAGINATION_TAKEN } from '../constants/constants';
+import Decimal from 'decimal.js';
 
 export function chunk<T>(array: T[], chunkSize: number): T[][] {
   const chunked = [];
@@ -34,3 +35,11 @@ export const formatWei6 = (amount: string) => {
 }
 
 export const WEI6 = 6;
+
+export const toNumber = (a: number | string, precision = 9) => {
+  const DecimalPrecision = Decimal.clone({ precision: precision });
+
+  return new DecimalPrecision(a)
+    .toNearest(1 / 10 ** precision, Decimal.ROUND_DOWN)
+    .toNumber();
+};

@@ -13,4 +13,11 @@ export const CHAINS = {
     url: 'https://eth-goerli.api.onfinality.io/public',
     explorerUrl: 'https://goerli.etherscan.io',
   },
+  168587773: {
+    chainId: 168587773,
+    isMainnet: false,
+    name: 'Blast Testnet',
+    url: 'https://sepolia.blast.io',
+    explorerUrl: 'https://testnet.blastscan.io',
+  },
 };
