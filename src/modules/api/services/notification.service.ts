@@ -8,11 +8,10 @@ import {
   GetNotificationDTO,
   PushNotificationDto,
 } from '../dtos/notification.dto';
-import { getOffset } from '@/shared/utils';
 import { UserNotificationRepository } from '@/modules/database/repositories/user-notification.repository';
-import { PAGINATION_TAKEN } from '@/shared/constants/constants';
 import { EventManager } from '@/modules/event/event.manager';
 import { SendNotiExternalEvent } from '@/modules/event/impls/sent-noti-external.event';
+import { paginate } from '@/shared/pagination/pagination';
 
 @Injectable()
 export class NotificationService {
@@ -51,9 +50,10 @@ export class NotificationService {
   }
 
   async getNotifications(query: GetNotificationDTO) {
-    const take = query?.take || PAGINATION_TAKEN;
-    const notiHistory = await this.userNotificationRepository.find({
-      where: {
+    const notiHistoryQuery = this.userNotificationRepository
+      .createQueryBuilder('user-noti')
+      .leftJoinAndSelect('user-noti.notification', 'notification')
+      .where({
         receiver: {
           client_uid: query.recipient_id,
           client_id: query.client_id,
@@ -61,12 +61,8 @@ export class NotificationService {
         notification: {
           type: query?.type,
         },
-      },
-      take: take,
-      skip: getOffset(take, query?.page || 0),
-      relations: ['notification'],
-      order: { created_at: 'DESC' },
-    });
-    return notiHistory;
+      })
+      .orderBy('user-noti.created_at', 'DESC');
+    return paginate(notiHistoryQuery, query.page, query.take);
   }
 }

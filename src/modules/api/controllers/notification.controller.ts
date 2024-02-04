@@ -15,6 +15,8 @@ import {
 import { NotificationService } from '../services/notification.service';
 import { CacheTTL } from '@nestjs/cache-manager';
 import { HttpCacheInterceptor } from '../cache';
+import { ApiBaseResponse } from '@/shared/swagger/decorator/api-response.decorator';
+import { BaseResponse } from '@/shared/swagger/response/base.response';
 
 @ApiTags('Notification')
 @Controller('/notification')
@@ -31,14 +33,21 @@ export class NotificationController {
     };
   }
 
+  @ApiBaseResponse(class { }, {
+    statusCode: HttpStatus.OK,
+    isArray: true,
+    isPaginate: true,
+  })
   @UseInterceptors(HttpCacheInterceptor)
   @CacheTTL(3000)
   @Get()
   async getNotification(@Query() query: GetNotificationDTO) {
     const result = await this.notificationService.getNotifications(query);
-    return {
-      statusCode: HttpStatus.OK,
-      data: result,
-    };
+    return new BaseResponse(
+      result.data,
+      HttpStatus.OK,
+      'Get your notification successfully',
+      result.pagination,
+    );
   }
 }

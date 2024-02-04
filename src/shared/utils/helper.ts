@@ -1,6 +1,6 @@
 import { BigNumber, ethers } from 'ethers';
-import { PAGINATION_TAKEN } from '../constants/constants';
 import Decimal from 'decimal.js';
+import { PAGINATION_TAKEN } from '../pagination/constants';
 
 export function chunk<T>(array: T[], chunkSize: number): T[][] {
   const chunked = [];
@@ -18,13 +18,6 @@ export const validateEtherAddress = (address: string) => {
 export const validateDate = (date: string | number | Date) => {
   return !isNaN(new Date(date).getDate());
 };
-
-export function getOffset(take: number = PAGINATION_TAKEN, page?: number) {
-  if (page && page > 0) {
-    return take * page - take;
-  }
-  return 0;
-}
 
 export const genEventIdFromOutcomeId = (outcomeId: string): string => {
   return BigNumber.from(outcomeId).shr(64).toString();

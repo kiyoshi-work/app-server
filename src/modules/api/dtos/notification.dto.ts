@@ -9,7 +9,7 @@ import {
 } from 'class-validator';
 import { ApiProperty, ApiPropertyOptional } from '@nestjs/swagger';
 import { Transform } from 'class-transformer';
-import { PaginateDto } from '@/shared/common/dto/paginate.dto';
+import { PaginateDto } from '@/shared/pagination/paginate.dto';
 
 export class PushNotificationDto {
   @ApiProperty()
