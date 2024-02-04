@@ -6,6 +6,7 @@ import { PriceGateway } from './gateways/price.gateway';
 import { ScheduleModule } from '@nestjs/schedule';
 import { PriceService } from './services/price.service';
 import { DatabaseModule } from '@/database';
+import { EventController } from './controllers';
 
 const services = [PriceService];
 @Module({
@@ -20,7 +21,7 @@ const services = [PriceService];
       load: [],
     }),
   ],
-  controllers: [],
+  controllers: [EventController],
   providers: [PriceGateway, ...services],
 })
-export class WebsocketModule {}
+export class WebsocketModule { }

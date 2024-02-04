@@ -33,12 +33,15 @@
     "@nestjs/platform-express": "^10.0.0",
     "@nestjs/cqrs": "^10.2.6",
     "@nestjs/websockets": "^10.2.8",
+    "@nestjs/microservices": "^10.2.10",
     "ethers": "5.7.1",
+    "@types/ws": "^8.5.10",
     "@nestjs/schedule": "^3.0.1",
     "@nestjs/swagger": "^7.0.4",
     "class-validator": "^0.14.0",
     "class-transformer": "^0.5.1",
     "@nestjs/typeorm": "^10.0.0",
+    "nestjs-google-pubsub-microservice": "^10.0.0",
     "@google-cloud/storage": "^7.1.0",
     "file-type": "^14.7.1",
     "bull": "^4.11.3",
@@ -55,6 +58,7 @@
     "node-telegram-bot-api": "^0.61.0",
     "nestjs-i18n": "^10.2.6",
     "socket.io-client": "^4.7.2",
+    "zlib": "^1.0.5",
     "typeorm": "^0.3.17"
   },
   "devDependencies": {

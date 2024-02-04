@@ -66,6 +66,17 @@ services:
     networks:
       - app-server-network
 
+  pubsub-emulator:
+    container_name: app-server-pubsub
+    image: google/cloud-sdk:emulators
+    ports:
+      - "8085:8085"
+    environment:
+      - PUBSUB_EMULATOR_HOST=0.0.0.0:8085
+    command: gcloud beta emulators pubsub start --host-port=0.0.0.0:8085
+    platform: linux/amd64
+    networks:
+      - app-server-network
 
 networks:
   app-server-network:
