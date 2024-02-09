@@ -63,11 +63,11 @@
       "@/logger/*": [
         "modules/logger/*"
       ],
-      "@/queue": [
-        "modules/queue/index"
+      "@/worker": [
+        "modules/worker/index"
       ],
-      "@/queue/*": [
-        "modules/queue/*"
+      "@/worker/*": [
+        "modules/worker/*"
       ],
       "@/shared/*": [
         "shared/*"

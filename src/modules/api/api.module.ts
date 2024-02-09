@@ -14,9 +14,9 @@ import { EventModule } from '@/modules/event/event.module';
 import { CacheModule } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TimescaleDBModule } from '@/modules/timescale-db';
-import { QueueModule } from '@/queue/queue.module';
-import { QueueService } from '@/queue/services/queue.service';
 import { UploadFileModule } from '../upload-file/upload-file.module';
+import { QueueService } from '../queue/queue.service';
+import { QueueModule } from '../queue/queue.module';
 
 const services = [AuthService, NotificationService];
 @Module({

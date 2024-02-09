@@ -21,7 +21,7 @@ export class NotificationService {
   constructor(
     private readonly clientRepository: ClientRepository,
     private readonly userNotificationRepository: UserNotificationRepository,
-  ) { }
+  ) {}
 
   async pushNotification(body: PushNotificationDto) {
     const client = await this.clientRepository.findOneBy({

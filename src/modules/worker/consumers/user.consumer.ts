@@ -1,10 +1,10 @@
+import { QUEUE_NAME, QUEUE_PROCESSOR } from '@/shared/constants/queue';
 import { Process, Processor } from '@nestjs/bull';
 import { Job } from 'bull';
-import { QUEUE_NAME, QUEUE_PROCESSOR } from '../constants';
 
 @Processor(QUEUE_NAME.USER)
 export class UserConsumer {
-  constructor() {}
+  constructor() { }
 
   @Process(QUEUE_PROCESSOR.USER.TEST)
   async processUserTest(

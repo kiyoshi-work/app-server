@@ -2,7 +2,11 @@ import { ApiPropertyOptional } from '@nestjs/swagger';
 import { Type } from 'class-transformer';
 import { IsNumber, IsOptional, Max, Min } from 'class-validator';
 import { IPaginateRequest } from './pagination.interface';
-import { MAX_PAGINATION_TAKEN, MIN_PAGINATION_TAKEN, PAGINATION_TAKEN } from './constants';
+import {
+  MAX_PAGINATION_TAKEN,
+  MIN_PAGINATION_TAKEN,
+  PAGINATION_TAKEN,
+} from './constants';
 
 export class PaginateDto implements IPaginateRequest {
   @ApiPropertyOptional({

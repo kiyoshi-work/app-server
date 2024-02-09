@@ -2,11 +2,20 @@ import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { configQueue } from './configs';
-import { QueueService } from './queue.service';
-import { QUEUE_NAME } from '@/shared/constants/queue';
+import { UserConsumer } from './consumers';
+import { DatabaseModule } from '@/database';
+
+const isQueue = Boolean(Number(process.env.IS_QUEUE || 0));
+
+let consumers = [];
+
+if (isQueue) {
+  consumers = [UserConsumer];
+}
 
 @Module({
   imports: [
+    DatabaseModule,
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory(config: ConfigService) {
@@ -27,14 +36,6 @@ import { QUEUE_NAME } from '@/shared/constants/queue';
       },
       inject: [ConfigService],
     }),
-    BullModule.registerQueue(
-      {
-        name: QUEUE_NAME.USER,
-      },
-      // {
-      //   name: QUEUE_NAME.USER_ACTION,
-      // },
-    ),
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
@@ -42,7 +43,7 @@ import { QUEUE_NAME } from '@/shared/constants/queue';
     }),
   ],
   controllers: [],
-  providers: [QueueService],
-  exports: [QueueService],
+  providers: [...consumers],
+  exports: [],
 })
-export class QueueModule { }
+export class WorkerModule { }
