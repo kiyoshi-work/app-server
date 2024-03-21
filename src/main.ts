@@ -4,6 +4,7 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import morgan from 'morgan';
 import { GCPubSubServer } from 'nestjs-google-pubsub-microservice';
+import { RedisIoAdapter } from './modules/websocket/services/redis.adapter';
 
 // const DEFAULT_API_VERSION = '1';
 const PORT = process.env.PORT || '3000';
@@ -36,6 +37,12 @@ async function bootstrap() {
       }),
     });
     await app.startAllMicroservices();
+  }
+
+  if(isWS){
+    const redisIoAdapter = new RedisIoAdapter(app);
+    await redisIoAdapter.connectToRedis();
+    app.useWebSocketAdapter(redisIoAdapter);
   }
 
   if (isApi) {
