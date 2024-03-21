@@ -17,6 +17,8 @@ import { TimescaleDBModule } from '@/modules/timescale-db';
 import { UploadFileModule } from '../upload-file/upload-file.module';
 import { QueueService } from '../queue/queue.service';
 import { QueueModule } from '../queue/queue.module';
+import { configAuth } from './configs/auth';
+import { JwtModule } from '@nestjs/jwt';
 
 const services = [AuthService, NotificationService];
 @Module({
@@ -38,7 +40,14 @@ const services = [AuthService, NotificationService];
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
-      load: [configFirebase, configCache],
+      load: [configFirebase, configCache, configAuth],
+    }),
+    JwtModule.registerAsync({
+      useFactory: (configService: ConfigService) => ({
+        secret: configService.get<string>('auth.key.jwt_secret_key'),
+        global: true,
+      }),
+      inject: [ConfigService],
     }),
     CacheModule.registerAsync({
       imports: [ConfigModule],

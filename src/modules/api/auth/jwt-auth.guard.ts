@@ -1,0 +1,58 @@
+import {  UserRepository } from '@/database/repositories';
+import {
+  CanActivate,
+  ExecutionContext,
+  HttpStatus,
+  Inject,
+  Injectable,
+  UnauthorizedException,
+} from '@nestjs/common';
+import { ConfigService } from '@nestjs/config';
+import { JwtService } from '@nestjs/jwt';
+import { Request } from 'express';
+
+export type TJWTPayload = {
+  sub: string,
+  address: string,
+}
+
+@Injectable()
+export class JwtAuthGuard implements CanActivate {
+  @Inject(UserRepository)
+  private userRepository: UserRepository;
+  constructor(
+    private jwtService: JwtService,
+    private configService: ConfigService,
+  ) {}
+
+  async canActivate(context: ExecutionContext): Promise<boolean> {
+    const request = context.switchToHttp().getRequest();
+    const token = this.extractTokenFromHeader(request);
+    if (!token) {
+      throw new UnauthorizedException();
+    }
+    try {
+      const payload: TJWTPayload = await this.jwtService.verifyAsync(token, {
+        secret: this.configService.get<string>('auth.key.jwt_secret_key'),
+      });
+      if (!await this.userRepository.exists({ where: { id: payload.sub } })) {
+        throw {
+          status_code: HttpStatus.UNAUTHORIZED,
+          message: `Not found user`,
+        };
+      }
+      request['user'] = { ...payload };
+    } catch (err) {
+      throw new UnauthorizedException({
+        status_code: HttpStatus.UNAUTHORIZED,
+        ...err,
+      });
+    }
+    return true;
+  }
+
+  private extractTokenFromHeader(request: Request): string | undefined {
+    const [type, token] = request.headers.authorization?.split(' ') ?? [];
+    return type === 'Bearer' ? token : undefined;
+  }
+}

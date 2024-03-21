@@ -5,6 +5,7 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AdminConfigEntity, UserEntity } from '@/database/entities';
 import {
   AdminConfigRepository,
+  AdministratorRepository,
   ClientRepository,
   NotificationRepository,
   UserRepository,
@@ -15,6 +16,8 @@ import { SeedDatabase } from './seeders/seed.database';
 import { NotificationEntity } from './entities/notification.entity';
 import { UserNotificationEntity } from './entities/user-notification.entity';
 import { UserNotificationRepository } from './repositories/user-notification.repository';
+import { Administrator } from './entities/administrator.entity';
+import { Role } from './entities/role.entity';
 
 const repositories = [
   UserRepository,
@@ -22,6 +25,7 @@ const repositories = [
   NotificationRepository,
   UserNotificationRepository,
   AdminConfigRepository,
+  AdministratorRepository,
 ];
 
 const entities = [
@@ -30,6 +34,8 @@ const entities = [
   NotificationEntity,
   UserNotificationEntity,
   AdminConfigEntity,
+  Administrator,
+  Role,
 ];
 
 @Module({

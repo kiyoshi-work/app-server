@@ -1,6 +1,7 @@
 import { AppFirestoreRepository } from '@/modules/firebase';
-import { Controller, Get, HttpStatus, Inject } from '@nestjs/common';
+import { Controller, Get, HttpStatus, Inject, UseGuards } from '@nestjs/common';
 import { ApiTags } from '@nestjs/swagger';
+import { AdminGuard } from '../auth/admin.guard';
 
 @ApiTags('Health')
 @Controller('/health')
@@ -10,6 +11,7 @@ export class HealthController {
     private appFirestoreRepository: AppFirestoreRepository,
   ) { }
 
+  @UseGuards(AdminGuard)
   @Get('/firebase')
   async healthCheck() {
     const res = await this.appFirestoreRepository.testConnection();
