@@ -1,7 +1,8 @@
 import { AppFirestoreRepository } from '@/modules/firebase';
 import { Controller, Get, HttpStatus, Inject, UseGuards } from '@nestjs/common';
-import { ApiTags } from '@nestjs/swagger';
+import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminGuard } from '../auth/admin.guard';
+import { Roles } from '@/shared/decorators/roles.decorator';
 
 @ApiTags('Health')
 @Controller('/health')
@@ -11,6 +12,8 @@ export class HealthController {
     private appFirestoreRepository: AppFirestoreRepository,
   ) { }
 
+  @ApiBearerAuth()
+  @Roles(['OPERATOR', 'ADMIN'])
   @UseGuards(AdminGuard)
   @Get('/firebase')
   async healthCheck() {
