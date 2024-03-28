@@ -18,8 +18,8 @@ services:
     env_file:
       - .env.dev
     ports:
-      - '8016:8003'
-      - '80:80'
+      - '8030:8003'
+      - '85:80'
 
   redis:
     container_name: app-redis
@@ -44,7 +44,7 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: 123456
     ports:
-      - 5437:5432
+      - 5446:5432
     networks:
       - app-server-network
 
@@ -62,7 +62,23 @@ services:
       POSTGRES_PASSWORD: 123456
       PGPORT: 5433
     ports:
-      - 5438:5433
+      - 5449:5433
+    networks:
+      - app-server-network
+
+  vector-database:
+    container_name: app-vector-database
+    image: ankane/pgvector
+    ports:
+      - 5445:5434
+    volumes:
+      - app-vector-database:/var/lib/postgres
+      #- ./docker/postgres:/docker-entrypoint-initdb.d
+    environment:
+      POSTGRES_USER: root
+      POSTGRES_PASSWORD: 123456
+      PGPORT: 5434
+      POSTGRES_DB: vector
     networks:
       - app-server-network
 
@@ -70,7 +86,7 @@ services:
     container_name: app-server-pubsub
     image: google/cloud-sdk:emulators
     ports:
-      - "8085:8085"
+      - "8089:8085"
     environment:
       - PUBSUB_EMULATOR_HOST=0.0.0.0:8085
     command: gcloud beta emulators pubsub start --host-port=0.0.0.0:8085
@@ -89,7 +105,9 @@ volumes:
     driver: local
   app-timescale-database:
     driver: local
-    
+  app-vector-database:
+    driver: local
+
 # https://docs.timescale.com/self-hosted/latest/install/installation-docker/
 
 # psql -U root -h localhost

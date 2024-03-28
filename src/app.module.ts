@@ -7,6 +7,7 @@ import { TelegramBotModule } from './modules/telegram-bot';
 import { ListenSocketModule } from '@/modules/listen-socket/listen-socket.module';
 import { SyncContractModule } from '@/modules/sync-contract/sync-contract.module';
 import { WorkerModule } from './modules/worker/worker.module';
+import { VectorStoreModule } from './modules/vectorstore-db/vector-store.module';
 
 const isApi = Boolean(Number(process.env.IS_API || 0));
 const isWS = Boolean(Number(process.env.IS_WS || 0));
@@ -29,7 +30,7 @@ if (isVM) {
   ];
 }
 @Module({
-  imports: [DatabaseModule, TimescaleDBModule, ..._modules],
+  imports: [DatabaseModule, TimescaleDBModule, VectorStoreModule, ..._modules],
   controllers: [],
   providers: [],
 })
