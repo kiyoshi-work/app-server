@@ -47,6 +47,11 @@ export class VectorStoreModule implements OnApplicationBootstrap{
   }
 
   async onApplicationBootstrap() {
+    // const data = await this.vectorService.queryOrmVector('what is lootbot', 2, { keyTopicId: 'lootbot' });
+    // const data = await this.vectorService.embedDocument('what is lootbot');
+    // const _data = await this.vectorService.queryVector(data, 2, { keyTopicId: 'lootbot' });
+    // console.log("🚀 ~ VectorStoreModule ~ onApplicationBootstrap ~ data:", _data)
+
     const dataMock = [
       {
         keyTopicId: topicMock.LOOT.name,
@@ -63,7 +68,6 @@ export class VectorStoreModule implements OnApplicationBootstrap{
           },
         };
       });
-      console.log("🚀 ~ VectorStoreModule ~ const_docs=docs.map ~ _docs:", _docs)
       await this.handleMockDataTopic(_docs, keyTopicId);
     }
   }

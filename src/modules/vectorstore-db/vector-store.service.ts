@@ -80,6 +80,17 @@ export class VectorStoreService {
     await this.pgvectorStore.ensureTableInDatabase();
   }
 
+  async embedDocuments(documents: any) {
+    const vectors = await this.embeddingModel.embedDocuments(documents);
+    console.log(vectors);
+    return vectors;
+  }
+
+  async embedDocument(document: any) {
+    const vectors = await this.embeddingModel.embedDocuments([document]);
+    return vectors?.[0];
+  }
+
   private async ensureDatabaseSchema() {
     const columns = this.configService.get<any>('langchain.columns');
     const tableName = this.configService.get<string>('langchain.tableName');
@@ -129,6 +140,16 @@ export class VectorStoreService {
     );
     return results;
   }
+
+  async queryVector(q: number[], limit: number = 10, filter?: any) {
+    const results = await this.pgvectorStore.similaritySearchVectorWithScore(
+      q,
+      limit,
+      filter,
+    );
+    return results;
+  }
+
 
   async ormAddDocuments(docs = []) {
     const sanitizedDocs = docs?.map((doc) => {
