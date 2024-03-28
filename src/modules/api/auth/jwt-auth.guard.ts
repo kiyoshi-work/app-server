@@ -1,4 +1,4 @@
-import {  UserRepository } from '@/database/repositories';
+import { UserRepository } from '@/database/repositories';
 import {
   CanActivate,
   ExecutionContext,
@@ -12,9 +12,9 @@ import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
 export type TJWTPayload = {
-  sub: string,
-  address: string,
-}
+  sub: string;
+  address: string;
+};
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {
@@ -23,7 +23,7 @@ export class JwtAuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) {}
+  ) { }
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
     const request = context.switchToHttp().getRequest();
@@ -35,7 +35,7 @@ export class JwtAuthGuard implements CanActivate {
       const payload: TJWTPayload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('auth.key.jwt_secret_key'),
       });
-      if (!await this.userRepository.exists({ where: { id: payload.sub } })) {
+      if (!(await this.userRepository.exist({ where: { id: payload.sub } }))) {
         throw {
           status_code: HttpStatus.UNAUTHORIZED,
           message: `Not found user`,

@@ -53,18 +53,18 @@ export class VectorStoreService {
   private postgresConnectionOptions: PostgresConnectionOptions;
   private tableName: string;
 
-  constructor(public configService: ConfigService){}
+  constructor(public configService: ConfigService) { }
 
-  async onModuleInit(
-  ) {
-    this.postgresConnectionOptions = this.configService.get<PostgresConnectionOptions>('langchain.db');
+  async onModuleInit() {
+    this.postgresConnectionOptions =
+      this.configService.get<PostgresConnectionOptions>('langchain.db');
     this.tableName = this.configService.get<string>('langchain.tableName');
 
     // this.pool = new pg.Pool({
-    //   ...postgresConnectionOptions, 
+    //   ...postgresConnectionOptions,
     //   user: postgresConnectionOptions?.username
     // });
-    // await this.ensureDatabaseSchema();    
+    // await this.ensureDatabaseSchema();
     this.embeddingModel = new OpenAIEmbeddings({
       modelName: EMBEDDING_MODEL_NAME,
       openAIApiKey: this.configService.get<string>('langchain.open_ai_key'),
@@ -73,7 +73,7 @@ export class VectorStoreService {
     this.pgvectorStore = await TypeORMVectorStore.fromDataSource(
       this.embeddingModel,
       {
-        postgresConnectionOptions: this.postgresConnectionOptions, 
+        postgresConnectionOptions: this.postgresConnectionOptions,
         tableName: this.tableName,
       },
     );
@@ -129,7 +129,7 @@ export class VectorStoreService {
     const typeormVectorStore = await TypeORMVectorStore.fromExistingIndex(
       this.embeddingModel,
       {
-        postgresConnectionOptions: this.postgresConnectionOptions, 
+        postgresConnectionOptions: this.postgresConnectionOptions,
         tableName: this.tableName,
       },
     );
@@ -150,7 +150,6 @@ export class VectorStoreService {
     return results;
   }
 
-
   async ormAddDocuments(docs = []) {
     const sanitizedDocs = docs?.map((doc) => {
       return {
@@ -161,13 +160,12 @@ export class VectorStoreService {
     const typeormVectorStore = await TypeORMVectorStore.fromDataSource(
       this.embeddingModel,
       {
-        postgresConnectionOptions: this.postgresConnectionOptions, 
+        postgresConnectionOptions: this.postgresConnectionOptions,
         tableName: this.tableName,
       },
-          );
+    );
     await typeormVectorStore.ensureTableInDatabase();
     await typeormVectorStore.addDocuments(sanitizedDocs);
     return true;
   }
-
 }

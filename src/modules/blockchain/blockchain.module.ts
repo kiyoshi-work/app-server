@@ -73,7 +73,5 @@ export class BlockchainModule implements OnApplicationBootstrap {
     public USDCContract: USDCContract,
   ) { }
 
-  async onApplicationBootstrap(
-  ) {
-  }
+  async onApplicationBootstrap() { }
 }
