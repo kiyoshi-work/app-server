@@ -2,22 +2,23 @@ import { Inject, Module, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { DatabaseModule } from '@/database';
 import { configLangchain } from './configs/langchain';
-import { VectorStoreService } from './vector-store.service';
-import lootMock from './mock/loot.mock';
 import { TypeOrmModule } from '@nestjs/typeorm';
 import { DocumentEntity } from './entities/document.entity';
 import { DocumentRepository } from './repositories/document.repository';
 import { OpenAIEmbeddings } from '@langchain/openai';
-
+import lootMock from './mock/loot.mock';
 const topicMock = {
   LOOT: {
     name: 'lootbot',
   },
 };
+
+
 @Module({
   imports: [
     DatabaseModule,
     TypeOrmModule.forRootAsync({
+      name: 'vector',
       useFactory: () => ({
         type: 'postgres',
         host: process.env.DB_VECTOR_HOST || 'localhost',
@@ -25,11 +26,12 @@ const topicMock = {
         username: process.env.DB_VECTOR_USERNAME || 'root',
         password: process.env.DB_VECTOR_PASSWORD || 'root',
         database: process.env.DB_VECTOR_DATABASE || 'test',
-        logging: true,
+        logging: false,
+        autoLoadEntities: true,
       }),
       // inject: [],
     }),
-    TypeOrmModule.forFeature([DocumentEntity]),
+    TypeOrmModule.forFeature([DocumentEntity], 'vector'),
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
@@ -54,23 +56,24 @@ const topicMock = {
       },
       inject: [ConfigService],
     },
-    VectorStoreService,
     DocumentRepository,
   ],
-  exports: [VectorStoreService, DocumentRepository],
+  exports: [
+    DocumentRepository,
+    'TEXT_EMBEDDING_3_LARGE',
+  ],
 })
 export class VectorStoreModule implements OnApplicationBootstrap {
   constructor(
-    @Inject(VectorStoreService)
-    private vectorService: VectorStoreService,
     @Inject('TEXT_EMBEDDING_3_LARGE')
     public embeddingModel: OpenAIEmbeddings,
     private documentRepository: DocumentRepository,
   ) { }
   async handleMockDataTopic(docs: any, keyTopicId: string) {
+    console.log("🚀 ~ VectorStoreModule ~ handleMockDataTopic ~ keyTopicId:", keyTopicId)
     let data = [];
     try {
-      data = await this.vectorService.queryOrmVector('', 10, {
+      data = await this.documentRepository.queryOrmVector('', 10, {
         keyTopicId: keyTopicId,
       });
       console.log(
@@ -80,27 +83,17 @@ export class VectorStoreModule implements OnApplicationBootstrap {
     } catch (e) {
       console.log('[ERROR] [handleMockDataTopic] :', e);
     }
-    if (data.length === 0) {
-      await this.vectorService.ormAddDocuments(docs);
-    }
+    // if (data.length === 0) {
+    //   await this.documentRepository.ormAddDocuments(docs);
+    // }
   }
 
   async onApplicationBootstrap() {
     const t = await this.documentRepository.findById(
-      'c505eae9-a7eb-4346-be86-9115940b0298',
+      '479e00ea-2c2b-443f-b299-e86428d570bc',
     );
     console.log('🚀 ~ VectorStoreModule ~ onApplicationBootstrap ~ t:', t);
-    // const data = await this.documentRepository.queryOrmVector(
-    //   'what is lootbot',
-    //   2,
-    //   {
-    //     keyTopicId: 'lootbot',
-    //   },
-    // );
-    // console.log(
-    //   '🚀 ~ VectorStoreModule ~ onApplicationBootstrap ~ data:',
-    //   data,
-    // );
+
     // const data = await this.vectorService.queryOrmVector('what is lootbot', 2, {
     //   keyTopicId: 'lootbot',
     // });
@@ -122,7 +115,7 @@ export class VectorStoreModule implements OnApplicationBootstrap {
     //       keyTopicId: topicMock.LOOT.name,
     //       docs: lootMock,
     //     },
-    //   ];
+    // ];
     //   for (const { keyTopicId, docs } of dataMock) {
     //     const _docs = docs.map((dos) => {
     //       return {

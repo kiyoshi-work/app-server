@@ -12,12 +12,4 @@ export const configLangchain = registerAs('langchain', () => ({
     database: process.env.DB_VECTOR_DATABASE || 'test',
     // logging: true,
   } as PostgresConnectionOptions,
-  tableName: 'documents',
-  columns: {
-    idColumnName: 'id',
-    vectorColumnName: 'embedding',
-    contentColumnName: 'pageContent',
-    metadataColumnName: 'metadata',
-  },
-  // distanceStrategy: 'cosine' as DistanceStrategy,
 }));
