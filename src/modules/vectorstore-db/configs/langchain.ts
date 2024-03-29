@@ -10,6 +10,7 @@ export const configLangchain = registerAs('langchain', () => ({
     username: process.env.DB_VECTOR_USERNAME || 'root',
     password: process.env.DB_VECTOR_PASSWORD || 'root',
     database: process.env.DB_VECTOR_DATABASE || 'test',
+    autoLoadEntities: true,
     // logging: true,
   } as PostgresConnectionOptions,
 }));

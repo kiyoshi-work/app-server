@@ -19,17 +19,8 @@ const topicMock = {
     DatabaseModule,
     TypeOrmModule.forRootAsync({
       name: 'vector',
-      useFactory: () => ({
-        type: 'postgres',
-        host: process.env.DB_VECTOR_HOST || 'localhost',
-        port: Number(process.env.DB_VECTOR_PORT) || 3306,
-        username: process.env.DB_VECTOR_USERNAME || 'root',
-        password: process.env.DB_VECTOR_PASSWORD || 'root',
-        database: process.env.DB_VECTOR_DATABASE || 'test',
-        logging: false,
-        autoLoadEntities: true,
-      }),
-      // inject: [],
+      useFactory: (config: ConfigService) => config.get('langchain.db'),
+      inject: [ConfigService],
     }),
     TypeOrmModule.forFeature([DocumentEntity], 'vector'),
     ConfigModule.forRoot({
