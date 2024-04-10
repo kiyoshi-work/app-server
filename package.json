@@ -34,6 +34,7 @@
     "@nestjs/cqrs": "^10.2.6",
     "@nestjs/websockets": "^10.2.8",
     "@nestjs/microservices": "^10.2.10",
+    "@sentry/node": "^7.107.0",
     "ethers": "5.7.1",
     "@types/ws": "^8.5.10",
     "@nestjs/schedule": "^3.0.1",

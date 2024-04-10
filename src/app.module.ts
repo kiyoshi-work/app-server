@@ -8,7 +8,8 @@ import { ListenSocketModule } from '@/modules/listen-socket/listen-socket.module
 import { SyncContractModule } from '@/modules/sync-contract/sync-contract.module';
 import { WorkerModule } from './modules/worker/worker.module';
 import { VectorStoreModule } from './modules/vectorstore-db/vector-store.module';
-import { AiModule } from './modules/ai/ai.module';
+import { AiModule } from '@/modules/ai/ai.module';
+import { SentryModule } from '@/modules/sentry/sentry.module';
 
 const isApi = Boolean(Number(process.env.IS_API || 0));
 const isWS = Boolean(Number(process.env.IS_WS || 0));
@@ -29,6 +30,18 @@ if (isVM) {
     WorkerModule,
     AiModule,
     // TelegramBotModule,
+  ];
+}
+
+if (process.env.APP_ENV) {
+  _modules = [
+    ..._modules,
+    SentryModule.forRoot({
+      dsn: process.env.SENTRY_DNS,
+      environment: process.env.APP_ENV || 'local',
+      // Performance Monitoring
+      tracesSampleRate: 1.0, //  Capture 100% of the transactions
+    }),
   ];
 }
 @Module({

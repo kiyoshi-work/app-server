@@ -95,7 +95,10 @@
       ],
       "@/ai/*": [
         "modules/ai/*"
-      ]
+      ],
+      "@/sentry/*": [
+        "modules/sentry//*"
+      ],
     }
   },
   "include": [
