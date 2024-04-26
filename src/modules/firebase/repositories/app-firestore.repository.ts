@@ -8,7 +8,7 @@ import {
   USER_COLL,
 } from '@/modules/firebase/constants';
 import Firestore = firestore.Firestore;
-import axios from "axios";
+import axios from 'axios';
 
 @Injectable()
 export class AppFirestoreRepository {
@@ -69,26 +69,6 @@ export class AppFirestoreRepository {
     return users.docs.map((user) => user.data());
   }
 
-  async getOdd(eventId: string, marketId: string, oddId: string) {
-    const params = `token=${betApiKey}&event_id=${eventId}`;
-    const t = await axios
-      .get(`https://api.b365api.com/v3/bet365/prematch?${params}`)
-    // console.log("🚀 ~ getOdd ~ t:", JSON.stringify(t?.data))
-    for (const res of t?.data?.results) {
-      for (const market of Object.values(res["main"]["sp"])) {
-        if ((market as any)["id"] == marketId) {
-          for (const odd of (market as any)["odds"]) {
-            console.log("🚀 ~ getOdd ~ odd:", odd)
-            if (odd["id"] == oddId) {
-              return odd["odds"]
-            }
-          }
-          return undefined;
-        }
-      }
-    }
-  }
-
   async test() {
     const outcomeId = '138007913835604830448075388';
     const eventId = '7481424';
@@ -99,20 +79,15 @@ export class AppFirestoreRepository {
       .get();
     const eventData = event.data();
     for (const market of Object.values(eventData.markets || {}).flat()) {
-      const marketData = (market as any)
+      const marketData = market as any;
       marketData.odds.forEach((odd) => {
         if (odd.outcome_id) {
           if (odd.outcome_id == outcomeId) {
             oddId = odd.id;
-            marketId = marketData.id
+            marketId = marketData.id;
           }
         }
       });
     }
-    if (oddId && marketId) {
-      const odd = await this.getOdd(eventId, marketId, oddId);
-      console.log("🚀 ~ odd:", odd)
-    }
-
   }
 }
