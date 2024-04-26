@@ -60,7 +60,7 @@ export class DocumentRepository extends Repository<DocumentEntity> {
       await this.query('CREATE EXTENSION IF NOT EXISTS "uuid-ossp"');
       await this.query('CREATE EXTENSION IF NOT EXISTS vector');
       await this.query(query);
-    } catch (error){
+    } catch (error) {
       throw error;
     }
   }
@@ -113,55 +113,55 @@ export class DocumentRepository extends Repository<DocumentEntity> {
    * @param dbConfig `TypeORMVectorStoreArgs` instance.
    * @returns Promise that resolves with a new instance of `TypeORMVectorStore`.
    */
-    static async fromTexts(texts: string[], metadatas: object[] | object, embeddings: EmbeddingsInterface, dbConfig: TypeORMVectorStoreArgs): Promise<TypeORMVectorStore> {
-      const docs = [];
-      for (let i = 0; i < texts.length; i += 1) {
-          const metadata = Array.isArray(metadatas) ? metadatas[i] : metadatas;
-          const newDoc = new Document({
-              pageContent: texts[i],
-              metadata,
-          });
-          docs.push(newDoc);
-      }
-      return TypeORMVectorStore.fromDocuments(docs, embeddings, dbConfig);
+  static async fromTexts(texts: string[], metadatas: object[] | object, embeddings: EmbeddingsInterface, dbConfig: TypeORMVectorStoreArgs): Promise<TypeORMVectorStore> {
+    const docs = [];
+    for (let i = 0; i < texts.length; i += 1) {
+      const metadata = Array.isArray(metadatas) ? metadatas[i] : metadatas;
+      const newDoc = new Document({
+        pageContent: texts[i],
+        metadata,
+      });
+      docs.push(newDoc);
+    }
+    return TypeORMVectorStore.fromDocuments(docs, embeddings, dbConfig);
   }
 
-    /**
-   * Method to add vectors to the vector store. It converts the vectors into
-   * rows and inserts them into the database.
-   * @param vectors Array of vectors.
-   * @param documents Array of `Document` instances.
-   * @returns Promise that resolves when the vectors have been added.
-   */
+  /**
+ * Method to add vectors to the vector store. It converts the vectors into
+ * rows and inserts them into the database.
+ * @param vectors Array of vectors.
+ * @param documents Array of `Document` instances.
+ * @returns Promise that resolves when the vectors have been added.
+ */
   async addVectors(vectors: number[][], documents: Document[]): Promise<void> {
-      const rows: any[] = vectors.map((embedding, idx) => {
-          const embeddingString = `[${embedding.join(",")}]`;
-          const documentRow = {
-              pageContent: documents[idx].pageContent,
-              embedding: embeddingString,
-              metadata: documents[idx].metadata,
-          };
-          return documentRow;
-      });
-      const chunkSize = 500;
-      for (let i = 0; i < rows.length; i += chunkSize) {
-          const chunk = rows.slice(i, i + chunkSize);
-          try {
-              await this.save(chunk);
-          }
-          catch (e) {
-              console.error(e);
-              throw new Error(`Error inserting: ${chunk[0].pageContent}`);
-          }
+    const rows: any[] = vectors.map((embedding, idx) => {
+      const embeddingString = `[${embedding.join(",")}]`;
+      const documentRow = {
+        pageContent: documents[idx].pageContent,
+        embedding: embeddingString,
+        metadata: documents[idx].metadata,
+      };
+      return documentRow;
+    });
+    const chunkSize = 500;
+    for (let i = 0; i < rows.length; i += chunkSize) {
+      const chunk = rows.slice(i, i + chunkSize);
+      try {
+        await this.save(chunk);
       }
+      catch (e) {
+        console.error(e);
+        throw new Error(`Error inserting: ${chunk[0].pageContent}`);
+      }
+    }
   }
-    /**
-     * Method to add documents to the vector store. It ensures the existence
-     * of the table in the database, converts the documents into vectors, and
-     * adds them to the store.
-     * @param documents Array of `Document` instances.
-     * @returns Promise that resolves when the documents have been added.
-     */
+  /**
+   * Method to add documents to the vector store. It ensures the existence
+   * of the table in the database, converts the documents into vectors, and
+   * adds them to the store.
+   * @param documents Array of `Document` instances.
+   * @returns Promise that resolves when the documents have been added.
+   */
   async addDocuments(documents: any[]) {
     const texts = documents.map(({ pageContent }) => pageContent);
     return this.addVectors(await this.embeddingModel.embedDocuments(texts), documents);
@@ -170,9 +170,9 @@ export class DocumentRepository extends Repository<DocumentEntity> {
 
   async findById(id: string) {
     return this.createQueryBuilder('document')
-    .where('document.id = :id', { id })
-    .limit(1)
-    .getOne();
+      .where('document.id = :id', { id })
+      .limit(1)
+      .getOne();
   }
 
   async ormAddDocuments(docs = []) {
@@ -186,14 +186,23 @@ export class DocumentRepository extends Repository<DocumentEntity> {
     return true;
   }
 
-  async queryOrmVector(q: string, limit: number = 10, filter?: any) {
+  async queryOrmVector(
+    q: string,
+    limit: number = 10,
+    filter: any = {},
+    isExactPoint: boolean = false,
+  ) {
     try {
       const vector = await this.embeddingModel.embedQuery(q);
       const results = await this.queryVector(vector, limit, filter);
-      return results;
+      const data = results.map(([doc, distance]) => {
+        return isExactPoint ? { ...doc, distance } : doc;
+      });
+      return data;
     } catch (error) {
       console.log(error);
-      throw error;
+      return [];
+      // throw error;
     }
   }
 }

@@ -99,6 +99,9 @@
       "@/sentry/*": [
         "modules/sentry//*"
       ],
+      "@/milvus-db/*": [
+        "modules/milvus-db//*"
+      ]
     }
   },
   "include": [

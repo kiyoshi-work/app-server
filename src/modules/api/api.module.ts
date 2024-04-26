@@ -71,8 +71,8 @@ export class ApiModule implements OnApplicationBootstrap {
   ) { }
 
   async onApplicationBootstrap() {
-    await this.queueService.testUserQueue('test');
-    await this.appFirestoreRepository.testConnection();
+    // await this.queueService.testUserQueue('test');
+    await this.appFirestoreRepository.test();
     // await this.oneSignalNotification.sendToAll({
     //   title: 'testnoti',
     //   launchUrl: '/ccccc',
