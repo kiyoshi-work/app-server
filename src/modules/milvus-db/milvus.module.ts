@@ -40,7 +40,7 @@ export class MilvusModule implements OnApplicationBootstrap {
     @Inject('TEXT_EMBEDDING_3_LARGE')
     public embeddingModel: OpenAIEmbeddings,
     public milvusDocumentRepository: MilvusDocumentRepository,
-  ) { }
+  ) {}
 
   async onApplicationBootstrap() {
     // const address = 'milvus:19530';
@@ -130,30 +130,36 @@ export class MilvusModule implements OnApplicationBootstrap {
     // //       collectionName: 'goldel_escher_bach',
     // //     },
     // //   );
-
-    if (
-      !(await this.milvusDocumentRepository.checkDocumentExist('solana_v2'))
-    ) {
-      await this.milvusDocumentRepository.ormAddDocuments(
-        solana_v2.map((dt) => ({
-          ...dt,
-          metadata: { ...dt.metadata, docName: 'solana_v2' },
-        })),
-      );
-      console.log(`ADD solana_v2 : ${solana_v2.length}`);
-    }
-    // await this.milvusDocumentRepository.checkDocumentExist('solana_v2');
-    const _data = await this.milvusDocumentRepository.queryOrmVector(
-      'what is solana',
-      1,
-    );
-    console.log(
-      '🚀 ~ VectorStoreModule ~ onApplicationBootstrap ~ data:',
-      _data,
-    );
-    // const del = await this.milvusDocumentRepository.deleteByIds([
-    //   '449348610621178587',
-    // ]);
+    //
+    //
+    //
+    // if (
+    //   !(await this.milvusDocumentRepository.checkDocumentExist('solana_v2'))
+    // ) {
+    //   await this.milvusDocumentRepository.ormAddDocuments(
+    //     solana_v2.map((dt) => ({
+    //       ...dt,
+    //       metadata: { ...dt.metadata, docName: 'solana_v2' },
+    //     })),
+    //   );
+    //   console.log(`ADD solana_v2 : ${solana_v2.length}`);
+    // }
+    // // await this.milvusDocumentRepository.checkDocumentExist('solana_v2');
+    // const _data = await this.milvusDocumentRepository.queryOrmVector(
+    //   'what is solana',
+    //   1,
+    // );
+    // console.log(
+    //   '🚀 ~ VectorStoreModule ~ onApplicationBootstrap ~ data:',
+    //   _data,
+    // );
+    // 
+    // 
+    // 
+    // const del = await this.milvusDocumentRepository.deleteByFilter(
+    //   'title == "Solana Economics Overview | Solana"',
+    // );
+    // console.log('🚀 ~ MilvusModule ~ onApplicationBootstrap ~ del:', del);
     // console.log('🚀 ~ MilvusModule ~ onApplicationBootstrap ~ del:', del);
   }
 }

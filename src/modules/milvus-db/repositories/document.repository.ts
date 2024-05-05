@@ -1,11 +1,14 @@
 import { ConfigService } from '@nestjs/config';
 import { OpenAIEmbeddings } from '@langchain/openai';
-import { Inject } from '@nestjs/common';
-import { MilvusClient, ErrorCode } from '@zilliz/milvus2-sdk-node';
+import { Inject, OnApplicationBootstrap } from '@nestjs/common';
+import { MilvusClient, ErrorCode, DataType } from '@zilliz/milvus2-sdk-node';
 import { Milvus } from 'langchain/vectorstores/milvus';
 import { Document } from '@langchain/core/documents';
 
-export class MilvusDocumentRepository extends Milvus {
+export class MilvusDocumentRepository
+  extends Milvus
+  implements OnApplicationBootstrap
+{
   public collectionName: string;
   public client: MilvusClient;
   constructor(
@@ -19,106 +22,121 @@ export class MilvusDocumentRepository extends Milvus {
       primaryField: 'id',
       vectorField: 'embbedding',
       textField: 'pageContent',
-      url: `${configService.get('milvus.db.host')}:${configService.get('milvus.db.port')}`,
+      url: `${configService.get('milvus.db.host')}:${configService.get(
+        'milvus.db.port',
+      )}`,
     });
     console.log(
       "🚀 ~ MilvusDocumentRepository ~ `${configService.get('milvus.db.host')}:${configService.get('milvus.db.port')}`:",
-      `${configService.get('milvus.db.host')}:${configService.get('milvus.db.port')}`,
+      `${configService.get('milvus.db.host')}:${configService.get(
+        'milvus.db.port',
+      )}`,
     );
     this.collectionName = collectionName;
+    this.indexCreateParams = {
+      index_type: 'HNSW',
+      metric_type: 'L2',
+      params: JSON.stringify({ M: 8, efConstruction: 64 }),
+    };
   }
 
-  async onModuleInit() {
-    // await this.ensureCollection();
+  async onApplicationBootstrap() {
+    await this.migrate();
   }
 
-  // async createCollection(): Promise<void> {
-  //   const fieldList: FieldType[] = [];
+  async migrate() {
+    const hasColResp = await this.client.hasCollection({
+      collection_name: this.collectionName,
+    });
+    if (hasColResp.status.error_code !== ErrorCode.SUCCESS) {
+      console.log(
+        `Error checking collection: ${JSON.stringify(hasColResp, null, 2)}`,
+      );
+      return;
+    }
+    if (hasColResp.value === false) {
+      const fieldList = [];
+      fieldList.push(
+        {
+          name: 'docName',
+          data_type: DataType.VarChar,
+          type_params: {
+            max_length: 100,
+          },
+        },
+        {
+          name: 'language',
+          data_type: DataType.VarChar,
+          type_params: {
+            max_length: 1000,
+          },
+        },
+        {
+          name: 'description',
+          data_type: DataType.VarChar,
+          type_params: {
+            max_length: 65000,
+          },
+        },
+        {
+          name: 'title',
+          data_type: DataType.VarChar,
+          type_params: {
+            max_length: 10000,
+          },
+        },
 
-  //   // fieldList.push(...createFieldTypeForMetadata(documents, this.primaryField));
-
-  //   fieldList.push(
-  //     {
-  //       name: this.primaryField,
-  //       description: 'Primary key',
-  //       data_type: DataType.Int64,
-  //       is_primary_key: true,
-  //       autoID: this.autoId,
-  //     },
-  //     {
-  //       name: this.textField,
-  //       description: 'Text field',
-  //       data_type: DataType.VarChar,
-  //       type_params: {
-  //         max_length: 2000,
-  //         //   this.textFieldMaxLength > 0
-  //         //     ? this.textFieldMaxLength.toString()
-  //         //     : getTextFieldMaxLength(documents).toString(),
-  //       },
-  //     },
-  //     {
-  //       name: this.vectorField,
-  //       description: 'Vector field',
-  //       data_type: DataType.FloatVector,
-  //       type_params: {
-  //         // dim: getVectorFieldDim(vectors).toString(),
-  //         dim: '3072',
-  //       },
-  //     },
-  //     {
-  //       name: 'docName',
-  //       description: 'docName',
-  //       data_type: DataType.VarChar,
-  //       type_params: {
-  //         max_length: 200,
-  //       },
-  //     },
-  //   );
-
-  //   fieldList.forEach((field) => {
-  //     if (!field.autoID) {
-  //       this.fields.push(field.name);
-  //     }
-  //   });
-
-  //   const createRes = await this.client.createCollection({
-  //     collection_name: this.collectionName,
-  //     fields: fieldList,
-  //   });
-
-  //   if (createRes.error_code !== ErrorCode.SUCCESS) {
-  //     console.log(createRes);
-  //     throw new Error(`Failed to create collection: ${ createRes }`);
-  //   }
-
-  //   await this.client.createIndex({
-  //     collection_name: this.collectionName,
-  //     field_name: this.vectorField,
-  //     extra_params: this.indexCreateParams,
-  //   });
-  // }
-
-  // async ensureCollection() {
-  //   // TODO: write in migrate file
-  //   try {
-  //     // Check and create table and columns
-  //     const hasColResp = await this.client.hasCollection({
-  //       collection_name: this.collectionName,
-  //     });
-  //     if (hasColResp.status.error_code !== ErrorCode.SUCCESS) {
-  //       throw new Error(
-  //         `Error checking collection: ${ JSON.stringify(hasColResp, null, 2) }`,
-  //       );
-  //     }
-  //     if (hasColResp.value === false) {
-  //       await this.createCollection();
-  //     } else {
-  //       await this.grabCollectionFields();
-  //     }
-  //   } catch (error) {
-  //     throw error;
-  //   }
-  // }
+        {
+          name: 'source',
+          data_type: DataType.VarChar,
+          type_params: {
+            max_length: 10000,
+          },
+        },
+        {
+          name: this.primaryField,
+          description: 'Primary key',
+          data_type: DataType.Int64,
+          is_primary_key: true,
+          autoID: this.autoId,
+        },
+        {
+          name: this.textField,
+          description: 'Text field',
+          data_type: DataType.VarChar,
+          type_params: {
+            max_length: 65000,
+          },
+        },
+        {
+          name: this.vectorField,
+          description: 'Vector field',
+          data_type: DataType.FloatVector,
+          type_params: {
+            dim: 3072,
+          },
+        },
+      );
+      // fieldList.forEach((field) => {
+      //   if (!field.autoID) {
+      //     this.fields.push(field.name);
+      //   }
+      // });
+      const createRes = await this.client.createCollection({
+        collection_name: this.collectionName,
+        fields: fieldList,
+      });
+      if (createRes.error_code !== ErrorCode.SUCCESS) {
+        console.log(`Failed to create collection: ${createRes}`);
+      }
+      await this.client.createIndex({
+        collection_name: this.collectionName,
+        field_name: this.vectorField,
+        extra_params: this.indexCreateParams,
+      });
+      console.log('======= MIGRATE DONE =====');
+    }
+  }
 
   async findById(id: string) {
     const res = this.client.query({
@@ -229,7 +247,7 @@ export class MilvusDocumentRepository extends Milvus {
   async queryOrmVector(
     q: string,
     limit: number = 10,
-    filter?: any,
+    filter?: string,
     isExactPoint: boolean = false,
   ) {
     try {
@@ -245,7 +263,26 @@ export class MilvusDocumentRepository extends Milvus {
       return data;
     } catch (error) {
       console.log(error);
-      return '';
+      return [];
     }
+  }
+
+  async deleteOrmVector(filter?: string) {
+    const queryOrmVector = await this.queryOrmVector('', 1000, filter);
+    console.log('queryOrmVector', queryOrmVector); // console by M-MON
+    queryOrmVector.length > 0 &&
+      this.deleteByIds(queryOrmVector.map((doc) => doc?.metadata?.id)).then();
+  }
+
+  async deleteByFilter(filter?: string) {
+    return await this.client.deleteEntities({
+      collection_name: this.collectionName,
+      expr: filter,
+    });
+  }
+  async updateOrdVector(filter?: string, docs?: any) {
+    await this.deleteByFilter(filter);
+    await this.ormAddDocuments(docs);
+    console.log('[updateOrdVector] [UPDATE] [SUCCESS]', filter);
   }
 }
