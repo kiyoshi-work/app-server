@@ -8,11 +8,11 @@ export class QueueService {
     private userQueue: Queue,
   ) { }
 
-  async testUserQueue(address: string) {
+  async testUserQueue(time: number) {
     await this.userQueue.add(
       QUEUE_PROCESSOR.USER.TEST,
       {
-        address,
+        time,
       },
       {
         removeOnComplete: 20,

@@ -1,5 +1,6 @@
 import { QUEUE_NAME, QUEUE_PROCESSOR } from '@/shared/constants/queue';
-import { Process, Processor } from '@nestjs/bull';
+import { OnQueueCompleted, Process, Processor } from '@nestjs/bull';
+import { sleep } from '@zilliz/milvus2-sdk-node';
 import { Job } from 'bull';
 
 @Processor(QUEUE_NAME.USER)
@@ -9,13 +10,15 @@ export class UserConsumer {
   @Process(QUEUE_PROCESSOR.USER.TEST)
   async processUserTest(
     job: Job<{
-      userSecurityBoxId: string;
-      chatId: string;
-      address: string;
-      amount: string;
+      time: number;
     }>,
   ) {
-    // console.log('!2332');
+    await sleep(job.data.time);
     console.log(job.data);
+  }
+
+  @OnQueueCompleted()
+  async test(job: Job<any>) {
+    console.log('🚀 ~ UserConsumer ~ test ~ jobId:', job.data);
   }
 }
