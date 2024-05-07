@@ -1,6 +1,6 @@
-import { Tool } from "langchain/tools";
+import { StructuredTool } from 'langchain/tools';
 
-export abstract class BaseTool extends Tool {
+export abstract class BaseTool extends StructuredTool {
   constructor() {
     super();
   }
@@ -11,8 +11,14 @@ export abstract class BaseTool extends Tool {
   public getConfig() {
     return this._config;
   }
+
   public clone(config?: any): this {
-    const clone = Object.create(this);
+    // Create a new instance of the same class
+    // const clone = new (this.constructor as { new() })();
+    const clone = Object.assign(
+      Object.create(Object.getPrototypeOf(this)),
+      this,
+    );
     clone._config = config;
     return clone;
   }

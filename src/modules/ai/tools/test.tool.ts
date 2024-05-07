@@ -23,7 +23,7 @@ export class TestTool extends BaseTool {
   Instructions on how to use the get_user_info tool
   1.Using the Tool:
   get_user_info is used when users ask for user info
-  `
+  `;
 
   getInstruction() {
     return this.instruction;
@@ -31,13 +31,16 @@ export class TestTool extends BaseTool {
 
   schema = z.object({
     username: z.string().describe('The usernames of the user'),
-  }) as any
+  }) as any;
 
   async _call(input: any) {
     console.log('=====> input', input); // console by M-MON
     const other = typeof input.ids === 'string' ? input.ids : '';
-    const user = await this.userRepository.findOne({ where: { username: input?.user_name } });
-    console.log("🚀 ~ TestTool ~ _call ~ user:", user)
+    const user = await this.userRepository.findOne({
+      where: { username: input?.user_name },
+    });
+    console.log('🚀 ~ TestTool ~ _call ~ user:', user);
     return JSON.stringify(user);
+    // return '';
   }
 }
