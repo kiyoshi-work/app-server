@@ -8,7 +8,7 @@ import {
   UseGuards,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
-import { AdminGuard } from '../auth/admin.guard';
+import { AdminGuard } from '../guards/admin.guard';
 import { Roles } from '@/shared/decorators/roles.decorator';
 
 @ApiTags('Health')

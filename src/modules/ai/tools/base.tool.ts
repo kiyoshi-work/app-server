@@ -12,8 +12,17 @@ export abstract class BaseTool extends StructuredTool {
     return this._config;
   }
 
+  protected loadingResponse = (action: string, callback?: any) => {
+    if (callback) {
+      callback({
+        type: 'loading',
+        text: action,
+      });
+    }
+  };
   public clone(config?: any): this {
     // Create a new instance of the same class
+    // const clone = Object.create(this);
     // const clone = new (this.constructor as { new() })();
     const clone = Object.assign(
       Object.create(Object.getPrototypeOf(this)),
