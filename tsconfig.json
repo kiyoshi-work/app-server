@@ -99,6 +99,9 @@
       "@/sentry/*": [
         "modules/sentry//*"
       ],
+      "@/crawler/*": [
+        "modules/crawler/*"
+      ],
       "@/milvus-db/*": [
         "modules/milvus-db//*"
       ]

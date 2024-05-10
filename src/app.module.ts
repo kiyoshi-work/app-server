@@ -12,6 +12,7 @@ import { AiModule } from '@/modules/ai/ai.module';
 import { SentryModule } from '@/modules/sentry/sentry.module';
 import * as Sentry from '@sentry/node';
 import { MilvusModule } from './modules/milvus-db/milvus.module';
+import { CrawlerModule } from './modules/crawler/crawler.module';
 
 const isApi = Boolean(Number(process.env.IS_API || 0));
 const isWS = Boolean(Number(process.env.IS_WS || 0));
@@ -52,6 +53,7 @@ if (process.env.APP_ENV) {
     TimescaleDBModule,
     VectorStoreModule,
     MilvusModule,
+    CrawlerModule,
     ..._modules,
   ],
   controllers: [],
