@@ -1,4 +1,5 @@
 import { UserRepository } from '@/database/repositories';
+import { TJWTPayload } from '@/shared/constants/types';
 import {
   CanActivate,
   ExecutionContext,
@@ -10,11 +11,6 @@ import {
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
-
-export type TJWTPayload = {
-  sub: string;
-  address: string;
-};
 
 @Injectable()
 export class JwtAuthGuard implements CanActivate {

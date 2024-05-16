@@ -8,6 +8,7 @@ import { configAI } from './configs/ai';
 import { AiService } from './services/ai.service';
 import { TestTool } from './tools/test.tool';
 import { SwapTokenTool } from './tools/swap-token-tool';
+import { EAIModel } from '@/shared/constants/enums';
 
 const tools = [TestTool, SwapTokenTool];
 @Module({
@@ -64,13 +65,12 @@ Customer journey of a blockchain user usually follows these 4 following steps:
     // 'give me user info of user hung',
 
     const question = 'swap me 1 sol to whales';
-    // await this.aiService.streamAgent(
-    //   `
+    // await this.aiService.handleStreamAPI({
+    //   question: `
     //   \n Instruction: ${instruction} \n
     //   \n Question: ${question} \n
     // `,
-    //   undefined,
-    //   tools,
-    // );
+    //   modelName: EAIModel.GPT3_5_TURBO_0125,
+    // });
   }
 }

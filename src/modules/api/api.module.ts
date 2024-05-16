@@ -1,6 +1,10 @@
 import { Inject, Module, OnApplicationBootstrap } from '@nestjs/common';
 import { DatabaseModule } from '@/database';
-import { AuthController, NotificationController } from '@/api/controllers';
+import {
+  AssistantController,
+  AuthController,
+  NotificationController,
+} from '@/api/controllers';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { AuthService } from '@/api/services';
 import { LoggerModule } from '@/logger';
@@ -19,6 +23,7 @@ import { QueueService } from '../queue/queue.service';
 import { QueueModule } from '../queue/queue.module';
 import { configAuth } from './configs/auth';
 import { JwtModule } from '@nestjs/jwt';
+import { AiModule } from '../ai/ai.module';
 
 const services = [AuthService, NotificationService];
 @Module({
@@ -30,6 +35,7 @@ const services = [AuthService, NotificationService];
     TimescaleDBModule,
     QueueModule,
     UploadFileModule,
+    AiModule,
     ScheduleModule.forRoot(),
     FirebaseModule.registerAsync({
       isGlobal: true,
@@ -57,7 +63,12 @@ const services = [AuthService, NotificationService];
       inject: [ConfigService],
     }),
   ],
-  controllers: [AuthController, NotificationController, HealthController],
+  controllers: [
+    AuthController,
+    NotificationController,
+    HealthController,
+    AssistantController,
+  ],
   providers: [...services],
 })
 export class ApiModule implements OnApplicationBootstrap {
