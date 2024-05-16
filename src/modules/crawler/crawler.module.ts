@@ -23,11 +23,27 @@ export class CrawlerModule implements OnApplicationBootstrap {
     private readonly scraperApiService: ScraperApiService,
   ) { }
   async onApplicationBootstrap() {
-    // const t = await this.rapidTwitterService.getListFollowing('167814881');
-    // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ t:', t);
-    // const l = await this.lunarCrushService.fetchTweets('elonmusk');
-    // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ l :', l);
-    // const m = await this.scraperApiService.test();
-    // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ m:', m);
+    // const m = await this.rapidTwitterService.getTweet('1790189394848092578');
+    // console.log(
+    //   '🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ m:',
+    //   JSON.stringify(m),
+    // );
+    // const t = await this.rapidTwitterService.getListFollowing(
+    //   'Akemixzz',
+    //   true,
+    // );
+    // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ t:', t.length);
+    // const l = await this.rapidTwitterService.fetchTweets('elliotrades', true);
+    // console.log(
+    //   '🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ l :',
+    //   JSON.stringify(l),
+    // );
+    // const l = await this.rapidTwitterService.fetchUserInfo(
+    //   '1649062578805686272',
+    // );
+    // console.log(
+    //   '🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ l :',
+    //   JSON.stringify(l.data.user_result.result),
+    // );
   }
 }
