@@ -28,5 +28,6 @@ export class CrawlerModule implements OnApplicationBootstrap {
     // const l = await this.lunarCrushService.fetchTweets('elonmusk');
     // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ l :', l);
     // const m = await this.scraperApiService.test();
+    // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ m:', m);
   }
 }

@@ -7,8 +7,7 @@ import { Document } from '@langchain/core/documents';
 
 export class MilvusDocumentRepository
   extends Milvus
-  implements OnApplicationBootstrap
-{
+  implements OnApplicationBootstrap {
   public collectionName: string;
   public client: MilvusClient;
   constructor(
@@ -22,9 +21,12 @@ export class MilvusDocumentRepository
       primaryField: 'id',
       vectorField: 'embbedding',
       textField: 'pageContent',
-      url: `${configService.get('milvus.db.host')}:${configService.get(
-        'milvus.db.port',
-      )}`,
+      clientConfig: {
+        address: `${configService.get('milvus.db.host')}:${configService.get('milvus.db.port')}`,
+        username: configService.get('milvus.db.username'),
+        password: configService.get('milvus.db.password'),
+        database: configService.get('milvus.db.database'),
+      },
     });
     console.log(
       "🚀 ~ MilvusDocumentRepository ~ `${configService.get('milvus.db.host')}:${configService.get('milvus.db.port')}`:",
@@ -117,11 +119,6 @@ export class MilvusDocumentRepository
           },
         },
       );
-      // fieldList.forEach((field) => {
-      //   if (!field.autoID) {
-      //     this.fields.push(field.name);
-      //   }
-      // });
       const createRes = await this.client.createCollection({
         collection_name: this.collectionName,
         fields: fieldList,

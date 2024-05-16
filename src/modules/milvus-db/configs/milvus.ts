@@ -5,5 +5,8 @@ export const configMilvus = registerAs('milvus', () => ({
   db: {
     host: process.env.DB_MILVUS_HOST || 'milvus',
     port: Number(process.env.DB_MILVUS_PORT) || 19530,
+    database: process.env.DB_MILVUS_DATABASE || 'default',
+    username: process.env.DB_MILVUS_USERNAME,
+    password: process.env.DB_MILVUS_PASSWORD,
   } as any,
 }));
