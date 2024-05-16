@@ -6,7 +6,8 @@ export const configCrawler = registerAs('crawler', () => ({
       process.env.RAPID_KEY ||
       '1ce2203c8dmsh2d0e3be3749a9f5p146142jsnf4ae3a8cf6ce',
     twitter_host:
-      process.env.RAPID_TWITTER_API_HOST || 'twitter-api47.p.rapidapi.com',
+      // process.env.RAPID_TWITTER_API_HOST || 'twitter-api47.p.rapidapi.com',
+      process.env.RAPID_TWITTER_API_HOST || 'twttrapi.p.rapidapi.com',
   },
   lunar_crush: {
     token: process.env.LUNAR_CRUSH_TOKEN || '9svht6kf2o8oldlvz6zwnn6p9xny',
