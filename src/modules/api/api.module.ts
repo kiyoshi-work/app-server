@@ -15,7 +15,7 @@ import { NotificationService } from './services/notification.service';
 import { HealthController } from './controllers/health.controller';
 import { Notification } from '@/onesignal/http/v1/notification';
 import { EventModule } from '@/modules/event/event.module';
-import { CacheModule } from '@nestjs/cache-manager';
+import { CacheModule, CacheStore } from '@nestjs/cache-manager';
 import { ScheduleModule } from '@nestjs/schedule';
 import { TimescaleDBModule } from '@/modules/timescale-db';
 import { UploadFileModule } from '../upload-file/upload-file.module';
@@ -24,6 +24,10 @@ import { QueueModule } from '../queue/queue.module';
 import { configAuth } from './configs/auth';
 import { JwtModule } from '@nestjs/jwt';
 import { AiModule } from '../ai/ai.module';
+import { redisStore } from 'cache-manager-redis-store';
+import { APP_GUARD } from '@nestjs/core';
+import { CustomThrottlerGuard } from './guards/custom-throttler.guard';
+import { ThrottlerModule } from '@nestjs/throttler';
 
 const services = [AuthService, NotificationService];
 @Module({
@@ -37,6 +41,10 @@ const services = [AuthService, NotificationService];
     UploadFileModule,
     AiModule,
     ScheduleModule.forRoot(),
+    ThrottlerModule.forRoot({
+      ttl: 60,
+      limit: process.env.APP_ENV === 'production' ? 60 : 600,
+    }),
     FirebaseModule.registerAsync({
       isGlobal: true,
       imports: [ConfigModule],
@@ -57,10 +65,15 @@ const services = [AuthService, NotificationService];
     }),
     CacheModule.registerAsync({
       imports: [ConfigModule],
-      useFactory: async (configService: ConfigService) => ({
-        ttl: configService.get('cache.api.cache_ttl'),
-      }),
       inject: [ConfigService],
+      useFactory: async () => {
+        const urlRedis = `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}/${process.env.REDIS_DATABASE}`;
+        return {
+          store: (await redisStore({
+            url: urlRedis,
+          })) as unknown as CacheStore,
+        };
+      },
     }),
   ],
   controllers: [
@@ -69,7 +82,13 @@ const services = [AuthService, NotificationService];
     HealthController,
     AssistantController,
   ],
-  providers: [...services],
+  providers: [
+    ...services,
+    {
+      provide: APP_GUARD,
+      useClass: CustomThrottlerGuard,
+    },
+  ],
 })
 export class ApiModule implements OnApplicationBootstrap {
   constructor(

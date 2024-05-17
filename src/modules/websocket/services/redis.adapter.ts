@@ -15,11 +15,11 @@ export class RedisIoAdapter extends IoAdapter {
     // const redisAdapter = createClient({ url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}` }); // use to publish message
 
     const redisAdapter = new Redis({
-      host: process.env.QUEUE_HOST,
-      port: Number(process.env.QUEUE_PORT),
+      host: process.env.REDIS_HOST,
+      port: Number(process.env.REDIS_PORT),
       lazyConnect: true,
-      db: Number(process.env.QUEUE_PDATABASE),
-      password: process.env.QUEUE_PASSWORD,
+      db: Number(process.env.REDIS_PDATABASE),
+      password: process.env.REDIS_PASSWORD,
     });
     const subClient = redisAdapter.duplicate();
     await Promise.all([redisAdapter.connect(), subClient.connect()]);
