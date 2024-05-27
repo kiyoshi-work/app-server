@@ -28,6 +28,7 @@ import { redisStore } from 'cache-manager-redis-store';
 import { APP_GUARD } from '@nestjs/core';
 import { CustomThrottlerGuard } from './guards/custom-throttler.guard';
 import { ThrottlerModule } from '@nestjs/throttler';
+import { configTwitterAuth } from './configs/twitter-auth';
 
 const services = [AuthService, NotificationService];
 @Module({
@@ -54,7 +55,7 @@ const services = [AuthService, NotificationService];
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
-      load: [configFirebase, configCache, configAuth],
+      load: [configFirebase, configCache, configAuth, configTwitterAuth],
     }),
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({

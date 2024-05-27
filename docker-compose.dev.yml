@@ -50,7 +50,7 @@ services:
 
   timescale-database:
     container_name: app-timescale-database
-    image: timescale/timescaledb-ha:pg14-latest
+    image: timescale/timescaledb:2.6.1-pg14
     platform: linux/amd64
     restart: unless-stopped
     volumes:

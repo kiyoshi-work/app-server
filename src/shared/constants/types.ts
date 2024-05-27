@@ -1,4 +1,4 @@
 export type TJWTPayload = {
   sub: string;
-  address: string;
+  address?: string;
 };

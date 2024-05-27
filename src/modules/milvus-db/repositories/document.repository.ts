@@ -19,7 +19,7 @@ export class MilvusDocumentRepository
     super(embeddingModel, {
       collectionName: collectionName,
       primaryField: 'id',
-      vectorField: 'embbedding',
+      vectorField: 'embedding',
       textField: 'pageContent',
       clientConfig: {
         address: `${configService.get('milvus.db.host')}:${configService.get('milvus.db.port')}`,
@@ -131,7 +131,7 @@ export class MilvusDocumentRepository
         field_name: this.vectorField,
         extra_params: this.indexCreateParams,
       });
-      console.log('======= MIGRATE DONE =====');
+      console.log('======= MIGRATE MILVUS DONE =====');
     }
   }
 
