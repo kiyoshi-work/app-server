@@ -29,6 +29,7 @@ import { APP_GUARD } from '@nestjs/core';
 import { CustomThrottlerGuard } from './guards/custom-throttler.guard';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { configTwitterAuth } from './configs/twitter-auth';
+import { ElasticSearchModule } from '@/elasticsearch/elasticsearch.module';
 
 const services = [AuthService, NotificationService];
 @Module({
@@ -41,6 +42,7 @@ const services = [AuthService, NotificationService];
     QueueModule,
     UploadFileModule,
     AiModule,
+    ElasticSearchModule,
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot({
       ttl: 60,

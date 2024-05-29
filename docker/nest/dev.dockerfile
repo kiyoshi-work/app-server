@@ -7,7 +7,7 @@ COPY --chown=node:node package*.json ./
 
 USER node
 
-RUN npm install --verbose
+# RUN npm install --verbose
 
 #RUN npm ci
 # run this for production

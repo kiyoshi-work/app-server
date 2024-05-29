@@ -96,6 +96,9 @@
       "@/ai/*": [
         "modules/ai/*"
       ],
+      "@/elasticsearch/*": [
+        "modules/elasticsearch/*"
+      ],
       "@/sentry/*": [
         "modules/sentry//*"
       ],
