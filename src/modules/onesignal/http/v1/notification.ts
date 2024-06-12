@@ -1,4 +1,7 @@
-import { MAX_EXTERNAL_IDS_SEND_NOTIFICATION } from '@/onesignal/constant';
+import {
+  MAX_EXTERNAL_IDS_SEND_NOTIFICATION,
+  getAppId,
+} from '@/onesignal/constant';
 import { RateLimitExternalIdsException } from '@/onesignal/exceptions/api-v1.exception';
 import {
   IPBodySendNotificationByExternalIds,
@@ -31,7 +34,7 @@ export class Notification extends HttpClient {
 
   async sendToAll(params: IParamsSendToAll) {
     const data: IPBodySendToAll = {
-      app_id: params.onesignalAppId,
+      app_id: params.onesignalAppId || getAppId(),
       contents: {
         en: params.content,
       },
