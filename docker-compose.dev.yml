@@ -183,6 +183,22 @@ services:
       - app-server-network
 
 
+  langfuse-server:
+    container_name: app-langfuse
+    image: langfuse/langfuse:2
+    ports:
+      - "1234:3000"
+    environment:
+      - DATABASE_URL=postgresql://root:123456@database:5432/langfuse
+      - NEXTAUTH_SECRET=mysecret
+      - SALT=mysalt
+      - NEXTAUTH_URL=http://localhost:3000
+      - TELEMETRY_ENABLED=${TELEMETRY_ENABLED:-true}
+      - LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES=${LANGFUSE_ENABLE_EXPERIMENTAL_FEATURES:-false}
+    platform: linux/amd64
+    networks:
+      - app-server-network
+      
   elasticsearch:
     container_name: app-elasticsearch
     image: elasticsearch:8.7.0
