@@ -39,3 +39,4 @@ docker-compose.local.yml
 docker-compose.dev.yml
 package-lock.json
 yarn.lock
+docker/models/*
