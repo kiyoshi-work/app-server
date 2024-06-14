@@ -24,7 +24,7 @@ import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from '@/database/repositories';
 import zlib from 'zlib';
 
-const SOCKET_PORT = Number(process.env.SOCKET_PORT) || 80;
+const SOCKET_PORT = Number(process.env.SOCKET_PORT) || 9000;
 @WebSocketGateway(SOCKET_PORT, {
   cors: {
     origin: '*',
@@ -32,7 +32,8 @@ const SOCKET_PORT = Number(process.env.SOCKET_PORT) || 80;
   maxHttpBufferSize: 1e8,
 })
 export class PriceGateway
-  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect {
+  implements OnGatewayInit, OnGatewayConnection, OnGatewayDisconnect
+{
   @Inject(LoggerService)
   private readonly loggerService: LoggerService;
 
