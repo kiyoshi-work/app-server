@@ -5,6 +5,7 @@ import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import morgan from 'morgan';
 import { GCPubSubServer } from 'nestjs-google-pubsub-microservice';
 import { RedisIoAdapter } from './modules/websocket/services/redis.adapter';
+import { GlobalExceptionFilter } from './modules/api/filters/GlobalExceptionFilter';
 
 // const DEFAULT_API_VERSION = '1';
 const PORT = process.env.PORT || '3000';
@@ -21,8 +22,9 @@ async function bootstrap() {
     app.connectMicroservice({
       strategy: new GCPubSubServer({
         topic: process.env.GC_PUBSUB_TOPIC || 'default_topic',
-        subscription: `${process.env.GC_PUBSUB_SUBSCRIPTION || 'app-server-pubsub'}${isVM ? '' : `-${randomCode}`
-          }`,
+        subscription: `${
+          process.env.GC_PUBSUB_SUBSCRIPTION || 'app-server-pubsub'
+        }${isVM ? '' : `-${randomCode}`}`,
         ...(!(
           process.env.APP_ENV == 'production' ||
           process.env.APP_ENV == 'staging' ||
@@ -39,14 +41,13 @@ async function bootstrap() {
     await app.startAllMicroservices();
   }
 
-  if(isWS){
+  if (isWS) {
     // const redisIoAdapter = new RedisIoAdapter(app);
     // await redisIoAdapter.connectToRedis();
     // app.useWebSocketAdapter(redisIoAdapter);
   }
 
   if (isApi) {
-
     const corsOrigin = process.env.CORS_ORIGIN.split(',') || [
       'http://localhost:3000',
     ];
@@ -59,6 +60,7 @@ async function bootstrap() {
 
     app.use(morgan('tiny'));
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
+    app.useGlobalFilters(new GlobalExceptionFilter(true, true));
 
     // app.useStaticAssets(join(__dirname, '.', 'public'));
     // app.setBaseViewsDir(join(__dirname, '.', 'views'));
