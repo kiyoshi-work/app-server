@@ -17,7 +17,7 @@ export class HealthController {
   constructor(
     @Inject('APP_FIRESTORE')
     private appFirestoreRepository: AppFirestoreRepository,
-  ) { }
+  ) {}
 
   @ApiBearerAuth()
   @Roles(['OPERATOR', 'ADMIN'])
@@ -31,8 +31,9 @@ export class HealthController {
     };
   }
 
-  funErr() {
-    throw new ForbiddenException('TEST SENTRY 111');
+  async funErr() {
+    const response = await fetch('https://api.example.com/data');
+    // throw new ForbiddenException('TEST SENTRY 111');
   }
   @Get('')
   async healthCheck() {
@@ -40,7 +41,7 @@ export class HealthController {
   }
 
   @Get('throw')
-  throwError() {
-    this.funErr();
+  async throwError() {
+    await this.funErr();
   }
 }
