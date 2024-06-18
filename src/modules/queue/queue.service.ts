@@ -20,4 +20,30 @@ export class QueueService {
       },
     );
   }
+
+  async testLock1(time: number) {
+    await this.userQueue.add(
+      QUEUE_PROCESSOR.USER.TEST_LOCK_1,
+      {
+        time,
+      },
+      {
+        removeOnComplete: 20,
+        removeOnFail: true,
+      },
+    );
+  }
+
+  async testLock2(time: number) {
+    await this.userQueue.add(
+      QUEUE_PROCESSOR.USER.TEST_LOCK_2,
+      {
+        time,
+      },
+      {
+        removeOnComplete: 20,
+        removeOnFail: true,
+      },
+    );
+  }
 }

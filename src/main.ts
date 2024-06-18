@@ -39,14 +39,13 @@ async function bootstrap() {
     await app.startAllMicroservices();
   }
 
-  if(isWS){
+  if (isWS) {
     // const redisIoAdapter = new RedisIoAdapter(app);
     // await redisIoAdapter.connectToRedis();
     // app.useWebSocketAdapter(redisIoAdapter);
   }
 
   if (isApi) {
-
     const corsOrigin = process.env.CORS_ORIGIN.split(',') || [
       'http://localhost:3000',
     ];
