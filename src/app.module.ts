@@ -39,12 +39,12 @@ if (isVM) {
 if (process.env.APP_ENV) {
   _modules = [
     ..._modules,
-    SentryModule.forRoot({
-      dsn: process.env.SENTRY_DNS,
-      environment: process.env.APP_ENV || 'local',
-      // Performance Monitoring
-      tracesSampleRate: 1.0, //  Capture 100% of the transactions
-    }),
+    // SentryModule.forRoot({
+    //   dsn: process.env.SENTRY_DNS,
+    //   environment: process.env.APP_ENV || 'local',
+    //   // Performance Monitoring
+    //   tracesSampleRate: 1.0, //  Capture 100% of the transactions
+    // }),
   ];
 }
 @Module({
@@ -60,12 +60,12 @@ if (process.env.APP_ENV) {
   providers: [],
 })
 export class AppModule {
-  configure(consumer: MiddlewareConsumer): void {
-    if (process.env.APP_ENV) {
-      consumer.apply(Sentry.Handlers.requestHandler()).forRoutes({
-        path: '*',
-        method: RequestMethod.ALL,
-      });
-    }
-  }
+  // configure(consumer: MiddlewareConsumer): void {
+  //   if (process.env.APP_ENV) {
+  //     consumer.apply(Sentry.Handlers.requestHandler()).forRoutes({
+  //       path: '*',
+  //       method: RequestMethod.ALL,
+  //     });
+  //   }
+  // }
 }

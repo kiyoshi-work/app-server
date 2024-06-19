@@ -105,11 +105,11 @@ export class ApiModule implements OnApplicationBootstrap {
   ) { }
 
   async onApplicationBootstrap() {
-    await this.queueService.testUserQueue(3000);
-    await this.queueService.testUserQueue(1000);
+    // await this.queueService.testUserQueue(3000);
+    // await this.queueService.testUserQueue(1000);
     // await sleep(2000);
-    // await this.queueService.testLock1(10000);
-    // await this.queueService.testLock2(1000);
+    await this.queueService.testLock1(10000);
+    await this.queueService.testLock2(1000);
     await this.appFirestoreRepository.test();
     // await this.oneSignalNotification.sendToAll({
     //   title: 'testnoti',
