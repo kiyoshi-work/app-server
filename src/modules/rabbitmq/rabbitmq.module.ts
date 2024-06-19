@@ -4,6 +4,7 @@ import { ClientsModule, Transport } from '@nestjs/microservices';
 import { configRabbitMq } from './configs/rabbitmq.config';
 import { RabbitMQService } from './rabbitmq.service';
 
+// https://github.com/jmaicaaan/tutorial-nestjs-rabbitmq
 @Module({
   imports: [
     ConfigModule.forRoot({
