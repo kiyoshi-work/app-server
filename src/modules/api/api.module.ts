@@ -30,6 +30,7 @@ import { CustomThrottlerGuard } from './guards/custom-throttler.guard';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { configTwitterAuth } from './configs/twitter-auth';
 import { ElasticSearchModule } from '@/elasticsearch/elasticsearch.module';
+import { RabbitMQModule } from '../rabbitmq/rabbitmq.module';
 
 const services = [AuthService, NotificationService];
 @Module({
@@ -78,6 +79,7 @@ const services = [AuthService, NotificationService];
         };
       },
     }),
+    RabbitMQModule,
   ],
   controllers: [
     AuthController,
@@ -101,7 +103,7 @@ export class ApiModule implements OnApplicationBootstrap {
 
     @Inject(QueueService)
     private queueService: QueueService,
-  ) { }
+  ) {}
 
   async onApplicationBootstrap() {
     await this.queueService.testUserQueue(4000);
