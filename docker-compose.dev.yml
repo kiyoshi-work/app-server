@@ -295,6 +295,24 @@ services:
       - elasticsearch
     ports:
       - 5601:5601
+
+
+  rabbitmq:
+    image: rabbitmq:3.6.14-management
+    container_name: app-rabbitmq
+    # healthcheck:
+    #   test: ['CMD', 'curl', '-f', 'http://127.0.0.1:5672']
+    #   interval: 30s
+    #   timeout: 10s
+    #   retries: 5
+    ports:
+      - 5672:5672
+      - 15672:15672
+    environment:
+      - RABBITMQ_DEFAULT_USER=root
+      - RABBITMQ_DEFAULT_PASS=123456
+    networks:
+      - app-server-network
       
 networks:
   app-server-network:

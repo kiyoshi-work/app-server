@@ -45,6 +45,8 @@
     "@socket.io/redis-adapter": "^7.2.0",
     "@types/ws": "^8.5.10",
     "@zilliz/milvus2-sdk-node": "^2.4.1",
+    "amqp-connection-manager": "^4.1.14",
+    "amqplib": "^0.10.4",
     "axios": "1.4.0",
     "bull": "^4.11.3",
     "cache-manager": "^5.2.3",
@@ -65,10 +67,10 @@
     "oauth": "^0.10.0",
     "pg": "^8.11.0",
     "reflect-metadata": "^0.1.13",
+    "rpc-websockets": "7.11.0",
     "rxjs": "^7.8.1",
     "socket.io-client": "^4.7.2",
     "typeorm": "^0.3.17",
-    "rpc-websockets": "7.11.0",
     "zlib": "^1.0.5"
   },
   "devDependencies": {

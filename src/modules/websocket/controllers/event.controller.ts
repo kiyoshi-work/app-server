@@ -1,12 +1,16 @@
 import { Controller } from '@nestjs/common';
-import { EventPattern, Payload } from '@nestjs/microservices';
+import {
+  Ctx,
+  EventPattern,
+  MessagePattern,
+  Payload,
+  RmqContext,
+} from '@nestjs/microservices';
 import { PriceGateway } from '../gateways/price.gateway';
 
 @Controller('/event')
 export class EventController {
-  constructor(
-    private readonly priceGateway: PriceGateway,
-  ) { }
+  constructor(private readonly priceGateway: PriceGateway) {}
 
   @EventPattern('new-top-askbid')
   async updateNewTopBidAsk(@Payload() data: any) {
@@ -18,5 +22,18 @@ export class EventController {
         error,
       );
     }
+  }
+
+  // @MessagePattern('TEST_MQ_EVENT')
+  @EventPattern('TEST_MQ_EVENT')
+  async testRMQ(@Payload() data: any, @Ctx() context: RmqContext) {
+    console.log(
+      '🚀 ~ EventController ~ testRMQ ~ data:',
+      data,
+      context.getMessage(),
+    );
+    // NOTE: use when noAck: false
+    // const channel = context.getChannelRef();
+    // channel.ack(context.getMessage());
   }
 }

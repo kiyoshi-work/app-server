@@ -6,6 +6,7 @@ import morgan from 'morgan';
 import { GCPubSubServer } from 'nestjs-google-pubsub-microservice';
 import { RedisIoAdapter } from './modules/websocket/services/redis.adapter';
 import { GlobalExceptionFilter } from './modules/api/filters/GlobalExceptionFilter';
+import { RmqOptions, Transport } from '@nestjs/microservices';
 
 // const DEFAULT_API_VERSION = '1';
 const PORT = process.env.PORT || '3000';
@@ -15,6 +16,29 @@ const isVM = Boolean(Number(process.env.IS_VM || 0));
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
+  if (isWS) {
+    // const redisIoAdapter = new RedisIoAdapter(app);
+    // await redisIoAdapter.connectToRedis();
+    // app.useWebSocketAdapter(redisIoAdapter);
+
+    app.connectMicroservice<RmqOptions>({
+      transport: Transport.RMQ,
+      options: {
+        urls: [process.env.RABITTMQ_URL],
+        queue: 'rabbit-mq-queue',
+        prefetchCount: 1,
+        persistent: true,
+        noAck: true,
+        queueOptions: {
+          durable: true,
+        },
+        socketOptions: {
+          heartbeatIntervalInSeconds: 60,
+          reconnectTimeInSeconds: 5,
+        },
+      },
+    });
+  }
 
   if (isWS || isVM) {
     // const randomCode = uuidv4();
@@ -38,13 +62,8 @@ async function bootstrap() {
         }),
       }),
     });
-    await app.startAllMicroservices();
-  }
 
-  if (isWS) {
-    // const redisIoAdapter = new RedisIoAdapter(app);
-    // await redisIoAdapter.connectToRedis();
-    // app.useWebSocketAdapter(redisIoAdapter);
+    await app.startAllMicroservices();
   }
 
   if (isApi) {
