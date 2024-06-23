@@ -20,7 +20,7 @@ export class HealthController {
     @Inject('APP_FIRESTORE')
     private appFirestoreRepository: AppFirestoreRepository,
     private readonly rabbitMqService: RabbitMQService,
-  ) {}
+  ) { }
 
   @ApiBearerAuth()
   @Roles(['OPERATOR', 'ADMIN'])
@@ -50,7 +50,7 @@ export class HealthController {
 
   @Post('/rmq')
   async testrmq() {
-    this.rabbitMqService.send('TEST_MQ_EVENT', {
+    this.rabbitMqService.emit('TEST_MQ_EVENT', {
       test: 1,
     });
   }

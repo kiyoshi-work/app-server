@@ -30,6 +30,7 @@ import { CustomThrottlerGuard } from './guards/custom-throttler.guard';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { configTwitterAuth } from './configs/twitter-auth';
 import { ElasticSearchModule } from '@/elasticsearch/elasticsearch.module';
+import { sleep } from '@zilliz/milvus2-sdk-node';
 import { RabbitMQModule } from '../rabbitmq/rabbitmq.module';
 
 const services = [AuthService, NotificationService];
@@ -106,8 +107,11 @@ export class ApiModule implements OnApplicationBootstrap {
   ) {}
 
   async onApplicationBootstrap() {
-    await this.queueService.testUserQueue(4000);
-    await this.queueService.testUserQueue(1000);
+    // await this.queueService.testUserQueue(3000);
+    // await this.queueService.testUserQueue(1000);
+    // await sleep(2000);
+    await this.queueService.testLock1(10000);
+    await this.queueService.testLock2(1000);
     await this.appFirestoreRepository.test();
     // await this.oneSignalNotification.sendToAll({
     //   title: 'testnoti',
