@@ -60,4 +60,6 @@ echo "Number of GPU layers: $n_gpu_layers"
 echo "Context window: $n_ctx"
 
 # Run the server
-exec python3 -m llama_cpp.server --n_ctx $n_ctx --n_threads $n_threads --n_gpu_layers $n_gpu_layers --n_batch $n_batch
+# exec python3 -m llama_cpp.server --n_ctx $n_ctx --n_threads $n_threads --n_gpu_layers $n_gpu_layers --n_batch $n_batch
+# python3 -m llama_cpp.server --n_ctx 4096 --n_threads 8 --n_gpu_layers 10 --n_batch 2096 --model models/functionary-7b-v1.4.q4_0.gguf
+tail -f /dev/null
