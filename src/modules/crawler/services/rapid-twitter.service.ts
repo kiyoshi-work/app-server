@@ -68,7 +68,11 @@ export class RapidTwitterService {
     return [];
   }
 
-  async fetchTweets(username: string, isRecursive: boolean = false) {
+  async fetchTweets(
+    username: string,
+    maxRecursive: number = 1,
+    config: { minView?: number } = { minView: 10000 },
+  ) {
     let cursor;
     let entries = [];
     const tweets = [];
@@ -81,11 +85,12 @@ export class RapidTwitterService {
         const dt = entry?.content?.content?.tweetResult?.result?.legacy;
         if (
           dt &&
+          // NOTE: Exclude retweet
           !dt?.retweeted_status_result &&
           Number(
             entry?.content?.content?.tweetResult?.result?.view_count_info
               ?.count || 0,
-          ) > 10000
+          ) > Number(config?.minView || 10000)
         ) {
           tweets.push({
             tweet_id: entry?.content?.content?.tweetResult?.result?.rest_id,
@@ -94,6 +99,8 @@ export class RapidTwitterService {
             favorite_count: dt.favorite_count,
             reply_count: dt.reply_count,
             retweet_count: dt.retweet_count,
+            conversation_id: dt.conversation_id_str,
+            reply_to_id: dt.in_reply_to_status_id_str,
             views: Number(
               entry?.content?.content?.tweetResult?.result?.view_count_info
                 ?.count || 0,
@@ -112,8 +119,15 @@ export class RapidTwitterService {
           cursor = entry?.content?.value;
         }
       }
-      console.log('🚀 ~ RapidTwitterService ~ fetchTweets ~ cursor:', cursor);
-      if (!isRecursive) break;
+      console.log(
+        '🚀 ~ RapidTwitterService ~ fetchTweets ~ cursor:',
+        cursor,
+        maxRecursive,
+        numQuery,
+        tweets.length,
+        username,
+      );
+      if (maxRecursive <= numQuery) break;
     }
     return { numQuery, tweets };
   }

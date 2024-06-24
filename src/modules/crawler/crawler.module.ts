@@ -4,6 +4,7 @@ import { ConfigModule } from '@nestjs/config';
 import { RapidTwitterService } from './services/rapid-twitter.service';
 import { LunarCrushService } from './services/lunar-crush.service';
 import { ScraperApiService } from './services/scraper-api.service';
+import { DexToolService } from './services/dextool.service';
 
 @Module({
   imports: [
@@ -13,15 +14,26 @@ import { ScraperApiService } from './services/scraper-api.service';
       load: [configCrawler],
     }),
   ],
-  providers: [RapidTwitterService, LunarCrushService, ScraperApiService],
-  exports: [RapidTwitterService, LunarCrushService, ScraperApiService],
+  providers: [
+    RapidTwitterService,
+    LunarCrushService,
+    ScraperApiService,
+    DexToolService,
+  ],
+  exports: [
+    RapidTwitterService,
+    LunarCrushService,
+    ScraperApiService,
+    DexToolService,
+  ],
 })
 export class CrawlerModule implements OnApplicationBootstrap {
   constructor(
     private readonly rapidTwitterService: RapidTwitterService,
     private readonly lunarCrushService: LunarCrushService,
     private readonly scraperApiService: ScraperApiService,
-  ) { }
+    private readonly dexToolService: DexToolService,
+  ) {}
   async onApplicationBootstrap() {
     // const m = await this.rapidTwitterService.getTweet('1790189394848092578');
     // console.log(
@@ -45,5 +57,9 @@ export class CrawlerModule implements OnApplicationBootstrap {
     //   '🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ l :',
     //   JSON.stringify(l.data.user_result.result),
     // );
+    const t = await this.dexToolService.getAuditTokenByAddress(
+      'GTH3wG3NErjwcf7VGCoXEXkgXSHvYhx5gtATeeM5JAS1',
+    );
+    console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ t:', t);
   }
 }
