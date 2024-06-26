@@ -5,6 +5,7 @@ import { RapidTwitterService } from './services/rapid-twitter.service';
 import { LunarCrushService } from './services/lunar-crush.service';
 import { ScraperApiService } from './services/scraper-api.service';
 import { DexToolService } from './services/dextool.service';
+import { BirdEyeService, EChainName } from './services/birdeye.service';
 
 @Module({
   imports: [
@@ -19,12 +20,14 @@ import { DexToolService } from './services/dextool.service';
     LunarCrushService,
     ScraperApiService,
     DexToolService,
+    BirdEyeService,
   ],
   exports: [
     RapidTwitterService,
     LunarCrushService,
     ScraperApiService,
     DexToolService,
+    BirdEyeService,
   ],
 })
 export class CrawlerModule implements OnApplicationBootstrap {
@@ -33,6 +36,7 @@ export class CrawlerModule implements OnApplicationBootstrap {
     private readonly lunarCrushService: LunarCrushService,
     private readonly scraperApiService: ScraperApiService,
     private readonly dexToolService: DexToolService,
+    private readonly birdEyeService: BirdEyeService,
   ) {}
   async onApplicationBootstrap() {
     // const m = await this.rapidTwitterService.getTweet('1790189394848092578');
@@ -57,9 +61,16 @@ export class CrawlerModule implements OnApplicationBootstrap {
     //   '🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ l :',
     //   JSON.stringify(l.data.user_result.result),
     // );
-    const t = await this.dexToolService.getAuditTokenByAddress(
-      'GTH3wG3NErjwcf7VGCoXEXkgXSHvYhx5gtATeeM5JAS1',
-    );
-    console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ t:', t);
+    //
+    // const t = await this.dexToolService.getAuditTokenByAddress(
+    //   'GTH3wG3NErjwcf7VGCoXEXkgXSHvYhx5gtATeeM5JAS1',
+    // );
+    // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ t:', t);
+    //
+    // const q = await this.birdEyeService.getTokenTradesHistory(
+    //   'GTH3wG3NErjwcf7VGCoXEXkgXSHvYhx5gtATeeM5JAS1',
+    //   EChainName.SOLANA,
+    // );
+    // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ q:', q);
   }
 }
