@@ -6,41 +6,15 @@ COPY . .
 RUN npm run build
 
 FROM node:18.15.0 AS runner
-ARG APP_ENV
-ARG DB_HOST
-ARG DB_PORT
-ARG DB_USERNAME
-ARG DB_PASSWORD
-ARG DB_DATABASE
-ARG DB_SYNC
-ARG CORS_ORIGIN
-ARG FIREBASE_PRIVATE_KEY
-ARG FIREBASE_CLIENT_EMAIL
-ARG FIREBASE_PROJECT_ID
-ARG CHAIN_ID
-ARG SPACE_NAME
-
-ENV APP_ENV $APP_ENV
-ENV DB_HOST $DB_HOST
-ENV DB_PORT $DB_PORT
-ENV DB_USERNAME $DB_USERNAME
-ENV DB_PASSWORD $DB_PASSWORD
-ENV DB_DATABASE $DB_DATABASE
-ENV DB_SYNC $DB_SYNC
-ENV PORT 8080
-ENV CORS_ORIGIN http://localhost:3000,$CORS_ORIGIN
-ENV FIREBASE_PRIVATE_KEY $FIREBASE_PRIVATE_KEY
-ENV FIREBASE_CLIENT_EMAIL $FIREBASE_CLIENT_EMAIL
-ENV FIREBASE_PROJECT_ID $FIREBASE_PROJECT_ID
-ENV CHAIN_ID $CHAIN_ID
-ENV SPACE_NAME $SPACE_NAME
-ENV IS_SCHEDULER=1
-
 RUN mkdir -p /home/node/app/node_modules && chown -R node:node /home/node/app
 WORKDIR /home/node/app
 COPY --chown=node:node package*.json ./
-RUN npm install --production
+RUN npm install @nestjs/core
 USER node
 EXPOSE 8080
 COPY --from=builder --chown=node:node /app/dist  .
+# RUN npm run migration:run
 CMD ["npm", "run", "start:prod"]
+# ENTRYPOINT ["tail"]
+# CMD ["-f","/dev/null"]
+# docker build -t test1 .

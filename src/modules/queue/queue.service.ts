@@ -46,4 +46,17 @@ export class QueueService {
       },
     );
   }
+
+  async testFail(attempts: number = 0) {
+    await this.userQueue.add(
+      QUEUE_PROCESSOR.USER.TEST_FAIL,
+      {},
+      {
+        attempts: attempts,
+        delay: 10000,
+        removeOnComplete: 20,
+        removeOnFail: true,
+      },
+    );
+  }
 }
