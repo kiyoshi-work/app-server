@@ -71,6 +71,7 @@
     "rxjs": "^7.8.1",
     "socket.io-client": "^4.7.2",
     "typeorm": "^0.3.17",
+    "user-agents": "^1.1.232",
     "zlib": "^1.0.5"
   },
   "devDependencies": {

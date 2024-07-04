@@ -21,4 +21,14 @@ export const configCrawler = registerAs('crawler', () => ({
     key: process.env.TWEET_SCOUT_KEY || 'aKUuMDeXsNcHCMPc59ivY',
     host: process.env.TWEET_SCOUT_HOST || 'https://tweetscout.io',
   },
+  dextool: {
+    api_key:
+      process.env.DEXTOOL_KEY || 's4WhlXc5yl1FHJLqQKHc61oeYedT4VRG4Ai7xJfa',
+    base_url: process.env.DEXTOOL_BASE_URL || 'https://api.dextools.io',
+  },
+  birdeye: {
+    api_key:
+      process.env.BIRDEYE_API_KEY || 'b5b7b6b6-4d5d-4b7d-9b5b-2b5b7b7b7b7b',
+    base_url: process.env.BIRDEYE_BASE_URL || 'https://public-api.birdeye.so',
+  },
 }));
