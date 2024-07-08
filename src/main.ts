@@ -7,9 +7,15 @@ import { GCPubSubServer } from 'nestjs-google-pubsub-microservice';
 import { RedisIoAdapter } from './modules/websocket/services/redis.adapter';
 import { GlobalExceptionFilter } from './modules/api/filters/GlobalExceptionFilter';
 import { RmqOptions, Transport } from '@nestjs/microservices';
+import { GameService } from '@/game/game.service';
+import { playground } from '@colyseus/playground';
+import { monitor } from '@colyseus/monitor';
 
 // const DEFAULT_API_VERSION = '1';
 const PORT = process.env.PORT || '3000';
+const GAMESERVER_PORT = Number(process.env.GAMESERVER_PORT || '3000');
+
+const isGameServer = Boolean(Number(process.env.IS_GAME_SERVER || 0));
 const isWS = Boolean(Number(process.env.IS_WS || 0));
 const isApi = Boolean(Number(process.env.IS_API || 0));
 const isVM = Boolean(Number(process.env.IS_VM || 0));
@@ -66,6 +72,23 @@ async function bootstrap() {
     await app.startAllMicroservices();
   }
 
+  if (isGameServer) {
+    const gameServer = new GameService();
+    gameServer.createServer(app.getHttpServer());
+    gameServer.defineRooms();
+    // gameServer.listen(GAMESERVER_PORT);
+
+    if (process.env.APP_ENV !== 'production') {
+      app.use('/', playground);
+    }
+    /**
+     * Use @colyseus/monitor
+     * It is recommended to protect this route with a password
+     * Read more: https://docs.colyseus.io/tools/monitor/#restrict-access-to-the-panel-using-a-password
+     */
+    app.use('/colyseus', monitor());
+  }
+
   if (isApi) {
     const corsOrigin = process.env.CORS_ORIGIN.split(',') || [
       'http://localhost:3000',
@@ -103,6 +126,9 @@ async function bootstrap() {
     }
     await app.listen(PORT);
     Logger.log(`🚀 Application is running in port ${PORT}`);
+  } else if (isGameServer) {
+    app.listen(GAMESERVER_PORT);
+    Logger.log(`🚀 Gameserver is running in port ${GAMESERVER_PORT}`);
   } else {
     await app.init();
   }

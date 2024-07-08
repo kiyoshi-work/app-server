@@ -27,3 +27,33 @@ export enum EAIModel {
   GPT4_TURBO_2024_04_09 = 'gpt-4-turbo-2024-04-09',
   GPT3_5_TURBO_0125 = 'gpt-3.5-turbo-0125',
 }
+
+export enum ERoomDefine {
+  MAIN_ROOM = 'main_room',
+}
+export enum ERussianPistolRoomStatus {
+  INITIALIZE = 'INITIALIZE',
+  PLAYING = 'PLAYING',
+  ENDGAME = 'ENDGAME',
+  DISPOSE = 'DISPOSE',
+}
+
+export enum EMainRoomPhase {
+  None = 'None',
+  StartGame = 'StartGame',
+  StartTurn = 'StartTurn',
+  StartAction = 'StartAction',
+  ExecuteAction = 'ExecuteAction',
+  EndTurn = 'EndTurn',
+  EndGame = 'EndGame',
+  Left = 'Left',
+  Error = 'Error',
+  Reconnect = 'Reconnect',
+}
+
+export enum EMessageMainRoom {
+  DoneStartTurnAnimation = 'DoneStartTurnAnimation',
+  DoneStartGameAnimation = 'DoneStartGameAnimation',
+  UserAction = 'UserAction',
+  DoneActionAnimation = 'DoneActionAnimation',
+}

@@ -41,6 +41,13 @@
     "@nestjs/throttler": "^4.2.1",
     "@nestjs/typeorm": "^10.0.0",
     "@nestjs/websockets": "^10.2.8",
+    "@colyseus/monitor": "^0.15.0",
+    "@colyseus/playground": "^0.15.3",
+    "@colyseus/tools": "^0.15.0",
+    "colyseus": "^0.15.0",
+    "@colyseus/command": "^0.2.1",
+    "inversify": "^6.0.1",
+    "inversify-inject-decorators": "^3.1.0",
     "@sentry/node": "^7.107.0",
     "@socket.io/redis-adapter": "^7.2.0",
     "@types/ws": "^8.5.10",
@@ -75,6 +82,8 @@
     "zlib": "^1.0.5"
   },
   "devDependencies": {
+    "@colyseus/loadtest": "^0.15.0",
+    "@colyseus/testing": "^0.15.0",
     "@localazy/cli": "^1.7.3",
     "@nestjs/cli": "^10.0.0",
     "@nestjs/schematics": "^10.0.0",

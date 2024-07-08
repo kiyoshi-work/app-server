@@ -110,6 +110,9 @@
       ],
       "@/rabbitmq/*": [
         "modules/rabbitmq/*"
+      ],
+      "@/game/*": [
+        "modules/game/*"
       ]
     }
   },
