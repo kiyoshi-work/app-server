@@ -71,11 +71,13 @@ const services = [AuthService, NotificationService];
     CacheModule.registerAsync({
       imports: [ConfigModule],
       inject: [ConfigService],
-      useFactory: async () => {
+      useFactory: async (configService: ConfigService) => {
         const urlRedis = `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}/${process.env.REDIS_DATABASE}`;
         return {
+          ttl: Number(configService.get('cache.api.cache_ttl')),
           store: (await redisStore({
             url: urlRedis,
+            ttl: Number(configService.get('cache.api.cache_ttl')) / 1000,
           })) as unknown as CacheStore,
         };
       },
@@ -104,14 +106,16 @@ export class ApiModule implements OnApplicationBootstrap {
 
     @Inject(QueueService)
     private queueService: QueueService,
-  ) {}
+  ) { }
 
   async onApplicationBootstrap() {
     // await this.queueService.testUserQueue(3000);
     // await this.queueService.testUserQueue(1000);
     // await sleep(2000);
-    await this.queueService.testLock1(10000);
-    await this.queueService.testLock2(1000);
+    // await this.queueService.testLock1(10000);
+    // await this.queueService.testLock2(1000);
+    await this.queueService.testFail(4);
+
     // await this.appFirestoreRepository.test();
     // await this.oneSignalNotification.sendToAll({
     //   title: 'testnoti',

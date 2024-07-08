@@ -27,7 +27,9 @@ export class UserEntity {
   @Index()
   client_id: string;
 
-  @ManyToOne(() => ClientEntity, (entity) => entity.users)
+  @ManyToOne(() => ClientEntity, (entity) => entity.users, {
+    createForeignKeyConstraints: false,
+  })
   @JoinColumn({ name: 'client_id' })
   client: ClientEntity;
 

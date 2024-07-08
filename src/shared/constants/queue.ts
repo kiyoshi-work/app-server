@@ -7,5 +7,6 @@ export const QUEUE_PROCESSOR = {
     TEST: 'test',
     TEST_LOCK_1: 'test_lock_1',
     TEST_LOCK_2: 'test_lock_2',
+    TEST_FAIL: 'test_fail',
   },
 };

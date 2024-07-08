@@ -23,6 +23,13 @@ export class UserConsumer {
     await sleep(job.data.time);
     console.log(job.data);
   }
+
+  @Process(QUEUE_PROCESSOR.USER.TEST_FAIL)
+  async processTestFail(job: Job) {
+    console.log('===== TEST FAIL ====');
+    throw new Error('test fail');
+  }
+
   @Process(QUEUE_PROCESSOR.USER.TEST_LOCK_1)
   async processTestLock1(
     job: Job<{

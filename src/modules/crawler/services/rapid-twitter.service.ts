@@ -217,6 +217,79 @@ export class RapidTwitterService {
     return userFollowings;
   }
 
+  async getFollowerAnchor(username: string, cursor?: string) {
+    const options = {
+      method: 'GET',
+      url: `${this._rapidHost}/user-followers`,
+      params: {
+        username: username,
+        cursor: cursor,
+        count: 100,
+      },
+      headers: this._buildHeader(),
+    };
+    const data = await this.sendRequest(options);
+    if (data?.data?.user?.timeline_response?.timeline?.instructions) {
+      for (const _ins of data?.data?.user?.timeline_response?.timeline
+        ?.instructions) {
+        if (_ins?.__typename === 'TimelineAddEntries') return _ins?.entries;
+      }
+    }
+    return [];
+  }
+
+  async fetchFollowers(
+    username: string,
+    maxRecursive: number = 1,
+    callbackEach?: any,
+  ): Promise<TTwitterUserInfo[]> {
+    let userFollowings: TTwitterUserInfo[] = [];
+    let cursor;
+    let numQuery = 0;
+    while (true) {
+      const entries = await this.getFollowerAnchor(username, cursor);
+      numQuery += 1;
+      if (entries.length <= 2) break;
+      const _twts: TTwitterUserInfo[] = [];
+      for (const entry of entries) {
+        const result = entry?.content?.content?.userResult?.result;
+        if (result?.rest_id) {
+          _twts.push({
+            rest_id: result?.rest_id,
+            is_blue_verified: result?.is_blue_verified,
+            username: result?.legacy?.screen_name,
+            follower_count: Number(result?.legacy?.followers_count || 0),
+            following_count: Number(result?.legacy?.friends_count || 0),
+            name: result?.legacy?.name,
+            metadata: {
+              description: result?.legacy?.description,
+              image_url: result?.legacy?.profile_image_url_https.replace(
+                '_normal',
+                '',
+              ),
+              banner_url: result?.legacy?.profile_banner_url,
+              url: result?.legacy?.url,
+            },
+          });
+        }
+        if (
+          entry?.content?.__typename === 'TimelineTimelineCursor' &&
+          entry?.content?.cursorType === 'Bottom'
+        ) {
+          cursor = entry?.content?.value;
+        }
+      }
+      console.log(
+        '🚀 ~ RapidTwitterService ~ getListFollowing ~ cursor:',
+        cursor,
+      );
+      userFollowings = [...userFollowings, ..._twts];
+      callbackEach && (await callbackEach(_twts));
+      if (maxRecursive !== -1 && maxRecursive <= numQuery) break;
+    }
+    return userFollowings;
+  }
+
   async getListFollowing47(
     restId: string,
     isRecursive: boolean = false,
