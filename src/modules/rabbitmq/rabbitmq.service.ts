@@ -7,7 +7,7 @@ export class RabbitMQService {
     @Inject('RABBITMQ_MODULE') private readonly client: ClientProxy,
   ) { }
 
-  public send(pattern: string, data: any) {
+  public async send(pattern: string, data: any) {
     return this.client.send(pattern, data).toPromise();
   }
 

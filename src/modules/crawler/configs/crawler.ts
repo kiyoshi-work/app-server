@@ -31,4 +31,7 @@ export const configCrawler = registerAs('crawler', () => ({
       process.env.BIRDEYE_API_KEY || 'b5b7b6b6-4d5d-4b7d-9b5b-2b5b7b7b7b7b',
     base_url: process.env.BIRDEYE_BASE_URL || 'https://public-api.birdeye.so',
   },
+  rugcheck: {
+    base_url: process.env.RUGCHECK_BASE_URL || 'https://api.rugcheck.xyz',
+  },
 }));

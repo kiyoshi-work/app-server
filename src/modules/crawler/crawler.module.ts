@@ -6,6 +6,7 @@ import { LunarCrushService } from './services/lunar-crush.service';
 import { ScraperApiService } from './services/scraper-api.service';
 import { DexToolService } from './services/dextool.service';
 import { BirdEyeService, EChainName } from './services/birdeye.service';
+import { RugcheckService } from './services/rugcheck.service';
 
 @Module({
   imports: [
@@ -21,6 +22,7 @@ import { BirdEyeService, EChainName } from './services/birdeye.service';
     ScraperApiService,
     DexToolService,
     BirdEyeService,
+    RugcheckService,
   ],
   exports: [
     RapidTwitterService,
@@ -28,6 +30,7 @@ import { BirdEyeService, EChainName } from './services/birdeye.service';
     ScraperApiService,
     DexToolService,
     BirdEyeService,
+    RugcheckService,
   ],
 })
 export class CrawlerModule implements OnApplicationBootstrap {
@@ -37,6 +40,7 @@ export class CrawlerModule implements OnApplicationBootstrap {
     private readonly scraperApiService: ScraperApiService,
     private readonly dexToolService: DexToolService,
     private readonly birdEyeService: BirdEyeService,
+    private readonly rugcheckService: RugcheckService,
   ) {}
   async onApplicationBootstrap() {
     // const m = await this.rapidTwitterService.getTweet('1790189394848092578');
@@ -72,5 +76,9 @@ export class CrawlerModule implements OnApplicationBootstrap {
     //   EChainName.SOLANA,
     // );
     // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ q:', q);
+    const k = await this.rugcheckService.getRugCheckInfo(
+      'GTH3wG3NErjwcf7VGCoXEXkgXSHvYhx5gtATeeM5JAS1',
+    );
+    console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ k :', k);
   }
 }
