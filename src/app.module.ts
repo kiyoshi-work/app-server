@@ -13,10 +13,12 @@ import { SentryModule } from '@/modules/sentry/sentry.module';
 import * as Sentry from '@sentry/node';
 import { MilvusModule } from './modules/milvus-db/milvus.module';
 import { CrawlerModule } from './modules/crawler/crawler.module';
+import { GameModule } from './modules/game/game.module';
 
 const isApi = Boolean(Number(process.env.IS_API || 0));
 const isWS = Boolean(Number(process.env.IS_WS || 0));
 const isVM = Boolean(Number(process.env.IS_VM || 0));
+const isGameServer = Boolean(Number(process.env.IS_GAME_SERVER || 0));
 
 let _modules = [];
 if (isWS) {
@@ -34,6 +36,10 @@ if (isVM) {
     AiModule,
     // TelegramBotModule,
   ];
+}
+
+if (isGameServer) {
+  _modules = [..._modules, GameModule];
 }
 
 if (process.env.APP_ENV) {
