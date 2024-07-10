@@ -4,6 +4,7 @@ import {
   ERoomDefine,
   EMainRoomPhase,
   EMessageMainRoom,
+  ERussianPistolRoomStatus,
 } from '@/shared/constants/enums';
 import { Dispatcher } from '@colyseus/command';
 import {
@@ -22,6 +23,7 @@ import { lazyInject } from '@/shared/injection/container';
 import { UserRepository } from '@/database/repositories';
 import { REPOSITORIES } from '@/shared/injection/symbols';
 import { EActionType, TActionRoom, TMessage } from '@/shared/constants/types';
+import EndGameCommand from '../commands/end-game.command';
 
 @Injectable()
 export class MainRoom extends Room<MainRoomState> {
@@ -61,6 +63,35 @@ export class MainRoom extends Room<MainRoomState> {
     );
   }
 
+  startGame = async () => {
+    console.log('Start Game');
+    this.lock();
+    this.state.statusRoom = ERussianPistolRoomStatus.PLAYING;
+
+    //NOTE: Assign Flag & clear timeout
+    this.state.phase = EMainRoomPhase.StartGame;
+    if (this.delayStartGame) {
+      this.delayStartGame.clear();
+    }
+
+    // NOTE: Broadcast to client (OPTIONAL)
+    this.broadcastMessage<any>({
+      type: this.state.phase,
+      data: {},
+    });
+
+    // NOTE: Delay next step
+    this.delayStartTurn = this.clock.setTimeout(async () => {
+      //NOTE: Locked
+      if (this.state.phase === EMainRoomPhase.StartGame) {
+        await this.startTurn();
+      } else {
+        this.broadcastError(
+          GameError.Time(this.state.phase, EMainRoomPhase.StartTurn),
+        );
+      }
+    }, TIME_CONFIG.WAITING_FOR_DONE_START_GAME_ANIMATION);
+  };
   async startTurn() {
     console.log('Start Turn');
 
@@ -70,7 +101,7 @@ export class MainRoom extends Room<MainRoomState> {
       this.delayStartTurn.clear();
     }
 
-    //NOTE: Dispatch command
+    //NOTE: Dispatch command & broadcast to client
     await this.dispatcher.dispatch(new StartTurnCommand(), {
       callback: (response) => {
         this.broadcastMessage<any>({
@@ -93,39 +124,8 @@ export class MainRoom extends Room<MainRoomState> {
     }, TIME_CONFIG.WAITING_FOR_DONE_START_TURN_ANIMATION);
   }
 
-  startGame = async () => {
-    console.log('Start Game');
-
-    // @dev: Setup game
-    this.state.phase = EMainRoomPhase.StartGame;
-    this.broadcastMessage<any>({
-      type: this.state.phase,
-      data: {},
-    });
-
-    if (this.delayStartGame) {
-      this.delayStartGame.clear();
-    }
-
-    this.delayStartTurn = this.clock.setTimeout(async () => {
-      //NOTE: Locked
-      if (this.state.phase === EMainRoomPhase.StartGame) {
-        await this.startTurn();
-      } else {
-        this.broadcastError(
-          GameError.Time(this.state.phase, EMainRoomPhase.StartTurn),
-        );
-      }
-    }, TIME_CONFIG.WAITING_FOR_DONE_START_GAME_ANIMATION);
-  };
-
   private startAction = async () => {
-    // NOTE: Check dead
-    // if (this.state.checkIsAllDead()) {
-    //   await this.endGame();
-    //   return;
-    // }
-    //NOTE: Assign Flag
+    //NOTE: Assign Flag & clear timeout
     this.state.phase = EMainRoomPhase.StartAction;
     if (this.delayStartAction) {
       this.delayStartAction.clear();
@@ -151,11 +151,10 @@ export class MainRoom extends Room<MainRoomState> {
   private executeAction = async (action: TActionRoom) => {
     //NOTE: Assign Flag & clear timeout
     this.state.phase = EMainRoomPhase.ExecuteAction;
-
     if (this.delayExecuteAction) {
       this.delayExecuteAction.clear();
     }
-    //NOTE: Dispatch command
+    //NOTE: Dispatch command & broadcast to client
     await this.dispatcher.dispatch(new ExecuteActionCommand(), {
       data: action,
       callback: () => {
@@ -191,6 +190,38 @@ export class MainRoom extends Room<MainRoomState> {
         });
       },
     });
+    const checkEndGame = Math.floor(Math.random() * 5) === 0;
+    if (checkEndGame) {
+      await this.endGame();
+    } else {
+      this.delayStartTurn = this.clock.setTimeout(async () => {
+        //NOTE: Locked
+        if (this.state.phase === EMainRoomPhase.EndTurn) {
+          await this.startTurn();
+        } else {
+          this.broadcastError(
+            GameError.Time(this.state.phase, EMainRoomPhase.StartTurn),
+          );
+        }
+      }, TIME_CONFIG.WAITING_FOR_DONE_END_TURN_ANIMATION);
+    }
+  };
+
+  private endGame = async () => {
+    this.state.phase = EMainRoomPhase.EndGame;
+    await this.dispatcher.dispatch(new EndGameCommand(), {
+      callback: (matchResult: any) => {
+        //NOTE: Broadcast message
+        this.broadcastMessage({
+          type: EMainRoomPhase.EndGame,
+          data: {
+            matchResult: matchResult,
+          },
+        });
+      },
+    });
+    this.state.statusRoom = ERussianPistolRoomStatus.ENDGAME;
+    this.disconnect();
   };
 
   async onCreate(options: any) {
@@ -207,6 +238,7 @@ export class MainRoom extends Room<MainRoomState> {
         });
       },
     });
+    this.state.statusRoom = ERussianPistolRoomStatus.PLAYING;
     this.delayStartGame = this.clock.setTimeout(async () => {
       //NOTE: Locked
       if (this.state.queue.length > 1) {

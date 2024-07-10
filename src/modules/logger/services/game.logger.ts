@@ -1,5 +1,8 @@
 import { Injectable, Scope } from '@nestjs/common';
 import { MainRoomState } from '@/game/schemas/states/MainRoomState';
+import { BattleLogRepository } from '@/modules/database/repositories';
+import { REPOSITORIES } from '@/shared/injection/symbols';
+import { lazyInject } from '@/shared/injection/container';
 
 export enum ERussianPistolRoomLogType {
   CLIENT_TO_SERVER = 'CLIENT_TO_SERVER',
@@ -10,7 +13,8 @@ export enum ERussianPistolRoomLogType {
 }
 @Injectable({ scope: Scope.TRANSIENT })
 export class GameLogger {
-  private battleLogModel: any;
+  @lazyInject(REPOSITORIES.BattleLogRepository)
+  private battleLogRepository: BattleLogRepository;
   public constructor() {}
   public error(
     roomId: string,
@@ -20,27 +24,27 @@ export class GameLogger {
     phase?: string,
   ) {
     try {
-      let log = {
-        room_id: roomId,
-        type: type,
-        data: data,
-        state: {},
-        phase: phase,
-      };
-      if (typeof data === 'string') {
-        log = { ...log, data: { message: data } };
+      if (roomId) {
+        let log = {
+          room_id: roomId,
+          type: type,
+          data: data,
+          state: {},
+          phase: phase,
+        };
+        if (typeof data === 'string') {
+          log = { ...log, data: { message: data } };
+        }
+        if (state) {
+          log = { ...log, state: state, phase: state.phase };
+        }
+        this.battleLogRepository
+          .insert(log)
+          .then(() => {})
+          .catch((error: string) => {
+            console.log(`insert database log ${error}`);
+          });
       }
-      if (state) {
-        log = { ...log, state: state, phase: state.phase };
-      }
-      console.log('🚀 ~ GameLogger ~ log:', log);
-      //   this.battleLogModel
-      //     .query()
-      //     .insert(log)
-      //     .then(() => {})
-      //     .catch((error: string) => {
-      //       console.log(`insert database log ${error}`);
-      //     });
     } catch (error: any) {
       console.log(error);
     }
@@ -54,27 +58,27 @@ export class GameLogger {
     phase?: string,
   ) {
     try {
-      let log = {
-        room_id: roomId,
-        type: type,
-        data: data,
-        state: {},
-        phase: phase,
-      };
-      if (typeof data === 'string') {
-        log = { ...log, data: { message: data } };
+      if (roomId) {
+        let log = {
+          room_id: roomId,
+          type: type,
+          data: data,
+          state: {},
+          phase: phase,
+        };
+        if (typeof data === 'string') {
+          log = { ...log, data: { message: data } };
+        }
+        if (state) {
+          log = { ...log, state: state, phase: state.phase };
+        }
+        this.battleLogRepository
+          .insert(log)
+          .then(() => {})
+          .catch((error: string) => {
+            console.log(`insert database log ${error}`);
+          });
       }
-      if (state) {
-        log = { ...log, state: state, phase: state.phase };
-      }
-      console.log('🚀 ~ GameLogger ~ log:', log);
-      //   this.battleLogModel
-      //     .query()
-      //     .insert(log)
-      //     .then(() => {})
-      //     .catch((error: string) => {
-      //       console.log(`insert database log ${error}`);
-      //     });
     } catch (error) {
       console.log(error);
     }
