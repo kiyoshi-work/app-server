@@ -7,6 +7,7 @@ import {
   RmqContext,
 } from '@nestjs/microservices';
 import { PriceGateway } from '../gateways/price.gateway';
+import { sleep } from '@zilliz/milvus2-sdk-node';
 
 @Controller('/event')
 export class EventController {
@@ -32,6 +33,8 @@ export class EventController {
       data,
       context.getMessage(),
     );
+    await sleep(3000);
+    return data.test + 1;
     // NOTE: use when noAck: false
     // const channel = context.getChannelRef();
     // channel.ack(context.getMessage());

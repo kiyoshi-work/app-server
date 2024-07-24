@@ -1,6 +1,6 @@
 import getDecorators from 'inversify-inject-decorators';
 import { Container } from 'inversify';
-import { UserRepository } from '@/database/repositories';
+import { BattleLogRepository, UserRepository } from '@/database/repositories';
 import { DataSource } from 'typeorm';
 import { REPOSITORIES } from './symbols';
 
@@ -23,6 +23,9 @@ const container = new Container({
   container
     .bind(REPOSITORIES.UserRepository)
     .toDynamicValue(() => new UserRepository(appDataSource));
+  container
+    .bind(REPOSITORIES.BattleLogRepository)
+    .toDynamicValue(() => new BattleLogRepository(appDataSource));
 })();
 
 // container.bind<DataSource>(DataSource).toSelf();

@@ -6,6 +6,7 @@ import { AdminConfigEntity, UserEntity } from '@/database/entities';
 import {
   AdminConfigRepository,
   AdministratorRepository,
+  BattleLogRepository,
   ClientRepository,
   NotificationRepository,
   UserRepository,
@@ -18,6 +19,7 @@ import { UserNotificationEntity } from './entities/user-notification.entity';
 import { UserNotificationRepository } from './repositories/user-notification.repository';
 import { Administrator } from './entities/administrator.entity';
 import { Role } from './entities/role.entity';
+import { BattleLogEntity } from './entities/battle-log.entity';
 
 const repositories = [
   UserRepository,
@@ -26,6 +28,7 @@ const repositories = [
   UserNotificationRepository,
   AdminConfigRepository,
   AdministratorRepository,
+  BattleLogRepository,
 ];
 
 const entities = [
@@ -36,6 +39,7 @@ const entities = [
   AdminConfigEntity,
   Administrator,
   Role,
+  BattleLogEntity,
 ];
 
 @Module({
@@ -56,4 +60,4 @@ const entities = [
   providers: [...repositories, SeedDatabase],
   exports: [...repositories, SeedDatabase],
 })
-export class DatabaseModule { }
+export class DatabaseModule {}

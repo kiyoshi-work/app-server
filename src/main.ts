@@ -73,6 +73,7 @@ async function bootstrap() {
   }
 
   if (isGameServer) {
+    console.log('🚀 ~ bootstrap ~ isGameServer:', isGameServer);
     const gameServer = new GameService();
     gameServer.createServer(app.getHttpServer());
     gameServer.defineRooms();
