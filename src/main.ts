@@ -6,7 +6,7 @@ import morgan from 'morgan';
 import { GCPubSubServer } from 'nestjs-google-pubsub-microservice';
 import { RedisIoAdapter } from './modules/websocket/services/redis.adapter';
 import { GlobalExceptionFilter } from './modules/api/filters/GlobalExceptionFilter';
-import { RmqOptions, Transport } from '@nestjs/microservices';
+import { RedisOptions, RmqOptions, Transport } from '@nestjs/microservices';
 import { GameService } from '@/game/game.service';
 import { playground } from '@colyseus/playground';
 import { monitor } from '@colyseus/monitor';
@@ -23,10 +23,11 @@ const isVM = Boolean(Number(process.env.IS_VM || 0));
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
   if (isWS) {
+    // NOTE: redisadapter for socket
     // const redisIoAdapter = new RedisIoAdapter(app);
     // await redisIoAdapter.connectToRedis();
     // app.useWebSocketAdapter(redisIoAdapter);
-
+    // NOTE: Pickone for transport
     app.connectMicroservice<RmqOptions>({
       transport: Transport.RMQ,
       options: {
@@ -42,6 +43,15 @@ async function bootstrap() {
           heartbeatIntervalInSeconds: 60,
           reconnectTimeInSeconds: 5,
         },
+      },
+    });
+    app.connectMicroservice<RedisOptions>({
+      transport: Transport.REDIS,
+      options: {
+        host: process.env.REDIS_HOST,
+        port: Number(process.env.REDIS_PORT),
+        password: process.env.REDIS_PASSWORD,
+        db: Number(process.env.REDIS_DATABASE),
       },
     });
   }

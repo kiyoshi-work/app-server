@@ -2,7 +2,7 @@ import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { configRabbitMq } from './configs/rabbitmq.config';
-import { RabbitMQService } from './rabbitmq.service';
+import { RabbitMQService, RedisMQService } from './services';
 
 // https://github.com/jmaicaaan/tutorial-nestjs-rabbitmq
 @Module({
@@ -22,8 +22,20 @@ import { RabbitMQService } from './rabbitmq.service';
         },
       },
     ]),
+    ClientsModule.register([
+      {
+        name: 'REDISMQ_MODULE',
+        transport: Transport.REDIS,
+        options: {
+          host: process.env.REDIS_HOST,
+          port: Number(process.env.REDIS_PORT),
+          password: process.env.REDIS_PASSWORD,
+          db: Number(process.env.REDIS_DATABASE),
+        },
+      },
+    ]),
   ],
-  providers: [RabbitMQService],
-  exports: [RabbitMQService],
+  providers: [RabbitMQService, RedisMQService],
+  exports: [RabbitMQService, RedisMQService],
 })
-export class RabbitMQModule {}
+export class TransporterModule {}
