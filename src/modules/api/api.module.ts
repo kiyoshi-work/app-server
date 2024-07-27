@@ -30,8 +30,7 @@ import { CustomThrottlerGuard } from './guards/custom-throttler.guard';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { configTwitterAuth } from './configs/twitter-auth';
 import { ElasticSearchModule } from '@/elasticsearch/elasticsearch.module';
-import { sleep } from '@zilliz/milvus2-sdk-node';
-import { RabbitMQModule } from '../rabbitmq/rabbitmq.module';
+import { TransporterModule } from '@/transporter/transporter.module';
 
 const services = [AuthService, NotificationService];
 @Module({
@@ -45,6 +44,7 @@ const services = [AuthService, NotificationService];
     UploadFileModule,
     AiModule,
     ElasticSearchModule,
+    TransporterModule,
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot({
       ttl: 60,
@@ -82,7 +82,6 @@ const services = [AuthService, NotificationService];
         };
       },
     }),
-    RabbitMQModule,
   ],
   controllers: [
     AuthController,
@@ -106,7 +105,7 @@ export class ApiModule implements OnApplicationBootstrap {
 
     @Inject(QueueService)
     private queueService: QueueService,
-  ) { }
+  ) {}
 
   async onApplicationBootstrap() {
     // await this.queueService.testUserQueue(3000);

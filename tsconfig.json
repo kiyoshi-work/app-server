@@ -21,102 +21,38 @@
     "resolveJsonModule": true,
     "paths": {
       "@/modules/*": ["modules/*"],
-      "@/database": [
-        "modules/database/index"
-      ],
-      "@/database/*": [
-        "modules/database/*"
-      ],
-      "@/timescale-db": [
-        "modules/timescale-db/index"
-      ],
-      "@/timescale-db/*": [
-        "modules/timescale-db/*"
-      ],
-      "@/websocket": [
-        "modules/websocket/index"
-      ],
-      "@/websocket/*": [
-        "modules/websocket/*"
-      ],
-      "@/telegram-bot": [
-        "modules/telegram-bot/index"
-      ],
-      "@/telegram-bot/*": [
-        "modules/telegram-bot/*"
-      ],
-      "@/blockchain": [
-        "modules/blockchain/index"
-      ],
-      "@/blockchain/*": [
-        "modules/blockchain/*"
-      ],
-      "@/api": [
-        "modules/api/index"
-      ],
-      "@/api/*": [
-        "modules/api/*"
-      ],
-      "@/logger": [
-        "modules/logger/index"
-      ],
-      "@/logger/*": [
-        "modules/logger/*"
-      ],
-      "@/worker": [
-        "modules/worker/index"
-      ],
-      "@/worker/*": [
-        "modules/worker/*"
-      ],
-      "@/shared/*": [
-        "shared/*"
-      ],
-      "@/event/*": [
-        "modules/event/*"
-      ],
-      "@/publisher": [
-        "modules/publisher/index"
-      ],
-      "@/publisher/*": [
-        "modules/publisher/*"
-      ],
-      "@/listen-socket/*": [
-        "modules/listen-socket/*"
-      ],
-      "@/sync-contract/*": [
-        "modules/sync-contract/*"
-      ],
-      "@/onesignal": [
-        "modules/onesignal"
-      ],
-      "@/onesignal/*": [
-        "modules/onesignal/*"
-      ],
-      "@/ai/*": [
-        "modules/ai/*"
-      ],
-      "@/elasticsearch/*": [
-        "modules/elasticsearch/*"
-      ],
-      "@/sentry/*": [
-        "modules/sentry/*"
-      ],
-      "@/crawler/*": [
-        "modules/crawler/*"
-      ],
-      "@/milvus-db/*": [
-        "modules/milvus-db/*"
-      ],
-      "@/rabbitmq/*": [
-        "modules/rabbitmq/*"
-      ],
-      "@/game/*": [
-        "modules/game/*"
-      ]
+      "@/database": ["modules/database/index"],
+      "@/database/*": ["modules/database/*"],
+      "@/timescale-db": ["modules/timescale-db/index"],
+      "@/timescale-db/*": ["modules/timescale-db/*"],
+      "@/websocket": ["modules/websocket/index"],
+      "@/websocket/*": ["modules/websocket/*"],
+      "@/telegram-bot": ["modules/telegram-bot/index"],
+      "@/telegram-bot/*": ["modules/telegram-bot/*"],
+      "@/blockchain": ["modules/blockchain/index"],
+      "@/blockchain/*": ["modules/blockchain/*"],
+      "@/api": ["modules/api/index"],
+      "@/api/*": ["modules/api/*"],
+      "@/logger": ["modules/logger/index"],
+      "@/logger/*": ["modules/logger/*"],
+      "@/worker": ["modules/worker/index"],
+      "@/worker/*": ["modules/worker/*"],
+      "@/shared/*": ["shared/*"],
+      "@/event/*": ["modules/event/*"],
+      "@/publisher": ["modules/publisher/index"],
+      "@/publisher/*": ["modules/publisher/*"],
+      "@/listen-socket/*": ["modules/listen-socket/*"],
+      "@/sync-contract/*": ["modules/sync-contract/*"],
+      "@/onesignal": ["modules/onesignal"],
+      "@/onesignal/*": ["modules/onesignal/*"],
+      "@/ai/*": ["modules/ai/*"],
+      "@/elasticsearch/*": ["modules/elasticsearch/*"],
+      "@/sentry/*": ["modules/sentry/*"],
+      "@/crawler/*": ["modules/crawler/*"],
+      "@/milvus-db/*": ["modules/milvus-db/*"],
+      "@/transporter/*": ["modules/transporter/*"],
+      "@/game/*": ["modules/game/*"]
     }
   },
-  "include": [
-    "src"
-, "src/shared/common"  ]
+  "include": ["src", "src/shared/common"]
 }

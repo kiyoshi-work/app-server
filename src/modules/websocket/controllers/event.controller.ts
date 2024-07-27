@@ -4,6 +4,7 @@ import {
   EventPattern,
   MessagePattern,
   Payload,
+  RedisContext,
   RmqContext,
 } from '@nestjs/microservices';
 import { PriceGateway } from '../gateways/price.gateway';
@@ -28,11 +29,11 @@ export class EventController {
   // @MessagePattern('TEST_MQ_EVENT')
   @EventPattern('TEST_MQ_EVENT')
   async testRMQ(@Payload() data: any, @Ctx() context: RmqContext) {
-    console.log(
-      '🚀 ~ EventController ~ testRMQ ~ data:',
-      data,
-      context.getMessage(),
-    );
+    // console.log(
+    //   '🚀 ~ EventController ~ testRMQ ~ data:',
+    //   data,
+    //   context.getMessage(),
+    // );
     await sleep(3000);
     return data.test + 1;
     // NOTE: use when noAck: false

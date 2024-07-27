@@ -11,7 +11,7 @@ import {
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminGuard } from '../guards/admin.guard';
 import { Roles } from '@/shared/decorators/roles.decorator';
-import { RabbitMQService } from '@/modules/rabbitmq/rabbitmq.service';
+import { RabbitMQService, RedisMQService } from '@/transporter/services';
 
 @ApiTags('Health')
 @Controller('/health')
@@ -20,6 +20,7 @@ export class HealthController {
     @Inject('APP_FIRESTORE')
     private appFirestoreRepository: AppFirestoreRepository,
     private readonly rabbitMqService: RabbitMQService,
+    private readonly redisMQService: RedisMQService,
   ) {}
 
   @ApiBearerAuth()
@@ -53,9 +54,12 @@ export class HealthController {
     // const t = await this.rabbitMqService.send('TEST_MQ_EVENT', {
     //   test: 1,
     // });
-    const t = this.rabbitMqService.emit('TEST_MQ_EVENT', {
+    // return t;
+    // this.rabbitMqService.emit('TEST_MQ_EVENT', {
+    //   test: 1,
+    // });
+    return await this.redisMQService.send('TEST_MQ_EVENT', {
       test: 1,
     });
-    return t;
   }
 }
