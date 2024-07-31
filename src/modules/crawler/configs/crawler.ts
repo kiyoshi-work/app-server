@@ -9,6 +9,15 @@ export const configCrawler = registerAs('crawler', () => ({
       // process.env.RAPID_TWITTER_API_HOST || 'twitter-api47.p.rapidapi.com',
       process.env.RAPID_TWITTER_API_HOST || 'twttrapi.p.rapidapi.com',
   },
+  rapid_api_45: {
+    key:
+      process.env.RAPID_KEY_45 ||
+      'cded57fe77msh96eb35449fb230fp17a709jsna5eedee97cdb',
+    host:
+      // process.env.RAPID_TWITTER_API_HOST || 'twitter-api47.p.rapidapi.com',
+      process.env.RAPID_TWITTER_API_HOST_45 || 'twitter-api45.p.rapidapi.com',
+  },
+
   lunar_crush: {
     token: process.env.LUNAR_CRUSH_TOKEN || '9svht6kf2o8oldlvz6zwnn6p9xny',
     host: process.env.LUNAR_CRUSH_HOST || 'https://lunarcrush.com/api4/public',

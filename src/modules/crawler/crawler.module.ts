@@ -7,6 +7,7 @@ import { ScraperApiService } from './services/scraper-api.service';
 import { DexToolService } from './services/dextool.service';
 import { BirdEyeService, EChainName } from './services/birdeye.service';
 import { RugcheckService } from './services/rugcheck.service';
+import { RapidTwitter45Service } from './services/rapid-twitter45.service';
 
 @Module({
   imports: [
@@ -23,6 +24,7 @@ import { RugcheckService } from './services/rugcheck.service';
     DexToolService,
     BirdEyeService,
     RugcheckService,
+    RapidTwitter45Service,
   ],
   exports: [
     RapidTwitterService,
@@ -31,6 +33,7 @@ import { RugcheckService } from './services/rugcheck.service';
     DexToolService,
     BirdEyeService,
     RugcheckService,
+    RapidTwitter45Service,
   ],
 })
 export class CrawlerModule implements OnApplicationBootstrap {
@@ -41,6 +44,7 @@ export class CrawlerModule implements OnApplicationBootstrap {
     private readonly dexToolService: DexToolService,
     private readonly birdEyeService: BirdEyeService,
     private readonly rugcheckService: RugcheckService,
+    private readonly rapidTwitter45Service: RapidTwitter45Service,
   ) {}
   async onApplicationBootstrap() {
     // const m = await this.rapidTwitterService.getTweet('1790189394848092578');
@@ -76,9 +80,14 @@ export class CrawlerModule implements OnApplicationBootstrap {
     //   EChainName.SOLANA,
     // );
     // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ q:', q);
-    const k = await this.rugcheckService.getRugCheckInfo(
-      'GTH3wG3NErjwcf7VGCoXEXkgXSHvYhx5gtATeeM5JAS1',
+    // const k = await this.rugcheckService.getRugCheckInfo(
+    //   'GTH3wG3NErjwcf7VGCoXEXkgXSHvYhx5gtATeeM5JAS1',
+    // );
+    // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ k :', k);
+    const p = await this.rapidTwitter45Service.checkLike(
+      '_jorge_mendes',
+      '1816517789940883896',
     );
-    console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ k :', k);
+    console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ p :', p);
   }
 }
