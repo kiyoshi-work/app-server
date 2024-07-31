@@ -1,14 +1,10 @@
-import { Module, OnApplicationBootstrap, forwardRef } from '@nestjs/common';
+import { Module, OnApplicationBootstrap } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
-// import { AiService } from './services/ai.service';
-import { WebsocketModule } from '@/websocket';
-// import { EveVectorStoreService } from '@/ai/services/vector-store.service';
 import { DatabaseModule } from '@/database';
 import { configAI } from './configs/ai';
 import { AiService } from './services/ai.service';
 import { TestTool } from './tools/test.tool';
 import { SwapTokenTool } from './tools/swap-token-tool';
-import { EAIModel } from '@/shared/constants/enums';
 
 const tools = [TestTool, SwapTokenTool];
 @Module({
@@ -19,7 +15,7 @@ const tools = [TestTool, SwapTokenTool];
       expandVariables: true,
       load: [configAI],
     }),
-    forwardRef(() => WebsocketModule),
+    // forwardRef(() => WebsocketModule),
   ],
   controllers: [],
   // @ts-ignore
@@ -31,7 +27,7 @@ export class AiModule implements OnApplicationBootstrap {
     private aiService: AiService,
     private testTool: TestTool,
     private swapTokenTool: SwapTokenTool,
-  ) { }
+  ) {}
 
   async onApplicationBootstrap() {
     // NOTE: test clone

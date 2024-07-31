@@ -7,6 +7,8 @@ import { ScheduleModule } from '@nestjs/schedule';
 import { PriceService } from './services/price.service';
 import { DatabaseModule } from '@/database';
 import { EventController } from './controllers';
+import { ChatGateway } from './gateways/chat.gateway';
+import { AiModule } from '../ai/ai.module';
 
 const services = [PriceService];
 @Module({
@@ -14,6 +16,7 @@ const services = [PriceService];
     LoggerModule,
     TimescaleDBModule,
     DatabaseModule,
+    AiModule,
     ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
@@ -22,6 +25,6 @@ const services = [PriceService];
     }),
   ],
   controllers: [EventController],
-  providers: [PriceGateway, ...services],
+  providers: [PriceGateway, ChatGateway, ...services],
 })
-export class WebsocketModule { }
+export class WebsocketModule {}

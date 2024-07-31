@@ -26,6 +26,7 @@ import zlib from 'zlib';
 
 const SOCKET_PORT = Number(process.env.SOCKET_PORT) || 9000;
 @WebSocketGateway(SOCKET_PORT, {
+  namespace: 'price',
   cors: {
     origin: '*',
   },
