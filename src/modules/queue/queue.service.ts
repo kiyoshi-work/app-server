@@ -6,7 +6,7 @@ export class QueueService {
   constructor(
     @InjectQueue(QUEUE_NAME.USER)
     private userQueue: Queue,
-  ) { }
+  ) {}
 
   async testUserQueue(time: number) {
     await this.userQueue.add(
@@ -15,8 +15,10 @@ export class QueueService {
         time,
       },
       {
-        removeOnComplete: 20,
+        // removeOnComplete: 3,
+        timeout: 2000,
         removeOnFail: true,
+        attempts: 5,
       },
     );
   }
