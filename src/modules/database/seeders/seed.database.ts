@@ -6,7 +6,7 @@ export class SeedDatabase implements OnApplicationBootstrap {
   constructor(
     private readonly clientRepository: ClientRepository,
     private readonly adminConfigRepository: AdminConfigRepository,
-  ) { }
+  ) {}
 
   async onApplicationBootstrap() {
     await this.clientRepository.upsert(

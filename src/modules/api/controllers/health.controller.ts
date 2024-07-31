@@ -12,6 +12,7 @@ import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminGuard } from '../guards/admin.guard';
 import { Roles } from '@/shared/decorators/roles.decorator';
 import { RabbitMQService, RedisMQService } from '@/transporter/services';
+import { QueueService } from '@/modules/queue/queue.service';
 
 @ApiTags('Health')
 @Controller('/health')
@@ -20,6 +21,7 @@ export class HealthController {
     @Inject('APP_FIRESTORE')
     private appFirestoreRepository: AppFirestoreRepository,
     private readonly rabbitMqService: RabbitMQService,
+    private readonly queueService: QueueService,
     private readonly redisMQService: RedisMQService,
   ) {}
 
@@ -47,6 +49,11 @@ export class HealthController {
   @Get('throw')
   async throwError() {
     await this.funErr();
+  }
+
+  @Post('/test-bullqueue')
+  async testBull() {
+    await this.queueService.testUserQueue(2000);
   }
 
   @Post('/rmq')

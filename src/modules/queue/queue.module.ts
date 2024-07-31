@@ -27,14 +27,13 @@ import { QUEUE_NAME } from '@/shared/constants/queue';
       },
       inject: [ConfigService],
     }),
-    BullModule.registerQueue(
-      {
-        name: QUEUE_NAME.USER,
-      },
-      // {
-      //   name: QUEUE_NAME.USER_ACTION,
+    BullModule.registerQueue({
+      name: QUEUE_NAME.USER,
+      // limiter: {
+      //   max: 2,
+      //   duration: 10000,
       // },
-    ),
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
@@ -45,4 +44,4 @@ import { QUEUE_NAME } from '@/shared/constants/queue';
   providers: [QueueService],
   exports: [QueueService],
 })
-export class QueueModule { }
+export class QueueModule {}

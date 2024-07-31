@@ -12,7 +12,7 @@ export class UserConsumer {
   constructor(
     private readonly clientRepository: ClientRepository,
     @InjectEntityManager() private readonly entityManager: EntityManager,
-  ) { }
+  ) {}
 
   @Process(QUEUE_PROCESSOR.USER.TEST)
   async processUserTest(
@@ -20,6 +20,8 @@ export class UserConsumer {
       time: number;
     }>,
   ) {
+    console.log('object');
+    throw new Error('oo');
     await sleep(job.data.time);
     console.log(job.data);
   }
