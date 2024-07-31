@@ -51,7 +51,8 @@
       "@/crawler/*": ["modules/crawler/*"],
       "@/milvus-db/*": ["modules/milvus-db/*"],
       "@/transporter/*": ["modules/transporter/*"],
-      "@/game/*": ["modules/game/*"]
+      "@/game/*": ["modules/game/*"],
+      "@/redis-cache/*": ["modules/redis-cache/*"]
     }
   },
   "include": ["src", "src/shared/common"]
