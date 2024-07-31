@@ -84,10 +84,10 @@ export class CrawlerModule implements OnApplicationBootstrap {
     //   'GTH3wG3NErjwcf7VGCoXEXkgXSHvYhx5gtATeeM5JAS1',
     // );
     // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ k :', k);
-    const p = await this.rapidTwitter45Service.checkLike(
-      '_jorge_mendes',
-      '1816517789940883896',
-    );
-    console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ p :', p);
+    // const p = await this.rapidTwitter45Service.checkLike(
+    //   '_jorge_mendes',
+    //   '1816517789940883896',
+    // );
+    // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ p :', p);
   }
 }
