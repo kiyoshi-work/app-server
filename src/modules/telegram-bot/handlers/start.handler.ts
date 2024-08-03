@@ -4,11 +4,7 @@ import { TelegramBot } from '@/telegram-bot/telegram-bot';
 import { Handler } from './handler';
 import { I18nService } from 'nestjs-i18n';
 import { EUserAction } from '../constants';
-import {
-  MainPage,
-  TermsConfirmation,
-  VerifySignatureCodePage,
-} from '../ui/pages';
+import { MainPage, TermsConfirmation, WelcomePage } from '../ui/pages';
 
 @Injectable()
 export class StartHandler implements Handler {
@@ -56,7 +52,7 @@ export class StartHandler implements Handler {
       }
       await this.bot.sendPagePhoto(
         data.chatId,
-        new VerifySignatureCodePage(this.i18n, state.language_code).build({
+        new WelcomePage(this.i18n, state.language_code).build({
           firstName: data.firstName,
         }),
       );

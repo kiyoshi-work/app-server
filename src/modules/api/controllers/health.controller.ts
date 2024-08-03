@@ -14,6 +14,7 @@ import { Roles } from '@/shared/decorators/roles.decorator';
 import { RabbitMQService, RedisMQService } from '@/transporter/services';
 import { QueueService } from '@/modules/queue/queue.service';
 import { TelegramBot } from '@/modules/telegram-bot/telegram-bot';
+import { MainPage, WelcomePage } from '@/modules/telegram-bot/ui/pages';
 
 @ApiTags('Health')
 @Controller('/health')
@@ -24,7 +25,7 @@ export class HealthController {
     private readonly rabbitMqService: RabbitMQService,
     private readonly queueService: QueueService,
     private readonly redisMQService: RedisMQService,
-    // private readonly bot: TelegramBot,
+    private readonly bot: TelegramBot,
   ) {}
 
   @ApiBearerAuth()
@@ -46,6 +47,14 @@ export class HealthController {
   @Get('')
   async healthCheck() {
     return 1;
+  }
+
+  @Get('telegram-bot')
+  async botTest() {
+    return await this.bot.sendPagePhoto(
+      5665860415,
+      new WelcomePage().build({}),
+    );
   }
 
   @Get('throw')

@@ -31,6 +31,7 @@ import { ThrottlerModule } from '@nestjs/throttler';
 import { configTwitterAuth } from './configs/twitter-auth';
 import { ElasticSearchModule } from '@/elasticsearch/elasticsearch.module';
 import { TransporterModule } from '@/transporter/transporter.module';
+import { TelegramBotModule } from '../telegram-bot';
 
 const services = [AuthService, NotificationService];
 @Module({
@@ -45,6 +46,7 @@ const services = [AuthService, NotificationService];
     AiModule,
     ElasticSearchModule,
     TransporterModule,
+    TelegramBotModule,
     ScheduleModule.forRoot(),
     ThrottlerModule.forRoot({
       ttl: 60,

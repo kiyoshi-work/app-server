@@ -8,11 +8,12 @@ import { createMenuButton } from '../../utils/ui';
 
 export class MainPage implements Page {
   constructor(
-    private readonly i18n: I18nService,
+    private readonly i18n?: I18nService,
     private lang: string = 'en',
   ) {}
 
   build(): PageResponse {
+    console.log(this.i18n, 'lll');
     const text = this.i18n.t('start.main.welcome', {
       lang: this.lang,
     });
