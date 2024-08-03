@@ -4,15 +4,21 @@ import TelegramBotApi, {
 } from 'node-telegram-bot-api';
 import { ConfigService } from '@nestjs/config';
 import { Inject, Injectable } from '@nestjs/common';
-import { COMMAND_KEYS } from '@/telegram-bot/constants';
+import { COMMAND_KEYS, EUserAction } from '@/telegram-bot/constants';
 import Redis from 'ioredis';
-import { parserMessageTelegram } from './utils';
+import {
+  parseCommand,
+  parserCallbackMessageTelegram,
+  parserMessageTelegram,
+} from './utils';
 import { Handler } from '@/telegram-bot/handlers';
+import { Menu, PageResponse, PhotoResponse } from './types';
 
 export type TelegramBotState = {
   language_code?: string;
   updated_at?: number;
   chain_id?: number;
+  user_action?: EUserAction;
 };
 export const MAX_TIME_STATE_OUT_DATE = 60 * 1000; //1 minute
 
@@ -31,8 +37,77 @@ export class TelegramBot {
 
   constructor(private readonly configService: ConfigService) {
     const token = this.configService.get<string>('telegram.token');
-    this.bot = new TelegramBotApi(token, { polling: true });
+    const isBot = Boolean(Number(process.env.IS_BOT || 0));
+    if (isBot) {
+      //if use node v20 -->  {"code":"EFATAL","message":"EFATAL: AggregateError"}
+      this.bot = new TelegramBotApi(token, {
+        polling: true,
+        // NOTE: prevent  {"code":"EFATAL","message":"EFATAL: AggregateError"}
+        request: {
+          url: '',
+          agentOptions: {
+            keepAlive: true,
+            family: 4,
+          },
+        },
+      });
+    } else {
+      this.bot = new TelegramBotApi(token, { polling: false });
+    }
+    this.bot.on('polling_error', (msg) => console.log(msg));
     this.state = {};
+  }
+
+  async sendPageMessage(chatId: ChatId, data: PageResponse) {
+    return this.bot.sendMessage(chatId, data.text, data.menu);
+  }
+
+  async sendPagePhoto(chatId: ChatId, data: PhotoResponse) {
+    return this.bot.sendPhoto(chatId, data.photo, data.menu);
+  }
+
+  async editMessageReplyMarkup(
+    newButton: {
+      inline_keyboard: Menu[][];
+    },
+    chat_id: ChatId,
+    message_id: number,
+  ) {
+    try {
+      await this.bot.editMessageReplyMarkup(newButton, {
+        chat_id,
+        message_id,
+      });
+    } catch (error) {
+      console.log('🚀 ~ file: telegram-bot.ts:103 ~ error:', error);
+    }
+  }
+  async setUserAction(chatId: string, userAction: EUserAction) {
+    const currState = (await this.botStateStore.hgetall(
+      'telegram_bot_state:chat:' + chatId,
+    )) as any;
+    this.state[chatId] = {
+      ...currState,
+      user_action: userAction,
+    };
+    await this.botStateStore.hset(
+      'telegram_bot_state:chat:' + chatId,
+      this.state[chatId],
+    );
+  }
+
+  async deleteMessage(chatId: ChatId, messageId: number, seconds = 0) {
+    const timeout = setTimeout(async () => {
+      try {
+        await this.bot.deleteMessage(chatId, messageId);
+      } catch (error) {
+        console.log(
+          '🚀 ~ file: telegram-bot.ts:93 ~ TelegramBot ~ timeout ~ error:',
+          error,
+        );
+      }
+      clearTimeout(timeout);
+    }, seconds * 1000);
   }
 
   async sendMessage(
@@ -56,6 +131,20 @@ export class TelegramBot {
   userReply(callback: any) {
     this.bot.on('message', (msg) => {
       callback(parserMessageTelegram(msg));
+    });
+  }
+
+  setupMenuCallback(callback: any) {
+    this.bot.on('callback_query', (query) => {
+      const { data: action } = query;
+      const data = parserCallbackMessageTelegram(query);
+      const chatId = data.chatId.toString();
+      if (this.state[chatId]?.language_code != query.from?.language_code) {
+        this.setState(data.chatId.toString(), {
+          language_code: query.from.language_code,
+        }).then();
+      }
+      callback(action, data);
     });
   }
 
@@ -103,6 +192,35 @@ export class TelegramBot {
     if (startHandler) {
       this.setupStartCommand(startHandler.handler);
     }
-    // this.userReply(this.handlers[COMMAND_KEYS.USER_INPUT].handler);
+    const userInputHandler = this.handlers[COMMAND_KEYS.USER_INPUT];
+    if (userInputHandler) {
+      this.userReply(this.handlers[COMMAND_KEYS.USER_INPUT].handler);
+    }
+
+    this.setupMenuCallback((cmd, data) => {
+      console.log('🚀 ~ REQUEST COMMAND:', { cmd });
+      const { cmd: _cmd, params } = parseCommand(cmd);
+      console.log(
+        '🚀 ~ file: telegram-bot.ts:257 ~ TelegramBot ~ this.setupMenuCallback ~ params:',
+        params,
+      );
+      const handler = this.handlers[_cmd];
+      if (handler) {
+        if (params && (handler as any)?.setConfig) {
+          (handler as any).setConfig(params);
+        }
+        handler
+          .handler(data)
+          .then()
+          .catch((e) => {
+            console.error(e, {
+              file: 'TelegramBot.start',
+              text: `handler command ${_cmd} error: `,
+            });
+          });
+      } else {
+        console.log('unknown callback:', { _cmd });
+      }
+    });
   }
 }

@@ -5,12 +5,27 @@ import { configTelegram } from '@/telegram-bot/configs/telegram';
 import { DatabaseModule } from '@/database';
 import Redis from 'ioredis';
 import { HandlerService } from '@/telegram-bot/services/handler.service';
-import { ComingSoonHandler, StartHandler } from '@/telegram-bot/handlers';
+import {
+  ComingSoonHandler,
+  StartHandler,
+  UserAgreeToTermsHandlers,
+  UserDisagreeToTermsHandlers,
+  VerifySignatureCodeButtonHandler,
+} from '@/telegram-bot/handlers';
 import { BlockchainModule } from '@/blockchain';
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import * as path from 'path';
+import { UserInputHandler } from './handlers/user-input.handler';
 
-const handlers = [HandlerService, StartHandler, ComingSoonHandler];
+const handlers = [
+  HandlerService,
+  StartHandler,
+  ComingSoonHandler,
+  UserInputHandler,
+  VerifySignatureCodeButtonHandler,
+  UserAgreeToTermsHandlers,
+  UserDisagreeToTermsHandlers,
+];
 
 @Module({
   imports: [
@@ -62,7 +77,7 @@ export class TelegramBotModule implements OnApplicationBootstrap {
   constructor(
     private telegramBot: TelegramBot,
     private handlerService: HandlerService,
-  ) { }
+  ) {}
 
   async onApplicationBootstrap() {
     const handlers = this.handlerService.getHandlers();

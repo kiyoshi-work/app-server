@@ -34,7 +34,7 @@ if (isVM) {
     SyncContractModule,
     WorkerModule,
     AiModule,
-    // TelegramBotModule,
+    TelegramBotModule,
   ];
 }
 

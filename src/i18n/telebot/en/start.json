@@ -1,3 +1,26 @@
 {
-  "xinchao": "hello"
+  "xinchao": "hello",
+  "verified": "<b>You are verified ✅</b>\n\n<i>Please read our Term of Service to continue.</i>",
+  "user_input": {
+    "invalid": "<b>Invalid code ⚠️</b>\n\n<i>Please try again with a correct code.</i>",
+    "wallet_import_success": "Wallet imported successfully ✅"
+  },
+  "verify": {
+    "verify_signature": "🟢 Verify Invitation Code",
+    "welcome_message": "Welcome {firstName} 👋 \n\nMeet Bot 🤖, your Assistant!\n\n💥 Ready to try it out? Enter an <b>INVITATION CODE</b> from existing user to get started with the free trial version.",
+    "verify_signature_code_button": "Enter an Invitation Code!\n\nℹ️ Hint: An Invitation Code will give you a 10% discount. Check out our <a href='https://example.com/'>docs.</a>",
+    "user_disagree_to_terms": "Fair enough, come back if you reconsider.",
+    "terms_confirmation": "*You are verified ✅*\n\nPlease read our Term of Service to continue.\n\n📜 By using My's services, *you agree to the following terms:*\n\n1️⃣ *Eligibility:* You must be at least 18 years old and comply with applicable laws.\n2️⃣ *Account Security:* Create and protect your own wallets and funds.\n3️⃣ *Prohibited Activities:* ⚠️ Hacking or fraud are not allowed.\n4️⃣ *Service Disclaimer:* We is provided 'as is' and disclaims any warranties.\n5️⃣ *Limitation of Liability:* Bot is not liable for any loss of funds.\n6️⃣ *Modifications and Termination:* The agreement may be modified, and access may be terminated for violations.\n7️⃣ *Governing Law:* The agreement is governed by the laws of your jurisdiction.\n\nPlease note that Bot is *currently* in a *free trial* version, but *fees* for its services may be introduced *in the future*. ⚠️\n\n👉 *By using Bot, you accept these terms.* 👈"  
+  },
+  "button": {
+    "accept": "Accept",
+    "decline": "Decline",
+    "zkSync": "zkSync",
+    "layer_zero": "Layer Zero",
+    "scroll": "Scroll",
+    "linear": "Linear"
+  },
+  "main": {
+    "welcome": "Welcome 👋\nChoose a <b>network</b> to start"
+  }
 }

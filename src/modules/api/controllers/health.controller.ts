@@ -13,6 +13,7 @@ import { AdminGuard } from '../guards/admin.guard';
 import { Roles } from '@/shared/decorators/roles.decorator';
 import { RabbitMQService, RedisMQService } from '@/transporter/services';
 import { QueueService } from '@/modules/queue/queue.service';
+import { TelegramBot } from '@/modules/telegram-bot/telegram-bot';
 
 @ApiTags('Health')
 @Controller('/health')
@@ -23,6 +24,7 @@ export class HealthController {
     private readonly rabbitMqService: RabbitMQService,
     private readonly queueService: QueueService,
     private readonly redisMQService: RedisMQService,
+    // private readonly bot: TelegramBot,
   ) {}
 
   @ApiBearerAuth()
