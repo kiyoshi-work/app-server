@@ -6,6 +6,8 @@ import { USDCContract } from './smart-contracts';
 import { LoggerModule } from '@/logger';
 import { DatabaseModule } from '@/database';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import OrderbookContract from './orderbook/orderbook.contract';
+import { Connection } from '@solana/web3.js';
 
 @Module({
   imports: [
@@ -46,6 +48,23 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     },
     {
+      provide: 'SOLANA_CONNECTION',
+      useFactory: async (config: ConfigService) => {
+        const blockchainOptions: BlockchainOptions = config.get('blockchain');
+        const chainId = blockchainOptions.mainnet ? 101 : 101;
+        const chain = CHAINS[chainId];
+        try {
+          return new Connection(chain.url);
+        } catch (e) {
+          console.log('SOLANA_CONNECTION');
+          console.error(e);
+          throw e;
+        }
+      },
+      inject: [ConfigService],
+    },
+
+    {
       provide: 'NETWORK_CHAIN_ID',
       useFactory: (config: ConfigService) => {
         const blockchainOptions: BlockchainOptions = config.get('blockchain');
@@ -58,12 +77,15 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
       inject: [ConfigService],
     },
     USDCContract,
+    OrderbookContract,
   ],
   exports: [
     'ETHEREUM_CONNECTION',
     'BLAST_CONNECTION',
+    'SOLANA_CONNECTION',
     'NETWORK_CHAIN_ID',
     USDCContract,
+    OrderbookContract,
   ],
 })
 export class BlockchainModule implements OnApplicationBootstrap {
@@ -71,7 +93,11 @@ export class BlockchainModule implements OnApplicationBootstrap {
     @Inject('BLAST_CONNECTION')
     public provider: ethers.providers.JsonRpcProvider,
     public USDCContract: USDCContract,
-  ) { }
+    private orderbookContract: OrderbookContract,
+  ) {}
 
-  async onApplicationBootstrap() { }
+  async onApplicationBootstrap() {
+    const t = await this.orderbookContract.getConfigAccount();
+    console.log(t, 'orderbookContract.getConfigAccount');
+  }
 }

@@ -1,11 +1,16 @@
 import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
-import { AdminConfigRepository, ClientRepository } from '../repositories';
+import {
+  AdminConfigRepository,
+  ClientRepository,
+  SmcEventRepository,
+} from '../repositories';
 
 @Injectable()
 export class SeedDatabase implements OnApplicationBootstrap {
   constructor(
     private readonly clientRepository: ClientRepository,
     private readonly adminConfigRepository: AdminConfigRepository,
+    private readonly smcEventRepository: SmcEventRepository,
   ) {}
 
   async onApplicationBootstrap() {
@@ -28,6 +33,40 @@ export class SeedDatabase implements OnApplicationBootstrap {
       await this.adminConfigRepository.upsert(runSyncUserConfig, {
         conflictPaths: ['id'],
       });
+    }
+    if (
+      !(await this.smcEventRepository.exists({
+        where: {
+          contract: 'event',
+        },
+      }))
+    ) {
+      await this.smcEventRepository.save([
+        {
+          chain_id: process.env.APP_ENV == 'production' ? 81457 : 168587773,
+          contract: 'event',
+          block_number: process.env.APP_ENV == 'production' ? 4775252 : 8606258,
+        },
+      ]);
+    }
+
+    if (
+      !(await this.smcEventRepository.exists({
+        where: {
+          contract: 'orderbook',
+        },
+      }))
+    ) {
+      await this.smcEventRepository.save([
+        {
+          chain_id: process.env.APP_ENV == 'production' ? 101 : 101,
+          contract: 'orderbook',
+          signature:
+            process.env.APP_ENV == 'production'
+              ? '5mYNKg1o14YTbaw9r2cXja4K6Zb7f4zoMqSbrc56PmxTkAQfnjouLd3MiZYgLgP6uvyvSSzAoqn48zL474g57Shi'
+              : '5mYNKg1o14YTbaw9r2cXja4K6Zb7f4zoMqSbrc56PmxTkAQfnjouLd3MiZYgLgP6uvyvSSzAoqn48zL474g57Shi',
+        },
+      ]);
     }
   }
 }

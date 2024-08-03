@@ -20,4 +20,14 @@ export const CHAINS = {
     url: 'https://sepolia.blast.io',
     explorerUrl: 'https://testnet.blastscan.io',
   },
+  101: {
+    chainId: 101,
+    isMainnet: false,
+    name: 'Solana Devnet',
+    url: process.env.SOLANA_RPC_ENDPOINT || 'https://api.devnet.solana.com',
+    explorerUrl: 'https://testnet.blastscan.io',
+  },
 };
+
+export const SOLANA_RPC_ENDPOINT =
+  process.env.SOLANA_RPC_ENDPOINT || 'https://api.devnet.solana.com';

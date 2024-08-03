@@ -1,6 +1,6 @@
 import { BigNumber, ethers } from 'ethers';
 import Decimal from 'decimal.js';
-import { PAGINATION_TAKEN } from '../pagination/constants';
+import BN from 'bn.js';
 
 export function chunk<T>(array: T[], chunkSize: number): T[][] {
   const chunked = [];
@@ -24,8 +24,13 @@ export const genEventIdFromOutcomeId = (outcomeId: string): string => {
 };
 
 export const formatWei6 = (amount: string) => {
-  return ethers.utils.parseUnits(amount, WEI6).toString()
-}
+  return ethers.utils.parseUnits(amount, WEI6).toString();
+};
+
+export const parseWei6 = (amount: string | number | BN): number => {
+  const amountInWei = new Decimal(Number(amount).toFixed(6)).div(10 ** 6);
+  return amountInWei.toNumber();
+};
 
 export const WEI6 = 6;
 

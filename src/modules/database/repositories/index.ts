@@ -4,3 +4,6 @@ export * from './notification.repository';
 export * from './admin-config.repository';
 export * from './administrator.repository';
 export * from './battle-logs.repository';
+export * from './evm-smc-transaction.repository';
+export * from './sol-smc-transaction.repository';
+export * from './smc-event.repository';

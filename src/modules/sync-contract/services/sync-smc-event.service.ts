@@ -1,11 +1,15 @@
 import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { Contract, ethers } from 'ethers';
 import { Cron, CronExpression } from '@nestjs/schedule';
-import CreditAbi from '@/blockchain/abi/Credit.json';
+import EventAbi from '@/blockchain/abi/Events.json';
 import { WEI6, toNumber } from '@/shared/utils/helper';
 import { CONTRACTS_ADDRESS } from '@/blockchain/configs';
+import {
+  EVMSmcTransactionRepository,
+  SmcEventRepository,
+} from '@/modules/database/repositories';
 @Injectable()
-export class SyncCreditSMCService implements OnApplicationBootstrap {
+export class SyncEventSMCService implements OnApplicationBootstrap {
   private fromBlock: number;
   public chainId: number;
   public isRunning: boolean;
@@ -15,24 +19,28 @@ export class SyncCreditSMCService implements OnApplicationBootstrap {
   @Inject('BLAST_CONNECTION')
   private blastProvider: ethers.providers.JsonRpcProvider;
 
+  constructor(
+    private smcEventRepository: SmcEventRepository,
+    private eVMSmcTransactionRepository: EVMSmcTransactionRepository,
+  ) {}
+
   private initialize = async () => {
     this.isRunning = false;
     this.runAt = Date.now();
-    this.contractName = 'credit';
+    this.contractName = 'event';
     const network = await this.blastProvider.getNetwork();
     this.chainId = network.chainId;
     // GET LAST block_number
-    // const { block_number } = await this.smcEventRepository.findOneBy({
-    //   chain_id: this.chainId,
-    //   contract: this.contractName,
-    // });
-    const block_number = 600000;
+    const { block_number } = await this.smcEventRepository.findOneBy({
+      chain_id: this.chainId,
+      contract: this.contractName,
+    });
     this.fromBlock = Number(block_number || 600000);
 
-    const contractAddresses = CONTRACTS_ADDRESS[network.chainId].Credit;
+    const contractAddresses = CONTRACTS_ADDRESS[network.chainId].Event;
     this.creditContract = new Contract(
       contractAddresses,
-      CreditAbi.abi,
+      EventAbi.abi,
       this.blastProvider,
     );
   };
@@ -40,7 +48,6 @@ export class SyncCreditSMCService implements OnApplicationBootstrap {
   async onApplicationBootstrap() {
     await this.initialize();
   }
-  constructor() { }
 
   @Cron(CronExpression.EVERY_MINUTE)
   async updateFromBlock() {
@@ -55,7 +62,7 @@ export class SyncCreditSMCService implements OnApplicationBootstrap {
       // );
     } catch (error) {
       console.log(
-        '🚀 ~ file: sync-smc-credit.service.ts:69 ~ SyncCreditSMCService ~ updateFromBlock ~ error:',
+        '🚀 ~ file: sync-smc-event.service.ts:69 ~ SyncEventSMCService ~ updateFromBlock ~ error:',
         error,
       );
     }
@@ -66,10 +73,17 @@ export class SyncCreditSMCService implements OnApplicationBootstrap {
     this.runAt = Date.now();
   }
 
-  private _unlockListening(latestBlock?: number) {
+  private async _unlockListening(latestBlock?: number) {
     this.fromBlock = latestBlock || this.fromBlock;
     this.isRunning = false;
     this.runAt = 0;
+    await this.smcEventRepository.update(
+      {
+        chain_id: this.chainId,
+        contract: this.contractName,
+      },
+      { block_number: this.fromBlock },
+    );
   }
 
   private _checkListening(): boolean {
@@ -88,53 +102,42 @@ export class SyncCreditSMCService implements OnApplicationBootstrap {
           await this.blastProvider.getBlockNumber(),
           this.fromBlock + 1000,
         );
-        const eventTopupFilter = this.creditContract.filters.Topup();
-        const eventWithdrawFilter = this.creditContract.filters.Withdraw();
-        const topUpLogs = await this.creditContract.queryFilter(
-          eventTopupFilter,
+        const eventCreateFilter = this.creditContract.filters.EventCreated();
+        const eventCreateLogs = await this.creditContract.queryFilter(
+          eventCreateFilter,
           this.fromBlock,
           Number(latestBlock),
         );
-        const withdrawLogs = await this.creditContract.queryFilter(
-          eventWithdrawFilter,
-          this.fromBlock,
-          Number(latestBlock),
-        );
-        const _saveData = [...topUpLogs, ...withdrawLogs].map((_log) => {
+        const _saveData = [...eventCreateLogs].map((_log) => {
           // const time = (await _log.getBlock())?.timestamp;
           return {
             txhash: _log?.transactionHash,
             block_number: Number(_log?.blockNumber),
             log_index: _log?.logIndex,
-            // chain_id: this.chainId,
             contract_name: this.contractName,
             event_name: _log?.event,
             // time: new Date(time * 1000),
             values: {
-              from: _log?.args?.from,
-              to: _log?.args?.to,
-              amount: toNumber(
-                ethers.utils.formatUnits(_log?.args?.amount, WEI6),
-              ),
+              id: _log?.args?.id.toString(),
             },
           };
         });
         console.log(
           'SYNC CREDIT from block: ' +
-          this.fromBlock +
-          ' ---> ' +
-          latestBlock +
-          ':' +
-          _saveData.length,
+            this.fromBlock +
+            ' ---> ' +
+            latestBlock +
+            ':' +
+            _saveData.length,
         );
 
         // Persist data
-        // await this.smcTransactionRepository.upsert(_saveData, [
-        //   'txhash',
-        //   'log_index',
-        // ]);
+        await this.eVMSmcTransactionRepository.upsert(_saveData as any[], [
+          'txhash',
+          'log_index',
+        ]);
 
-        this._unlockListening(latestBlock);
+        await this._unlockListening(latestBlock);
       }
     } catch (e) {
       console.log(

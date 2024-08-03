@@ -8,7 +8,10 @@ import {
   AdministratorRepository,
   BattleLogRepository,
   ClientRepository,
+  EVMSmcTransactionRepository,
   NotificationRepository,
+  SmcEventRepository,
+  SolSmcTransactionRepository,
   UserRepository,
 } from './repositories';
 import { LoggerModule } from '@/logger';
@@ -20,6 +23,9 @@ import { UserNotificationRepository } from './repositories/user-notification.rep
 import { Administrator } from './entities/administrator.entity';
 import { Role } from './entities/role.entity';
 import { BattleLogEntity } from './entities/battle-log.entity';
+import { EVMSmcTransactionEntity } from './entities/evm-smc-transaction.entity';
+import { SolSmcTransactionEntity } from './entities/solana-smc-transaction.entity';
+import { SmcEventEntity } from './entities/smc-event.entity';
 
 const repositories = [
   UserRepository,
@@ -29,6 +35,9 @@ const repositories = [
   AdminConfigRepository,
   AdministratorRepository,
   BattleLogRepository,
+  EVMSmcTransactionRepository,
+  SolSmcTransactionRepository,
+  SmcEventRepository,
 ];
 
 const entities = [
@@ -40,6 +49,9 @@ const entities = [
   Administrator,
   Role,
   BattleLogEntity,
+  EVMSmcTransactionEntity,
+  SolSmcTransactionEntity,
+  SmcEventEntity,
 ];
 
 @Module({

@@ -1,31 +1,21 @@
 import { Module } from '@nestjs/common';
 import { DatabaseModule } from '@/database';
 import { BlockchainModule } from '@/blockchain';
-import { SyncCreditSMCService } from './services/sync-smc-credit.service';
+import { SyncEventSMCService } from './services/sync-smc-event.service';
 import { ScheduleModule } from '@nestjs/schedule';
+import { SyncSMCSolanaService } from './services/sync-smc-solana.service';
 
-const runSchedule = Boolean(Number(process.env.IS_SCHEDULER || 0));
+const runSchedule = Boolean(Number(process.env.RUN_SYNC_CONTRACT || 0));
 
 let schedulers = [];
 if (runSchedule) {
-  schedulers = [
-    SyncCreditSMCService,
-  ];
+  schedulers = [SyncEventSMCService, SyncSMCSolanaService];
 }
 
-
 @Module({
-  imports: [
-    DatabaseModule,
-    BlockchainModule,
-    ScheduleModule.forRoot(),
-  ],
+  imports: [DatabaseModule, BlockchainModule, ScheduleModule.forRoot()],
   controllers: [],
-  providers: [
-    ...schedulers,
-  ],
-  exports: [
-    ...schedulers,
-  ],
+  providers: [...schedulers],
+  exports: [...schedulers],
 })
-export class SyncContractModule { }
+export class SyncContractModule {}
