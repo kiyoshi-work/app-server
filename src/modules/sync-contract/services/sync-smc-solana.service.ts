@@ -43,7 +43,7 @@ export class SyncSMCSolanaService {
   private async _unlockSyncing(latestSignature: string) {
     this.isRunning = false;
     // NOTE: if not pass will re-run old fromSignature
-    if (latestSignature) {
+    if (latestSignature && latestSignature !== this.fromSignature) {
       this.fromSignature = latestSignature;
       await this.smcEventRepository.update(
         {
@@ -68,26 +68,30 @@ export class SyncSMCSolanaService {
         await this.orderbookContract.getTransactions(this.fromSignature);
       latestSignature = _latestSignature;
 
-      const rs = [];
-      for (const signature of signatures) {
-        const transactions =
-          await this.orderbookContract.parseTransactions(signature);
+      if (latestSignature !== this.fromSignature) {
+        const rs = [];
+        for (const signature of signatures) {
+          const transactions =
+            await this.orderbookContract.parseTransactions(signature);
 
-        const transaction_push = [];
-        for (const transaction of transactions) {
-          if (!transaction?.meta?.err) transaction_push.push(transaction);
+          const transaction_push = [];
+          for (const transaction of transactions) {
+            if (!transaction?.meta?.err) transaction_push.push(transaction);
+          }
+          rs.push(transaction_push);
         }
-        rs.push(transaction_push);
-      }
 
-      const events = this.orderbookContract
-        .parseEvents(_.flatten(rs))
-        .reverse();
-
-      if (events.length) {
-        this.saveEvents(events).catch((error) => {
-          console.error('[saveEvents]', error);
-        });
+        const events = this.orderbookContract
+          .parseEvents(_.flatten(rs))
+          .reverse();
+        console.log(
+          `🚀 ~ SyncSMCService ~ getTxnLogs : FROM ${this.fromSignature} ---> ${latestSignature} : ${events.length} transactions`,
+        );
+        if (events.length) {
+          this.saveEvents(events).catch((error) => {
+            console.error('[saveEvents]', error);
+          });
+        }
       }
     } catch (error) {
       console.log('🚀 ~ SyncSMCService ~ getTxnLogs ~ error:', error);

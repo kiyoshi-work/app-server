@@ -50,7 +50,7 @@ export default class OrderbookContract {
         );
         console.log('🚀 ~ PredictionMarketSM ~ batchTransactions:', cnt);
         if (batchTransactions.filter((bt) => bt === null)?.length) {
-          continue;
+          throw Error('Not found transaction');
         }
         // @ts-ignore
         transactions.push(...batchTransactions);
@@ -68,12 +68,13 @@ export default class OrderbookContract {
     untilSignature?: string,
   ): Promise<string[]> {
     const until = untilSignature ? untilSignature : null;
+    // NOTE: get jinalize
     const confirmedSignatureInfo =
       await this.connection.getConfirmedSignaturesForAddress2(
         this.program.programId,
         // @ts-ignore
         { until: until },
-        'confirmed',
+        'finalized',
       );
     return confirmedSignatureInfo
       .filter((item) => item.err == null)
