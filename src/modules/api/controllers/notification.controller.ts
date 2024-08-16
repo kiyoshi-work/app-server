@@ -14,14 +14,17 @@ import {
 } from '../dtos/notification.dto';
 import { NotificationService } from '../services/notification.service';
 import { CacheTTL } from '@nestjs/cache-manager';
-import { HttpCacheInterceptor } from '../cache';
 import { ApiBaseResponse } from '@/shared/swagger/decorator/api-response.decorator';
-import { BaseResponse } from '@/shared/swagger/response/base.response';
+import { ResponseMessage } from '@/shared/decorators/response-message.decorator';
+import {
+  FormatResponseInterceptor,
+  HttpCacheInterceptor,
+} from '../interceptors';
 
 @ApiTags('Notification')
 @Controller('/notification')
 export class NotificationController {
-  constructor(private readonly notificationService: NotificationService) { }
+  constructor(private readonly notificationService: NotificationService) {}
 
   @Post()
   async pushNotification(@Body() body: PushNotificationDto) {
@@ -33,21 +36,17 @@ export class NotificationController {
     };
   }
 
-  @ApiBaseResponse(class { }, {
+  @ApiBaseResponse(class {}, {
     statusCode: HttpStatus.OK,
     isArray: true,
     isPaginate: true,
   })
+  @ResponseMessage('Get your notification successfully')
   @UseInterceptors(HttpCacheInterceptor)
   @CacheTTL(3000)
+  @UseInterceptors(FormatResponseInterceptor)
   @Get()
   async getNotification(@Query() query: GetNotificationDTO) {
-    const result = await this.notificationService.getNotifications(query);
-    return new BaseResponse(
-      result.data,
-      HttpStatus.OK,
-      'Get your notification successfully',
-      result.pagination,
-    );
+    return await this.notificationService.getNotifications(query);
   }
 }

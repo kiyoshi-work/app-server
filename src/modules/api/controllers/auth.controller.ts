@@ -8,7 +8,6 @@ import {
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
 import { AuthService } from '@/api/services/auth.service';
-import { BaseResponse } from '@/shared/swagger/response/base.response';
 import { ApiBaseResponse } from '@/shared/swagger/decorator/api-response.decorator';
 import { TwitterOauthDto } from '../dtos/login.dto';
 
@@ -21,18 +20,16 @@ export class AuthController {
   @Get('twitter/oauth-url')
   @ApiOperation({ summary: 'generate twitter auth url' })
   async getAuthUrl() {
-    const res = await this.authService.authUrl();
-    return new BaseResponse(res, HttpStatus.OK);
+    return await this.authService.authUrl();
   }
 
-  @ApiBaseResponse(class { }, {
+  @ApiBaseResponse(class {}, {
     statusCode: HttpStatus.OK,
     isArray: false,
     isPaginate: false,
   })
   @Post('twitter/login')
   async login(@Body() dto: TwitterOauthDto) {
-    const res = await this.authService.login(dto);
-    return new BaseResponse(res, HttpStatus.OK);
+    return await this.authService.login(dto);
   }
 }

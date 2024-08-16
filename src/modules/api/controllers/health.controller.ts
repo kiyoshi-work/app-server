@@ -21,6 +21,7 @@ import { CurrentUser } from '@/shared/decorators/user.decorator';
 import { TJWTPayload } from '@/shared/constants/types';
 import { VerifyAuthenticatorDTO } from '../dtos/verify-authenticator-secret.dto';
 import { DemoValidatePipe } from '../validators';
+import { ResponseMessage } from '@/shared/decorators/response-message.decorator';
 
 @ApiTags('Health')
 @Controller('/health')
@@ -50,6 +51,8 @@ export class HealthController {
     const response = await fetch('https://api.example.com/data');
     // throw new ForbiddenException('TEST SENTRY 111');
   }
+
+  @ResponseMessage('Health check')
   @Get('')
   async healthCheck() {
     return 1;
