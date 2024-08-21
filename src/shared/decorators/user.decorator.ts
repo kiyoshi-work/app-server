@@ -1,5 +1,5 @@
 import { createParamDecorator, ExecutionContext } from '@nestjs/common';
-import { TJWTPayload } from '../constants/types';
+import { TJWTPayload } from '../types';
 
 export const CurrentUser = createParamDecorator(
   (data: unknown, ctx: ExecutionContext): TJWTPayload => {

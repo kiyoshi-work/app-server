@@ -1,5 +1,5 @@
 import { UserRepository } from '@/database/repositories';
-import { TJWTPayload } from '@/shared/constants/types';
+import { TJWTPayload } from '@/shared/types';
 import {
   CanActivate,
   ExecutionContext,

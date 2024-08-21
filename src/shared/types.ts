@@ -1,4 +1,4 @@
-import { EMainRoomPhase } from './enums';
+import { EMainRoomPhase } from './constants/enums';
 
 export type TJWTPayload = {
   sub: string;

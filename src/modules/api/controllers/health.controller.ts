@@ -18,7 +18,7 @@ import { TelegramBot } from '@/modules/telegram-bot/telegram-bot';
 import { MainPage, WelcomePage } from '@/modules/telegram-bot/ui/pages';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { CurrentUser } from '@/shared/decorators/user.decorator';
-import { TJWTPayload } from '@/shared/constants/types';
+import { TJWTPayload } from '@/shared/types';
 import { VerifyAuthenticatorDTO } from '../dtos/verify-authenticator-secret.dto';
 import { DemoValidatePipe } from '../validators';
 import { ResponseMessage } from '@/shared/decorators/response-message.decorator';

@@ -9,14 +9,14 @@ import {
 } from '@nestjs/common';
 import { AssistantDTO } from '../dtos/assistant.dto';
 import { AiService } from '@/ai/services/ai.service';
-import { TJWTPayload } from '@/shared/constants/types';
+import { TJWTPayload } from '@/shared/types';
 import { CurrentUser } from '@/shared/decorators/user.decorator';
 import { EAIModel } from '@/shared/constants/enums';
 
 @ApiTags('Assistant')
 @Controller('assistant')
 export class AssistantController {
-  constructor(private readonly aiService: AiService) { }
+  constructor(private readonly aiService: AiService) {}
 
   @Post('conversation')
   @ApiOperation({ summary: 'conversation assistant' })
