@@ -18,15 +18,38 @@ export function getOffset(take: number = PAGINATION_TAKEN, page?: number) {
 export const paginate = async (
   queryBuilder: SelectQueryBuilder<any>,
   page: number,
-  take: number,
+  take?: number,
+  isRaw = false,
 ): Promise<IGetPaginationResponse<any>> => {
+  if (take == -1) {
+    const data = isRaw
+      ? await queryBuilder.getRawMany()
+      : await queryBuilder.getMany();
+    return {
+      pagination: {
+        current_page: 0,
+        total_pages: 0,
+        take: 0,
+        total: 0,
+      },
+      data: data,
+    };
+  }
   page = page ? page : 1;
   take = take ? take : PAGINATION_TAKEN;
   const total = await queryBuilder.getCount();
-  const result = await queryBuilder
-    .skip(getOffset(take, page))
-    .take(Number(take))
-    .getMany();
+  let result;
+  if (isRaw) {
+    result = await queryBuilder
+      .offset(getOffset(take, page))
+      .limit(Number(take))
+      .getRawMany();
+  } else {
+    result = await queryBuilder
+      .skip(getOffset(take, page))
+      .take(Number(take))
+      .getMany();
+  }
   return {
     pagination: {
       current_page: page,
