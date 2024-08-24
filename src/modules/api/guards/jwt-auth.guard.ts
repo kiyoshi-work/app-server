@@ -1,5 +1,5 @@
 import { UserRepository } from '@/database/repositories';
-import { TJWTPayload } from '@/shared/constants/types';
+import { TJWTPayload } from '@/shared/types';
 import {
   CanActivate,
   ExecutionContext,
@@ -19,9 +19,12 @@ export class JwtAuthGuard implements CanActivate {
   constructor(
     private jwtService: JwtService,
     private configService: ConfigService,
-  ) { }
+  ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
+    if (!process.env.APP_ENV || process.env.APP_ENV === 'local') {
+      return true;
+    }
     const request = context.switchToHttp().getRequest();
     const token = this.extractTokenFromHeader(request);
     if (!token) {

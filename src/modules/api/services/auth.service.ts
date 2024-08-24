@@ -4,7 +4,7 @@ import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
 import { Cache } from 'cache-manager';
 import { CACHE_MANAGER } from '@nestjs/cache-manager';
-import { TJWTPayload } from '@/shared/constants/types';
+import { TJWTPayload } from '@/shared/types';
 import { TwitterOauthDto } from '../dtos/login.dto';
 import { JwtService } from '@nestjs/jwt';
 import { UserRepository } from '@/modules/database/repositories';

@@ -2,14 +2,23 @@ import { Connection, PublicKey } from '@solana/web3.js';
 import * as anchor from '@coral-xyz/anchor';
 import _ from 'lodash';
 import { Supercharged } from './sdk/idl/supercharged';
-import { getConfigPda } from './pda';
+import {
+  getAdminPda,
+  getConfigPda,
+  getEventPda,
+  getOutcomePda,
+  getProgramBalancePda,
+} from './pda';
 import { Program } from '@coral-xyz/anchor';
-import { IDLGetter } from './utils';
+import { createAndSendV0Tx, IDLGetter } from './utils';
 import { Inject } from '@nestjs/common';
+import { bs58 } from '@coral-xyz/anchor/dist/cjs/utils/bytes';
 const sleep = (ms: number) => new Promise((resolve) => setTimeout(resolve, ms));
 
 export default class OrderbookContract {
   program: Program<Supercharged>;
+  private readonly operator: any;
+
   constructor(
     @Inject('SOLANA_CONNECTION')
     private readonly connection: Connection,
@@ -17,6 +26,9 @@ export default class OrderbookContract {
     this.program = new anchor.Program(IDLGetter as Supercharged, {
       connection: this.connection,
     });
+    this.operator = anchor.web3.Keypair.fromSecretKey(
+      Uint8Array.from(bs58.decode(process.env.OPERATOR_PRIVATE_KEY)),
+    );
   }
 
   async getTransactions(untilSignature?: string): Promise<{
@@ -125,5 +137,41 @@ export default class OrderbookContract {
   async getConfigAccount() {
     const configPda = getConfigPda(this.program);
     return this.program.account.config.fetch(configPda);
+  }
+
+  async createEvent(
+    eventId: number,
+    outcomeId: number,
+    startTime: Date,
+    endTime: Date,
+  ) {
+    const eventIdBN = new anchor.BN(eventId);
+    const outcomeIdBN = new anchor.BN(outcomeId);
+    const startTimeBN = new anchor.BN(new Date(startTime).getTime());
+    const endTimeBN = new anchor.BN(new Date(endTime).getTime());
+
+    const eventPda = getEventPda(this.program, eventIdBN);
+    const outcomePda = getOutcomePda(this.program, outcomeIdBN);
+    const programBalancePda = getProgramBalancePda(this.program, outcomeIdBN);
+    const adminPda = getAdminPda(this.program, this.operator.publicKey);
+
+    const finalIxs: anchor.web3.TransactionInstruction[] = [];
+
+    const itx = await this.program.methods
+      .createEvent(eventIdBN, outcomeIdBN, startTimeBN, endTimeBN)
+      .accountsStrict({
+        operator: this.operator.publicKey,
+        administrator: adminPda,
+        event: eventPda,
+        outcome: outcomePda,
+        balance: programBalancePda,
+        systemProgram: anchor.web3.SystemProgram.programId,
+      })
+      .instruction();
+
+    finalIxs.push(itx);
+
+    const dataSend = await createAndSendV0Tx(this.operator, finalIxs);
+    return dataSend;
   }
 }

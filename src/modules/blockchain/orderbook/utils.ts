@@ -12,7 +12,7 @@ import {
   TOKEN_PROGRAM_ID,
 } from '@solana/spl-token';
 import { ed25519 } from '@noble/curves/ed25519';
-import { ComputeBudgetProgram, Connection } from '@solana/web3.js';
+import { ComputeBudgetProgram, Connection, Transaction } from '@solana/web3.js';
 import IDLDevelop from '@/blockchain/orderbook/sdk/idl/develop/supercharged.json';
 import { SOLANA_RPC_ENDPOINT } from '../configs';
 
@@ -256,6 +256,7 @@ export async function sendTransaction(data: string) {
   });
 }
 
+// NOTE: CREATE AND SEND TX
 export async function createAndSendV0Tx(
   signer: anchor.web3.Keypair,
   txInstructions: anchor.web3.TransactionInstruction[],
@@ -407,6 +408,7 @@ export async function createAndSendV0Tx(
   }
 }
 
+// NOTE: BOOKER SIGN TRANSACTION
 export async function createAndSerializeV0Tx(
   signer: anchor.web3.Keypair,
   txInstructions: anchor.web3.TransactionInstruction[],
@@ -461,6 +463,7 @@ export async function createAndSerializeV0Tx(
   }
 }
 
+// NOTE: SIGN TRANSACTION WITH USER ADDRESS
 export async function createAndSerializeTxForUser(
   payerKey: anchor.web3.PublicKey,
   txInstructions: any,
@@ -500,6 +503,46 @@ export async function createAndSerializeTxForUser(
     return {
       message: 'Transaction failed.',
     };
+  }
+}
+
+export async function createAndSerializeV1Tx(
+  signer: anchor.web3.Keypair,
+  address: anchor.web3.PublicKey,
+  txInstructions: anchor.web3.TransactionInstruction[],
+  addressLookupTableAccounts?: anchor.web3.AddressLookupTableAccount[],
+  commitment: anchor.web3.Commitment = 'confirmed',
+) {
+  const connection = new Connection(SOLANA_RPC_ENDPOINT, 'confirmed');
+
+  try {
+    const latestBlockhash = await connection.getLatestBlockhash(commitment);
+
+    console.log(
+      '   ✅ - Fetched latest blockHash. Last valid height:',
+      latestBlockhash.lastValidBlockHeight,
+    );
+
+    const transaction = new Transaction();
+
+    transaction.add(...txInstructions);
+    transaction.feePayer = address;
+    transaction.recentBlockhash = (
+      await connection.getLatestBlockhash({ commitment: 'finalized' })
+    ).blockhash;
+
+    transaction.partialSign(signer);
+
+    const serializeTrx = transaction
+      .serialize({ requireAllSignatures: false })
+      .toString('base64');
+
+    return {
+      serialized_tx: serializeTrx,
+    };
+  } catch (e: any) {
+    console.log('🚀 ~ e:', e);
+    return;
   }
 }
 

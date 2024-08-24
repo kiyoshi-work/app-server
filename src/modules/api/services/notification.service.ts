@@ -53,6 +53,7 @@ export class NotificationService {
     const notiHistoryQuery = this.userNotificationRepository
       .createQueryBuilder('user-noti')
       .leftJoinAndSelect('user-noti.notification', 'notification')
+      .leftJoinAndSelect('user-noti.receiver', 'receiver')
       .where({
         receiver: {
           client_uid: query.recipient_id,

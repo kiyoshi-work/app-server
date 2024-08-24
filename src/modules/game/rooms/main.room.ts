@@ -22,7 +22,7 @@ import EndTurnCommand from '../commands/end-turn.command';
 import { lazyInject } from '@/shared/injection/container';
 import { UserRepository } from '@/database/repositories';
 import { REPOSITORIES } from '@/shared/injection/symbols';
-import { EActionType, TActionRoom, TMessage } from '@/shared/constants/types';
+import { EActionType, TActionRoom, TMessage } from '@/shared/types';
 import EndGameCommand from '../commands/end-game.command';
 
 @Injectable()

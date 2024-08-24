@@ -25,13 +25,14 @@ import { configAuth } from './configs/auth';
 import { JwtModule } from '@nestjs/jwt';
 import { AiModule } from '../ai/ai.module';
 import { redisStore } from 'cache-manager-redis-store';
-import { APP_GUARD } from '@nestjs/core';
+import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { CustomThrottlerGuard } from './guards/custom-throttler.guard';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { configTwitterAuth } from './configs/twitter-auth';
 import { ElasticSearchModule } from '@/elasticsearch/elasticsearch.module';
 import { TransporterModule } from '@/transporter/transporter.module';
 import { TelegramBotModule } from '../telegram-bot';
+import { FormatResponseInterceptor } from './interceptors';
 
 const services = [AuthService, NotificationService];
 @Module({
@@ -97,6 +98,10 @@ const services = [AuthService, NotificationService];
       provide: APP_GUARD,
       useClass: CustomThrottlerGuard,
     },
+    {
+      provide: APP_INTERCEPTOR,
+      useClass: FormatResponseInterceptor,
+    },
   ],
 })
 export class ApiModule implements OnApplicationBootstrap {
@@ -113,10 +118,9 @@ export class ApiModule implements OnApplicationBootstrap {
     // await this.queueService.testUserQueue(3000);
     // await this.queueService.testUserQueue(1000);
     // await sleep(2000);
-    // await this.queueService.testLock1(10000);
+    // await this.queueService.testLock1(3000);
     // await this.queueService.testLock2(1000);
-    await this.queueService.testFail(4);
-
+    // await this.queueService.testFail(4);
     // await this.appFirestoreRepository.test();
     // await this.oneSignalNotification.sendToAll({
     //   title: 'testnoti',

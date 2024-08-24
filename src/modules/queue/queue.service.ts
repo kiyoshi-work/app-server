@@ -43,6 +43,11 @@ export class QueueService {
         time,
       },
       {
+        backoff: {
+          type: 'fixed', // Use exponential backoff
+          delay: 1000, // Initial delay (1 second)
+        },
+        attempts: 5,
         removeOnComplete: 20,
         removeOnFail: true,
       },

@@ -1,5 +1,6 @@
 import { AppFirestoreRepository } from '@/modules/firebase';
 import {
+  Body,
   Controller,
   ForbiddenException,
   Get,
@@ -15,6 +16,12 @@ import { RabbitMQService, RedisMQService } from '@/transporter/services';
 import { QueueService } from '@/modules/queue/queue.service';
 import { TelegramBot } from '@/modules/telegram-bot/telegram-bot';
 import { MainPage, WelcomePage } from '@/modules/telegram-bot/ui/pages';
+import { JwtAuthGuard } from '../guards/jwt-auth.guard';
+import { CurrentUser } from '@/shared/decorators/user.decorator';
+import { TJWTPayload } from '@/shared/types';
+import { VerifyAuthenticatorDTO } from '../dtos/verify-authenticator-secret.dto';
+import { DemoValidatePipe } from '../validators';
+import { ResponseMessage } from '@/shared/decorators/response-message.decorator';
 
 @ApiTags('Health')
 @Controller('/health')
@@ -44,9 +51,22 @@ export class HealthController {
     const response = await fetch('https://api.example.com/data');
     // throw new ForbiddenException('TEST SENTRY 111');
   }
+
+  @ResponseMessage('Health check')
   @Get('')
   async healthCheck() {
     return 1;
+  }
+
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  @Post('test-auth')
+  testAuth(
+    @CurrentUser() user: TJWTPayload,
+    @Body(DemoValidatePipe) data: VerifyAuthenticatorDTO,
+  ) {
+    console.log(user);
+    return true;
   }
 
   @Get('telegram-bot')

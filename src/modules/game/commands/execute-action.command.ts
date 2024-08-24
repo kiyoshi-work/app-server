@@ -1,6 +1,6 @@
 import { Command } from '@colyseus/command';
 import { MainRoom } from '../rooms/main.room';
-import { TActionRoom } from '@/shared/constants/types';
+import { TActionRoom } from '@/shared/types';
 
 type Payload = {
   data: TActionRoom;
