@@ -10,6 +10,6 @@ search:
     - html
     - json
 ui:
-  static_use_hash: true
+  static_use_hash: false
 redis:
   url: redis://redis:6379/0
