@@ -33,6 +33,21 @@ services:
     volumes:
       - app-redis:/data
 
+
+  # redis-commander:
+  #   container_name: app-redis-commander
+  #   hostname: redis-commander
+  #   image: ghcr.io/joeferner/redis-commander:latest
+  #   restart: always
+  #   environment:
+  #     - REDIS_HOSTS=local:redis:6379
+  #   ports:
+  #     - 8081:8081
+  #   networks:
+  #     - app-server-network
+  #   volumes:
+  #     - app-redis:/data
+
   database:
     container_name: app-database
     image: postgres:14.1
@@ -343,7 +358,33 @@ services:
       - RABBITMQ_DEFAULT_PASS=123456
     networks:
       - app-server-network
-      
+
+  searxng:
+    container_name: app-searxng
+    image: docker.io/searxng/searxng:latest
+    restart: unless-stopped
+    networks:
+      - app-server-network
+    ports:
+      # - "127.0.0.1:8080:8080"
+      - "8080:8080"
+    volumes:
+      - ./docker/searxng:/etc/searxng:rw
+    environment:
+      - SEARXNG_BASE_URL=https://${SEARXNG_HOSTNAME:-localhost}/
+    # cap_drop:
+    #   - ALL
+    # cap_add:
+    #   - CHOWN
+    #   - SETGID
+    #   - SETUID
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "1m"
+        max-file: "1"
+
+
 networks:
   app-server-network:
     driver: bridge
