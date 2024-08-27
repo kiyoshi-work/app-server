@@ -6,7 +6,25 @@ export class QueueService {
   constructor(
     @InjectQueue(QUEUE_NAME.USER)
     private userQueue: Queue,
+
+    @InjectQueue(QUEUE_NAME.TELEGRAM_BOT)
+    private telegramQueue: Queue,
   ) {}
+
+  addCommandToQueue(cmd: string, params: any, data: any) {
+    this.telegramQueue.add(
+      QUEUE_PROCESSOR.TELEGRAM_BOT.POOLING_QUEUE,
+      {
+        cmd: cmd,
+        params,
+        data,
+      },
+      {
+        removeOnComplete: 20,
+        removeOnFail: true,
+      },
+    );
+  }
 
   async testUserQueue(time: number) {
     await this.userQueue.add(

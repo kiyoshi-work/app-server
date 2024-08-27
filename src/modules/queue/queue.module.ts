@@ -34,6 +34,9 @@ import { QUEUE_NAME } from '@/shared/constants/queue';
       //   duration: 10000,
       // },
     }),
+    BullModule.registerQueue({
+      name: QUEUE_NAME.TELEGRAM_BOT,
+    }),
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
