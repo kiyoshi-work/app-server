@@ -16,6 +16,7 @@ import { BlockchainModule } from '@/blockchain';
 import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import * as path from 'path';
 import { UserInputHandler } from './handlers/user-input.handler';
+import { QueueModule } from '../queue/queue.module';
 
 const handlers = [
   HandlerService,
@@ -31,6 +32,7 @@ const handlers = [
   imports: [
     DatabaseModule,
     BlockchainModule,
+    QueueModule,
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,

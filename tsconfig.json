@@ -52,6 +52,7 @@
       "@/milvus-db/*": ["modules/milvus-db/*"],
       "@/transporter/*": ["modules/transporter/*"],
       "@/game/*": ["modules/game/*"],
+      "@/queue/*": ["modules/queue/*"],
       "@/redis-cache/*": ["modules/redis-cache/*"]
     }
   },

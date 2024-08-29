@@ -26,9 +26,11 @@ export default class OrderbookContract {
     this.program = new anchor.Program(IDLGetter as Supercharged, {
       connection: this.connection,
     });
-    this.operator = anchor.web3.Keypair.fromSecretKey(
-      Uint8Array.from(bs58.decode(process.env.OPERATOR_PRIVATE_KEY)),
-    );
+    if (process.env.OPERATOR_PRIVATE_KEY) {
+      this.operator = anchor.web3.Keypair.fromSecretKey(
+        Uint8Array.from(bs58.decode(process.env.OPERATOR_PRIVATE_KEY)),
+      );
+    }
   }
 
   async getTransactions(untilSignature?: string): Promise<{

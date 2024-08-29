@@ -13,6 +13,7 @@ import {
 } from './utils';
 import { Handler } from '@/telegram-bot/handlers';
 import { Menu, PageResponse, PhotoResponse } from './types';
+import { QueueService } from '@/queue/queue.service';
 
 export type TelegramBotState = {
   language_code?: string;
@@ -28,14 +29,17 @@ export class TelegramBot {
 
   private bot: TelegramBotApi;
 
-  private handlers: Record<string, Handler>;
+  public handlers: Record<string, Handler>;
 
   @Inject('TELEGRAM_BOT_STATE')
   private botStateStore: Redis;
 
   private state: Record<string, TelegramBotState>;
 
-  constructor(private readonly configService: ConfigService) {
+  constructor(
+    private readonly configService: ConfigService,
+    private readonly queueService: QueueService,
+  ) {
     const token = this.configService.get<string>('telegram.token');
     const isBot = Boolean(Number(process.env.IS_BOT || 0));
     if (isBot) {
@@ -204,23 +208,24 @@ export class TelegramBot {
         '🚀 ~ file: telegram-bot.ts:257 ~ TelegramBot ~ this.setupMenuCallback ~ params:',
         params,
       );
-      const handler = this.handlers[_cmd];
-      if (handler) {
-        if (params && (handler as any)?.setConfig) {
-          (handler as any).setConfig(params);
-        }
-        handler
-          .handler(data)
-          .then()
-          .catch((e) => {
-            console.error(e, {
-              file: 'TelegramBot.start',
-              text: `handler command ${_cmd} error: `,
-            });
-          });
-      } else {
-        console.log('unknown callback:', { _cmd });
-      }
+      return this.queueService.addCommandToQueue(_cmd, params, data);
+      // const handler = this.handlers[_cmd];
+      // if (handler) {
+      //   if (params && (handler as any)?.setConfig) {
+      //     (handler as any).setConfig(params);
+      //   }
+      //   handler
+      //     .handler(data)
+      //     .then()
+      //     .catch((e) => {
+      //       console.error(e, {
+      //         file: 'TelegramBot.start',
+      //         text: `handler command ${_cmd} error: `,
+      //       });
+      //     });
+      // } else {
+      //   console.log('unknown callback:', { _cmd });
+      // }
     });
   }
 }

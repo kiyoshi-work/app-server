@@ -2,20 +2,22 @@ import { BullModule } from '@nestjs/bull';
 import { Module } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import { configQueue } from './configs';
-import { UserConsumer } from './consumers';
+import { TelegramBotConsumer, UserConsumer } from './consumers';
 import { DatabaseModule } from '@/database';
+import { TelegramBotModule } from '../telegram-bot';
 
 const isQueue = Boolean(Number(process.env.IS_QUEUE || 0));
 
 let consumers = [];
 
 if (isQueue) {
-  consumers = [UserConsumer];
+  consumers = [UserConsumer, TelegramBotConsumer];
 }
 
 @Module({
   imports: [
     DatabaseModule,
+    TelegramBotModule,
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory(config: ConfigService) {
@@ -46,4 +48,4 @@ if (isQueue) {
   providers: [...consumers],
   exports: [],
 })
-export class WorkerModule { }
+export class WorkerModule {}
