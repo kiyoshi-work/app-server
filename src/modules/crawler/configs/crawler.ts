@@ -23,7 +23,7 @@ export const configCrawler = registerAs('crawler', () => ({
     host: process.env.LUNAR_CRUSH_HOST || 'https://lunarcrush.com/api4/public',
   },
   scraper_api: {
-    key: process.env.SCRAPER_API_KEY || '44197a3b75773be1cdf93a3dab622167',
+    key: process.env.SCRAPER_API_KEY || '063cffa64422e3a4acf8281f36ff6cd7',
     host: process.env.SCRAPER_API_HOST || 'https://api.scraperapi.com',
   },
   tweet_scout: {

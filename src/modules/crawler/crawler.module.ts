@@ -89,5 +89,7 @@ export class CrawlerModule implements OnApplicationBootstrap {
     //   '1816517789940883896',
     // );
     // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ p :', p);
+    // const ip = await this.scraperApiService.checkProxyIP();
+    // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ ip:', ip);
   }
 }

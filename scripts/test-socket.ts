@@ -36,6 +36,10 @@ const socket = io('ws://localhost:9002/chat', {
   transports: ['websocket'],
 });
 (async () => {
+  socket.emit('ping');
+  socket.on('pong', (payload: any) => {
+    console.log('pong');
+  });
   socket.on('chat', (payload: any) => {
     console.log('🚀 ~ socket.on ~ payload:', payload);
   });
