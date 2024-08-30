@@ -16,7 +16,6 @@ import { HealthController } from './controllers/health.controller';
 import { Notification } from '@/onesignal/http/v1/notification';
 import { EventModule } from '@/modules/event/event.module';
 import { CacheModule, CacheStore } from '@nestjs/cache-manager';
-import { ScheduleModule } from '@nestjs/schedule';
 import { TimescaleDBModule } from '@/modules/timescale-db';
 import { UploadFileModule } from '../upload-file/upload-file.module';
 import { QueueService } from '../queue/queue.service';
@@ -33,6 +32,7 @@ import { ElasticSearchModule } from '@/elasticsearch/elasticsearch.module';
 import { TransporterModule } from '@/transporter/transporter.module';
 import { TelegramBotModule } from '../telegram-bot';
 import { FormatResponseInterceptor } from './interceptors';
+import { RabbitMQService } from '../transporter/services';
 
 const services = [AuthService, NotificationService];
 @Module({
@@ -48,7 +48,6 @@ const services = [AuthService, NotificationService];
     ElasticSearchModule,
     TransporterModule,
     TelegramBotModule,
-    ScheduleModule.forRoot(),
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: process.env.APP_ENV === 'production' ? 60 : 600,
@@ -112,6 +111,7 @@ export class ApiModule implements OnApplicationBootstrap {
 
     @Inject(QueueService)
     private queueService: QueueService,
+    private rabbitMQService: RabbitMQService,
   ) {}
 
   async onApplicationBootstrap() {
@@ -128,6 +128,12 @@ export class ApiModule implements OnApplicationBootstrap {
     //   content: 'casca',
     //   onesignalAppId: '611f78ab-1f2b-40e0-9e7b-c5eef7ce8ca0',
     //   onesignalApiKey: 'YzE4NmRmNDUtY2NkOC00OGVkLWIxODktNTk3YTgxM2FhYmJm',
+    // });
+    // const m = await this.rabbitMQService.send('TEST_MQ_EVENT', {
+    //   test: 1,
+    // });
+    // this.rabbitMQService.send('TEST_MQ_EVENT', {
+    //   test: 2,
     // });
   }
 }

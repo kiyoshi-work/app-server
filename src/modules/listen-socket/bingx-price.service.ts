@@ -27,6 +27,7 @@ export class BingXPriceService implements OnApplicationBootstrap {
 
   private async _loadPair() {
     if (!this._socket || this._socket.readyState !== WebSocket.OPEN) {
+      this._socket?.close();
       console.log('CREATE NEW SOCKET CONNECTION');
       this._socket = new WebSocket(this._pairSocketUrl, {
         headers: {
@@ -42,7 +43,7 @@ export class BingXPriceService implements OnApplicationBootstrap {
       this._socket.on('message', async (_payload: any) => {
         const buf = Buffer.from(_payload);
         const decodedMsg = zlib.gunzipSync(buf).toString('utf-8');
-        if (decodedMsg === "Ping") {
+        if (decodedMsg === 'Ping') {
           this._socket.send('Pong');
           console.log('Pong');
         } else {
@@ -83,7 +84,5 @@ export class BingXPriceService implements OnApplicationBootstrap {
     // await this.initialize();
   }
 
-  constructor(
-    private readonly gCPubSubService: GCPubSubService,
-  ) { }
+  constructor(private readonly gCPubSubService: GCPubSubService) {}
 }

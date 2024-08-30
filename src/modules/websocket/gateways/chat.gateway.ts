@@ -53,6 +53,11 @@ export class ChatGateway
     );
   }
 
+  @SubscribeMessage('ping')
+  ping() {
+    this.wss.emit('pong');
+  }
+
   emitChatResponse(clientId: string, data: any) {
     try {
       // const compressed = zlib.gzipSync(JSON.stringify(data));
