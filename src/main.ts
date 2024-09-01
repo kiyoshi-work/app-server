@@ -10,6 +10,7 @@ import { RedisOptions, RmqOptions, Transport } from '@nestjs/microservices';
 import { GameService } from '@/game/game.service';
 import { playground } from '@colyseus/playground';
 import { monitor } from '@colyseus/monitor';
+import { useContainer } from 'class-validator';
 
 // const DEFAULT_API_VERSION = '1';
 const PORT = process.env.PORT || '3000';
@@ -101,6 +102,8 @@ async function bootstrap() {
   }
 
   if (isApi) {
+    // TIP: to inject class-validator
+    useContainer(app.select(AppModule), { fallbackOnErrors: true });
     const corsOrigin = process.env.CORS_ORIGIN.split(',') || [
       'http://localhost:3000',
     ];

@@ -33,8 +33,13 @@ import { ElasticSearchModule } from '@/elasticsearch/elasticsearch.module';
 import { TransporterModule } from '@/transporter/transporter.module';
 import { TelegramBotModule } from '../telegram-bot';
 import { FormatResponseInterceptor } from './interceptors';
+import {
+  ValidateCodeUppercase,
+  ValidateQuestContent,
+} from './dtos/demo-validator.dto';
 
 const services = [AuthService, NotificationService];
+const validators = [ValidateCodeUppercase, ValidateQuestContent];
 @Module({
   imports: [
     LoggerModule,
@@ -94,6 +99,7 @@ const services = [AuthService, NotificationService];
   ],
   providers: [
     ...services,
+    ...validators,
     {
       provide: APP_GUARD,
       useClass: CustomThrottlerGuard,

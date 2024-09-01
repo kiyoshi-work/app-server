@@ -6,7 +6,7 @@ import {
   Injectable,
   PipeTransform,
 } from '@nestjs/common';
-import { VerifyAuthenticatorDTO } from '../dtos/verify-authenticator-secret.dto';
+import { DemoDTO } from '../dtos/demo-validator.dto';
 
 @Injectable()
 export class DemoValidatePipe implements PipeTransform<any> {
@@ -20,9 +20,9 @@ export class DemoValidatePipe implements PipeTransform<any> {
     return true;
   }
 
-  async transform(data: VerifyAuthenticatorDTO, metadata: ArgumentMetadata) {
-    console.log(this.request?.user, 'iiim');
-    if (this.validateToken(data.token)) {
+  async transform(data: DemoDTO, metadata: ArgumentMetadata) {
+    console.log(this.request, 'iiim');
+    if (this.validateToken(data.start_date.toString())) {
       return data;
     } else {
       throw new BadRequestException('Invalid token');

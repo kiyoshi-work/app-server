@@ -8,6 +8,7 @@ import {
   Inject,
   Post,
   UseGuards,
+  UseInterceptors,
 } from '@nestjs/common';
 import { ApiBearerAuth, ApiTags } from '@nestjs/swagger';
 import { AdminGuard } from '../guards/admin.guard';
@@ -19,12 +20,14 @@ import { MainPage, WelcomePage } from '@/modules/telegram-bot/ui/pages';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { CurrentUser } from '@/shared/decorators/user.decorator';
 import { TJWTPayload } from '@/shared/types';
-import { VerifyAuthenticatorDTO } from '../dtos/verify-authenticator-secret.dto';
+import { DemoDTO } from '../dtos/demo-validator.dto';
 import { DemoValidatePipe } from '../validators';
 import { ResponseMessage } from '@/shared/decorators/response-message.decorator';
+import { ContextInterceptor } from '../interceptors/context.interceptor';
 
 @ApiTags('Health')
 @Controller('/health')
+@UseInterceptors(ContextInterceptor)
 export class HealthController {
   constructor(
     @Inject('APP_FIRESTORE')
@@ -41,10 +44,7 @@ export class HealthController {
   @Get('/firebase')
   async firebaseCheck() {
     const res = await this.appFirestoreRepository.testConnection();
-    return {
-      statusCode: HttpStatus.OK,
-      data: res,
-    };
+    return res;
   }
 
   async funErr() {
@@ -56,17 +56,6 @@ export class HealthController {
   @Get('')
   async healthCheck() {
     return 1;
-  }
-
-  @ApiBearerAuth()
-  @UseGuards(JwtAuthGuard)
-  @Post('test-auth')
-  testAuth(
-    @CurrentUser() user: TJWTPayload,
-    @Body(DemoValidatePipe) data: VerifyAuthenticatorDTO,
-  ) {
-    console.log(user);
-    return true;
   }
 
   @Get('telegram-bot')
@@ -99,5 +88,12 @@ export class HealthController {
     return await this.redisMQService.send('TEST_MQ_EVENT', {
       test: 1,
     });
+  }
+
+  @Post('test-validator')
+  @ApiBearerAuth()
+  @UseGuards(JwtAuthGuard)
+  async createCampaign(@Body(DemoValidatePipe) body: DemoDTO) {
+    return body;
   }
 }
