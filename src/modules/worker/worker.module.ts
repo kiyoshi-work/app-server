@@ -5,19 +5,27 @@ import { configQueue } from './configs';
 import { TelegramBotConsumer, UserConsumer } from './consumers';
 import { DatabaseModule } from '@/database';
 import { TelegramBotModule } from '../telegram-bot';
+import { ScheduleService } from './schedulers/schedule.service';
+import { ScheduleModule } from '@nestjs/schedule';
 
 const isQueue = Boolean(Number(process.env.IS_QUEUE || 0));
+const isScheduler = Boolean(Number(process.env.IS_SCHEDULER || 0));
 
 let consumers = [];
+let schedulers = [];
 
 if (isQueue) {
   consumers = [UserConsumer, TelegramBotConsumer];
+}
+if (isScheduler) {
+  schedulers = [ScheduleService];
 }
 
 @Module({
   imports: [
     DatabaseModule,
     TelegramBotModule,
+    ScheduleModule.forRoot(),
     BullModule.forRootAsync({
       imports: [ConfigModule],
       useFactory(config: ConfigService) {
@@ -45,7 +53,7 @@ if (isQueue) {
     }),
   ],
   controllers: [],
-  providers: [...consumers],
+  providers: [...consumers, ...schedulers],
   exports: [],
 })
 export class WorkerModule {}

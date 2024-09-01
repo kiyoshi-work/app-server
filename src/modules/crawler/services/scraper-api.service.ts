@@ -47,8 +47,34 @@ export class ScraperApiService {
       throw error;
     }
   }
+
+  async checkProxyIP() {
+    try {
+      const response = await axios.get('https://api.myip.com', {
+        proxy: {
+          protocol: 'http',
+          host: 'proxy-server.scraperapi.com',
+          port: 8001,
+          auth: {
+            username:
+              'scraperapi.device_type=desktop.premium=true.country_code=us',
+            password: this._scraperApiKey,
+          },
+        },
+      });
+      if (response.status === 200) {
+        return response.data.ip;
+      } else {
+        console.log(response);
+        throw new Error(`Can't get proxy ip. ${response.status}`);
+      }
+    } catch (error) {
+      throw new Error(error?.message + '---' + error?.response?.data);
+    }
+  }
+
   async test() {
-    const options = {
+    const options: AxiosRequestConfig = {
       ...this._buildConfig(),
       method: 'GET',
       url: `https://www.dextools.io/app/en/ether/pair-explorer/0x5201523c0ad5ba792c40ce5aff7df2d1a721bbf8?t=1715315222267`,
