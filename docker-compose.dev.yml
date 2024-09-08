@@ -1,38 +1,37 @@
 version: "3.8"
 services:
-  app:
-    image: app-server:1.0.0-dev
-    container_name: app-server-dev
-    build:
-      context: .
-      dockerfile: docker/nest/dev.dockerfile
-    working_dir: /home/node/workspace
-    command: npm run start:debug
-    restart: unless-stopped
-    tty: true
-    volumes:
-      - .:/home/node/workspace
-      - /home/node/workspace/node_modules
-    networks:
-      -  app-server-network
-    env_file:
-      - .env.dev
-    ports:
-      - '8030:8003'
-      - '85:80'
+  # app:
+  #   image: app-server:1.0.0-dev
+  #   container_name: app-server-dev
+  #   build:
+  #     context: .
+  #     dockerfile: docker/nest/dev.dockerfile
+  #   working_dir: /home/node/workspace
+  #   command: npm run start:debug
+  #   restart: unless-stopped
+  #   tty: true
+  #   volumes:
+  #     - .:/home/node/workspace
+  #     - /home/node/workspace/node_modules
+  #   networks:
+  #     -  app-server-network
+  #   env_file:
+  #     - .env.dev
+  #   ports:
+  #     - '8030:8003'
+  #     - '85:80'
 
   redis:
     container_name: app-redis
     image: redis
     restart: unless-stopped
     ports:
-      - 6383:6379
+      - 6379:6379
     command: redis-server --save 20 1 --loglevel warning
     networks:
       - app-server-network
     volumes:
       - app-redis:/data
-
 
   # redis-commander:
   #   container_name: app-redis-commander
@@ -52,6 +51,10 @@ services:
     container_name: app-database
     image: postgres:14.1
     restart: unless-stopped
+    command: >
+      postgres -c shared_preload_libraries=pg_stat_statements
+              -c pg_stat_statements.track=all
+              -c pg_stat_statements.max=10000
     volumes:
       - app-database:/var/lib/postgres
       - ./docker/postgres:/docker-entrypoint-initdb.d
@@ -59,7 +62,7 @@ services:
       POSTGRES_USER: root
       POSTGRES_PASSWORD: 123456
     ports:
-      - 5446:5432
+      - 5432:5432
     networks:
       - app-server-network
 
@@ -77,7 +80,7 @@ services:
       POSTGRES_PASSWORD: 123456
       PGPORT: 5433
     ports:
-      - 5449:5433
+      - 5433:5433
     networks:
       - app-server-network
 
@@ -85,7 +88,7 @@ services:
     container_name: app-vector-database
     image: ankane/pgvector
     ports:
-      - 5445:5434
+      - 5434:5434
     volumes:
       - app-vector-database:/var/lib/postgres
       #- ./docker/postgres:/docker-entrypoint-initdb.d
@@ -101,7 +104,7 @@ services:
     container_name: app-server-pubsub
     image: google/cloud-sdk:emulators
     ports:
-      - "8089:8085"
+      - "8085:8085"
     environment:
       - PUBSUB_EMULATOR_HOST=0.0.0.0:8085
     command: gcloud beta emulators pubsub start --host-port=0.0.0.0:8085
@@ -119,7 +122,7 @@ services:
       - ETCD_SNAPSHOT_COUNT=50000
     command: etcd -advertise-client-urls=http://127.0.0.1:2379 -listen-client-urls http://0.0.0.0:2379 --data-dir /etcd
     healthcheck:
-      test: ["CMD", "etcdctl", "endpoint", "health"]
+      test: [ "CMD", "etcdctl", "endpoint", "health" ]
       interval: 30s
       timeout: 20s
       retries: 3
@@ -140,7 +143,7 @@ services:
       - "9000:9000"
     command: minio server /minio_data --console-address ":9001"
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9000/minio/health/live"]
+      test: [ "CMD", "curl", "-f", "http://localhost:9000/minio/health/live" ]
       interval: 30s
       timeout: 20s
       retries: 3
@@ -153,14 +156,14 @@ services:
   milvus:
     container_name: app-milvus-standalone
     image: milvusdb/milvus:v2.3.12
-    command: ["milvus", "run", "standalone"]
+    command: [ "milvus", "run", "standalone" ]
     security_opt:
-    - seccomp:unconfined
+      - seccomp:unconfined
     environment:
       ETCD_ENDPOINTS: etcd:2379
       MINIO_ADDRESS: minio:9000
     healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:9091/healthz"]
+      test: [ "CMD", "curl", "-f", "http://localhost:9091/healthz" ]
       interval: 30s
       start_period: 90s
       timeout: 20s
@@ -193,10 +196,9 @@ services:
     image: zilliz/milvus_cli:latest
     command: tail -f /dev/null
     platform: linux/amd64
-    tty: true           # <-- This option
+    tty: true # <-- This option
     networks:
       - app-server-network
-
 
   langfuse-server:
     container_name: app-langfuse
@@ -237,35 +239,35 @@ services:
   #     - app-server-network
 
   # https://github.com/getumbrel/llama-gpt/blob/master/docker-compose-cuda-ggml.yml
-  llama-gpt-api-cuda-ggml:
-    container_name: app-llama-gpt
-    build:
-      context: ./docker/cuda
-      dockerfile: gglm.Dockerfile
-    restart: on-failure
-    volumes:
-      - './docker/models:/models'
-      - './docker/cuda:/cuda'
-    ports:
-      - 3001:8000
-    environment:
-      MODEL: '/models/${MODEL_NAME:-llama-2-7b-chat.bin}'
-      MODEL_DOWNLOAD_URL: '${MODEL_DOWNLOAD_URL:-https://huggingface.co/TheBloke/Nous-Hermes-Llama-2-7B-GGML/resolve/main/nous-hermes-llama-2-7b.ggmlv3.q4_0.bin}'
-      N_GQA: '${N_GQA:-1}'
-      USE_MLOCK: 1
-    cap_add:
-      - IPC_LOCK
-      - SYS_RESOURCE
-    command: '/bin/sh /cuda/run.sh'
-    deploy:
-      resources:
-        reservations:
-          devices:
-            - driver: nvidia
-              count: 1
-              capabilities: [gpu]
-    networks:
-      - app-server-network
+  # llama-gpt-api-cuda-ggml:
+  #   container_name: app-llama-gpt
+  #   build:
+  #     context: ./docker/cuda
+  #     dockerfile: gglm.Dockerfile
+  #   restart: on-failure
+  #   volumes:
+  #     - './docker/models:/models'
+  #     - './docker/cuda:/cuda'
+  #   ports:
+  #     - 3001:8000
+  #   environment:
+  #     MODEL: '/models/${MODEL_NAME:-llama-2-7b-chat.bin}'
+  #     MODEL_DOWNLOAD_URL: '${MODEL_DOWNLOAD_URL:-https://huggingface.co/TheBloke/Nous-Hermes-Llama-2-7B-GGML/resolve/main/nous-hermes-llama-2-7b.ggmlv3.q4_0.bin}'
+  #     N_GQA: '${N_GQA:-1}'
+  #     USE_MLOCK: 1
+  #   cap_add:
+  #     - IPC_LOCK
+  #     - SYS_RESOURCE
+  #   command: '/bin/sh /cuda/run.sh'
+  #   deploy:
+  #     resources:
+  #       reservations:
+  #         devices:
+  #           - driver: nvidia
+  #             count: 1
+  #             capabilities: [ gpu ]
+  #   networks:
+  #     - app-server-network
 
   # llama-gpt-api-cuda-gguf:
   #   container_name: app-llama-gpt
@@ -297,25 +299,25 @@ services:
   #   networks:
   #     - app-server-network
 
-  llama-gpt-ui:
-    # TODO: Use this image instead of building from source after the next release
-    container_name: app-llama-gpt-ui
-    image: 'ghcr.io/getumbrel/llama-gpt-ui:latest'
-    # build:
-    #   context: ./ui
-    #   dockerfile: Dockerfile
-    ports:
-      - 3000:3000
-    restart: on-failure
-    environment:
-      - 'OPENAI_API_KEY=sk-XXXXXXXXXXXXXXXXXXXX'
-      - 'OPENAI_API_HOST=http://llama-gpt-api-cuda-ggml:8000'
-      - 'DEFAULT_MODEL=/models/${MODEL_NAME:-llama-2-7b-chat.bin}'
-      - 'NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT=${DEFAULT_SYSTEM_PROMPT:-"You are a helpful and friendly AI assistant. Respond very concisely."}'
-      - 'WAIT_HOSTS=llama-gpt-api-cuda-ggml:8000'
-      - 'WAIT_TIMEOUT=${WAIT_TIMEOUT:-3600}'
-    networks:
-      - app-server-network
+  # llama-gpt-ui:
+  #   # TODO: Use this image instead of building from source after the next release
+  #   container_name: app-llama-gpt-ui
+  #   image: 'ghcr.io/getumbrel/llama-gpt-ui:latest'
+  #   # build:
+  #   #   context: ./ui
+  #   #   dockerfile: Dockerfile
+  #   ports:
+  #     - 3000:3000
+  #   restart: on-failure
+  #   environment:
+  #     - 'OPENAI_API_KEY=sk-XXXXXXXXXXXXXXXXXXXX'
+  #     - 'OPENAI_API_HOST=http://llama-gpt-api-cuda-ggml:8000'
+  #     - 'DEFAULT_MODEL=/models/${MODEL_NAME:-llama-2-7b-chat.bin}'
+  #     - 'NEXT_PUBLIC_DEFAULT_SYSTEM_PROMPT=${DEFAULT_SYSTEM_PROMPT:-"You are a helpful and friendly AI assistant. Respond very concisely."}'
+  #     - 'WAIT_HOSTS=llama-gpt-api-cuda-ggml:8000'
+  #     - 'WAIT_TIMEOUT=${WAIT_TIMEOUT:-3600}'
+  #   networks:
+  #     - app-server-network
 
   elasticsearch:
     container_name: app-elasticsearch
@@ -340,7 +342,6 @@ services:
       - elasticsearch
     ports:
       - 5601:5601
-
 
   rabbitmq:
     image: rabbitmq:3.6.14-management
@@ -383,7 +384,6 @@ services:
       options:
         max-size: "1m"
         max-file: "1"
-
 
 networks:
   app-server-network:
