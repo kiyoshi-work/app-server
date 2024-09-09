@@ -23,30 +23,30 @@ services:
 
   redis:
     container_name: app-redis
-    image: redis
+    image: redis/redis-stack:latest
     restart: unless-stopped
     ports:
       - 6379:6379
-    command: redis-server --save 20 1 --loglevel warning
+      - 8001:8001
     networks:
       - app-server-network
-    volumes:
-      - app-redis:/data
-
-
-  redis-commander:
-    container_name: app-redis-commander
-    hostname: redis-commander
-    image: ghcr.io/joeferner/redis-commander:latest
-    restart: always
     environment:
-      - REDIS_HOSTS=local:redis:6379
-    ports:
-      - 8081:8081
-    networks:
-      - app-server-network
+      REDIS_ARGS: --appendonly yes --protected-mode no --save 20 1 --loglevel warning
     volumes:
       - app-redis:/data
+      # - redis-conf:/usr/local/etc/redis/redis.conf
+
+  # redis:
+  #   container_name: app-redis
+  #   image: redis
+  #   restart: unless-stopped
+  #   ports:
+  #     - 6379:6379
+  #   command: redis-server --save 20 1 --loglevel warning
+  #   networks:
+  #     - app-server-network
+  #   volumes:
+  #     - app-redis:/data
 
   database:
     container_name: app-database
