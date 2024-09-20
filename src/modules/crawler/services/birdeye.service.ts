@@ -6,6 +6,12 @@ import UserAgent from 'user-agents';
 export enum EChainName {
   SOLANA = 'solana',
 }
+interface DataPrice {
+  value: number;
+  updateUnixTime: number;
+  updateHumanTime: string;
+}
+
 @Injectable()
 export class BirdEyeService {
   private readonly birdeye_api_key: string;
@@ -35,6 +41,20 @@ export class BirdEyeService {
       'x-api-key': this.birdeye_api_key,
       'x-chain': chainName,
     };
+  }
+
+  async getTokenPriceByAddress(
+    address: string,
+    chainName: string = EChainName.SOLANA,
+  ): Promise<DataPrice> {
+    const url = `${this.base_url}/defi/price?address=${address}`;
+    const headers = this._buildHeader(chainName);
+    try {
+      const response = await axios.get(url, { headers: headers });
+      return response.data?.data;
+    } catch (error) {
+      console.error('[BirdeyeService] [getTokenPriceByAddress]', error);
+    }
   }
 
   async getTokenInfoByAddress(

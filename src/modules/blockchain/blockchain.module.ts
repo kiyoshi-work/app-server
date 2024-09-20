@@ -8,6 +8,7 @@ import { DatabaseModule } from '@/database';
 import { ConfigModule, ConfigService } from '@nestjs/config';
 import OrderbookContract from './orderbook/orderbook.contract';
 import { Connection } from '@solana/web3.js';
+import { SolanaService } from './services/solana.service';
 
 @Module({
   imports: [
@@ -78,6 +79,7 @@ import { Connection } from '@solana/web3.js';
     },
     USDCContract,
     OrderbookContract,
+    SolanaService,
   ],
   exports: [
     'ETHEREUM_CONNECTION',
@@ -86,6 +88,7 @@ import { Connection } from '@solana/web3.js';
     'NETWORK_CHAIN_ID',
     USDCContract,
     OrderbookContract,
+    SolanaService
   ],
 })
 export class BlockchainModule implements OnApplicationBootstrap {
@@ -94,10 +97,14 @@ export class BlockchainModule implements OnApplicationBootstrap {
     public provider: ethers.providers.JsonRpcProvider,
     public USDCContract: USDCContract,
     private orderbookContract: OrderbookContract,
+    private solanaService: SolanaService,
   ) {}
 
   async onApplicationBootstrap() {
-    const t = await this.orderbookContract.getConfigAccount();
-    console.log(t, 'orderbookContract.getConfigAccount');
+    // const t = await this.orderbookContract.getConfigAccount();
+    // console.log(t, 'orderbookContract.getConfigAccount');
+
+    const m = await this.solanaService.checkWalletAddress('EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm');
+    console.log(m);
   }
 }

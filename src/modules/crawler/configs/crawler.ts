@@ -43,4 +43,8 @@ export const configCrawler = registerAs('crawler', () => ({
   rugcheck: {
     base_url: process.env.RUGCHECK_BASE_URL || 'https://api.rugcheck.xyz',
   },
+  coingecko: {
+    host: process.env.COINGECKO_HOST || 'https://pro-api.coingecko.com/api/v3',
+    api_key: process.env.COINGECKO_API_KEY,
+  }
 }));

@@ -8,6 +8,7 @@ import { DexToolService } from './services/dextool.service';
 import { BirdEyeService, EChainName } from './services/birdeye.service';
 import { RugcheckService } from './services/rugcheck.service';
 import { RapidTwitter45Service } from './services/rapid-twitter45.service';
+import { CoingeckoService } from './services/coingecko.service';
 
 @Module({
   imports: [
@@ -25,6 +26,7 @@ import { RapidTwitter45Service } from './services/rapid-twitter45.service';
     BirdEyeService,
     RugcheckService,
     RapidTwitter45Service,
+    CoingeckoService
   ],
   exports: [
     RapidTwitterService,
@@ -34,6 +36,7 @@ import { RapidTwitter45Service } from './services/rapid-twitter45.service';
     BirdEyeService,
     RugcheckService,
     RapidTwitter45Service,
+    CoingeckoService
   ],
 })
 export class CrawlerModule implements OnApplicationBootstrap {
@@ -45,6 +48,7 @@ export class CrawlerModule implements OnApplicationBootstrap {
     private readonly birdEyeService: BirdEyeService,
     private readonly rugcheckService: RugcheckService,
     private readonly rapidTwitter45Service: RapidTwitter45Service,
+    private readonly coingeckoService: CoingeckoService,
   ) {}
   async onApplicationBootstrap() {
     // const m = await this.rapidTwitterService.getTweet('1790189394848092578');
