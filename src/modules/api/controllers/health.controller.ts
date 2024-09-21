@@ -24,6 +24,14 @@ import { DemoDTO } from '../dtos/demo-validator.dto';
 import { DemoValidatePipe } from '../validators';
 import { ResponseMessage } from '@/shared/decorators/response-message.decorator';
 import { ContextInterceptor } from '../interceptors/context.interceptor';
+import { ApiBaseResponse } from '@/shared/swagger/decorator/api-response.decorator';
+import {
+  FormatResponseInterceptor,
+  HttpCacheInterceptor,
+} from '../interceptors';
+import { CacheTTL } from '@nestjs/cache-manager';
+import { CustomThrottlerGuard } from '../guards/custom-throttler.guard';
+import { Throttle } from '@nestjs/throttler';
 
 @ApiTags('Health')
 @Controller('/health')
@@ -92,6 +100,17 @@ export class HealthController {
 
   @Post('test-validator')
   @ApiBearerAuth()
+  @ApiBaseResponse(class {}, {
+    statusCode: HttpStatus.OK,
+    isArray: true,
+    isPaginate: true,
+  })
+  @ResponseMessage('Get demo dto successfully')
+  @UseInterceptors(HttpCacheInterceptor)
+  @CacheTTL(3000)
+  @UseInterceptors(FormatResponseInterceptor)
+  @UseGuards(CustomThrottlerGuard)
+  @Throttle(10, 60)
   @UseGuards(JwtAuthGuard)
   async createCampaign(@Body(DemoValidatePipe) body: DemoDTO) {
     return body;

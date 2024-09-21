@@ -201,6 +201,21 @@ services:
     networks:
       - app-server-network
 
+  milvus-backup:
+    image: milvusdb/milvus-backup:latest
+    container_name: app-milvus-backup
+    ports:
+      - "8088:8088"
+    platform: linux/amd64
+    depends_on:
+      - milvus
+      - minio
+    command: server -p 8088 --config /app/configs/backup.yaml
+    volumes:
+      - ./docker/milvus/backup.yaml:/app/configs/backup.yaml
+    networks:
+      - app-server-network
+
   langfuse-server:
     container_name: app-langfuse
     image: langfuse/langfuse:2

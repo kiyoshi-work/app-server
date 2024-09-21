@@ -250,7 +250,7 @@ export async function sendTransaction(data: string) {
       const end2 = new Date().getTime();
       console.log('🚀 ~ sendTransaction ~ end2 - start', end2 - start);
     } catch (e) {
-      console.log('[sendTransaction] e', e); // console by M-MON
+      console.log('[sendTransaction] e', e);
       reject('Send transaction error: ');
     }
   });
@@ -311,7 +311,7 @@ export async function createAndSendV0Tx(
 
     const txthash = await sendTransaction(txh).catch((e) => {
       console.log(e.getLogs());
-      console.log('eeeeeeeeeee', e); // console by M-MON
+      console.log('eeeeeeeeeee', e);
     });
     // Step 5 - Confirm Transaction
     if (confirmed) {
@@ -320,7 +320,7 @@ export async function createAndSendV0Tx(
         'confirmed',
       );
       // if (confirmation?.value?.err) {
-      //   console.log('confirmation.value.err', confirmation.value.err); // console by M-MON
+      //   console.log('confirmation.value.err', confirmation.value.err);
       //   return {
       //     message: '❌ Transaction not confirmed.',
       //   };

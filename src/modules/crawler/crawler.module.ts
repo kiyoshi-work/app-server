@@ -9,6 +9,7 @@ import { BirdEyeService, EChainName } from './services/birdeye.service';
 import { RugcheckService } from './services/rugcheck.service';
 import { RapidTwitter45Service } from './services/rapid-twitter45.service';
 import { CoingeckoService } from './services/coingecko.service';
+import { DexScreenerService } from './services/dexscreener.service';
 
 @Module({
   imports: [
@@ -26,7 +27,8 @@ import { CoingeckoService } from './services/coingecko.service';
     BirdEyeService,
     RugcheckService,
     RapidTwitter45Service,
-    CoingeckoService
+    CoingeckoService,
+    DexScreenerService,
   ],
   exports: [
     RapidTwitterService,
@@ -36,7 +38,8 @@ import { CoingeckoService } from './services/coingecko.service';
     BirdEyeService,
     RugcheckService,
     RapidTwitter45Service,
-    CoingeckoService
+    CoingeckoService,
+    DexScreenerService,
   ],
 })
 export class CrawlerModule implements OnApplicationBootstrap {
@@ -49,6 +52,7 @@ export class CrawlerModule implements OnApplicationBootstrap {
     private readonly rugcheckService: RugcheckService,
     private readonly rapidTwitter45Service: RapidTwitter45Service,
     private readonly coingeckoService: CoingeckoService,
+    private readonly dexScreenerService: DexScreenerService,
   ) {}
   async onApplicationBootstrap() {
     // const m = await this.rapidTwitterService.getTweet('1790189394848092578');
@@ -74,7 +78,7 @@ export class CrawlerModule implements OnApplicationBootstrap {
     //   JSON.stringify(l.data.user_result.result),
     // );
     //
-    // const t = await this.dexToolService.getAuditTokenByAddress(
+    // const t = await this.dexToolService.getTokenDetailByAddress(
     //   'GTH3wG3NErjwcf7VGCoXEXkgXSHvYhx5gtATeeM5JAS1',
     // );
     // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ t:', t);

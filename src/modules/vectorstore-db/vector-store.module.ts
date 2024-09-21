@@ -13,7 +13,6 @@ const topicMock = {
   },
 };
 
-
 @Module({
   imports: [
     DatabaseModule,
@@ -49,19 +48,19 @@ const topicMock = {
     },
     DocumentRepository,
   ],
-  exports: [
-    DocumentRepository,
-    'TEXT_EMBEDDING_3_LARGE',
-  ],
+  exports: [DocumentRepository, 'TEXT_EMBEDDING_3_LARGE'],
 })
 export class VectorStoreModule implements OnApplicationBootstrap {
   constructor(
     @Inject('TEXT_EMBEDDING_3_LARGE')
     public embeddingModel: OpenAIEmbeddings,
     private documentRepository: DocumentRepository,
-  ) { }
+  ) {}
   async handleMockDataTopic(docs: any, keyTopicId: string) {
-    console.log("🚀 ~ VectorStoreModule ~ handleMockDataTopic ~ keyTopicId:", keyTopicId)
+    console.log(
+      '🚀 ~ VectorStoreModule ~ handleMockDataTopic ~ keyTopicId:',
+      keyTopicId,
+    );
     let data = [];
     try {
       data = await this.documentRepository.queryOrmVector('', 10, {
@@ -80,11 +79,10 @@ export class VectorStoreModule implements OnApplicationBootstrap {
   }
 
   async onApplicationBootstrap() {
-    const t = await this.documentRepository.findById(
-      '479e00ea-2c2b-443f-b299-e86428d570bc',
-    );
-    console.log('🚀 ~ VectorStoreModule ~ onApplicationBootstrap ~ t:', t);
-
+    // const t = await this.documentRepository.findById(
+    //   '479e00ea-2c2b-443f-b299-e86428d570bc',
+    // );
+    // console.log('🚀 ~ VectorStoreModule ~ onApplicationBootstrap ~ t:', t);
     // const data = await this.vectorService.queryOrmVector('what is lootbot', 2, {
     //   keyTopicId: 'lootbot',
     // });
@@ -92,7 +90,6 @@ export class VectorStoreModule implements OnApplicationBootstrap {
     // const _data = await this.vectorService.queryVector(data, 2, {
     //   keyTopicId: 'lootbot',
     // });
-
     // const _data = await this.documentRepository.queryVector(data, 2, {
     //   keyTopicId: 'lootbot',
     // });
@@ -100,7 +97,6 @@ export class VectorStoreModule implements OnApplicationBootstrap {
     //   '🚀 ~ VectorStoreModule ~ onApplicationBootstrap ~ data:',
     //   _data,
     // );
-
     //   const dataMock = [
     //     {
     //       keyTopicId: topicMock.LOOT.name,

@@ -33,7 +33,8 @@ export const configCrawler = registerAs('crawler', () => ({
   dextool: {
     api_key:
       process.env.DEXTOOL_KEY || 's4WhlXc5yl1FHJLqQKHc61oeYedT4VRG4Ai7xJfa',
-    base_url: process.env.DEXTOOL_BASE_URL || 'https://api.dextools.io',
+    base_url:
+      process.env.DEXTOOL_BASE_URL || 'https://public-api.dextools.io/trial/v2',
   },
   birdeye: {
     api_key:
@@ -46,5 +47,8 @@ export const configCrawler = registerAs('crawler', () => ({
   coingecko: {
     host: process.env.COINGECKO_HOST || 'https://pro-api.coingecko.com/api/v3',
     api_key: process.env.COINGECKO_API_KEY,
-  }
+  },
+  dexscreener: {
+    api_key: process.env.DEXSCREENER_HOST || 'https://api.dexscreener.com',
+  },
 }));

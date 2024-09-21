@@ -34,7 +34,7 @@ export class TestTool extends BaseTool {
   }) as any;
 
   async _call(input: any) {
-    console.log('=====> input', input); // console by M-MON
+    console.log('=====> input', input);
     const other = typeof input.ids === 'string' ? input.ids : '';
     const user = await this.userRepository.findOne({
       where: { username: input?.user_name },

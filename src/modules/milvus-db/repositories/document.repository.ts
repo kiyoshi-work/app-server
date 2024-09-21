@@ -7,7 +7,8 @@ import { Document } from '@langchain/core/documents';
 
 export class MilvusDocumentRepository
   extends Milvus
-  implements OnApplicationBootstrap {
+  implements OnApplicationBootstrap
+{
   public collectionName: string;
   public client: MilvusClient;
   constructor(
@@ -266,7 +267,7 @@ export class MilvusDocumentRepository
 
   async deleteOrmVector(filter?: string) {
     const queryOrmVector = await this.queryOrmVector('', 1000, filter);
-    console.log('queryOrmVector', queryOrmVector); // console by M-MON
+    console.log('queryOrmVector', queryOrmVector);
     queryOrmVector.length > 0 &&
       this.deleteByIds(queryOrmVector.map((doc) => doc?.metadata?.id)).then();
   }

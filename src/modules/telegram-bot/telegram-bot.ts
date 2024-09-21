@@ -63,11 +63,19 @@ export class TelegramBot {
   }
 
   async sendPageMessage(chatId: ChatId, data: PageResponse) {
-    return this.bot.sendMessage(chatId, data.text, data.menu);
+    try {
+      return await this.bot.sendMessage(chatId, data.text, data.menu);
+    } catch (error) {
+      console.log('[sendPageMessage] [error]', error);
+    }
   }
 
   async sendPagePhoto(chatId: ChatId, data: PhotoResponse) {
-    return this.bot.sendPhoto(chatId, data.photo, data.menu);
+    try {
+      return await this.bot.sendPhoto(chatId, data.photo, data.menu);
+    } catch (error) {
+      console.log('[sendPagePhoto] [error]', error);
+    }
   }
 
   async editMessageReplyMarkup(
@@ -120,9 +128,9 @@ export class TelegramBot {
     options?: SendMessageOptions,
   ) {
     try {
-      return this.bot.sendMessage(chatId, text, options);
+      return await this.bot.sendMessage(chatId, text, options);
     } catch (error) {
-      console.log('🚀 ~ file: telegram-bot.ts:89 ~ error:', error);
+      console.log('[sendMessage] [error]', error);
     }
   }
 
