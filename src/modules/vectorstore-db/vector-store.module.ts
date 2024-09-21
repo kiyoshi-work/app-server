@@ -6,10 +6,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { DocumentEntity } from './entities/document.entity';
 import { DocumentRepository } from './repositories/document.repository';
 import { OpenAIEmbeddings } from '@langchain/openai';
-import lootMock from './mock/loot.mock';
+import solanaMock from './mock/solana.mock';
 const topicMock = {
-  LOOT: {
-    name: 'lootbot',
+  SOLANA: {
+    name: 'solana',
   },
 };
 
@@ -83,15 +83,15 @@ export class VectorStoreModule implements OnApplicationBootstrap {
     //   '479e00ea-2c2b-443f-b299-e86428d570bc',
     // );
     // console.log('🚀 ~ VectorStoreModule ~ onApplicationBootstrap ~ t:', t);
-    // const data = await this.vectorService.queryOrmVector('what is lootbot', 2, {
-    //   keyTopicId: 'lootbot',
+    // const data = await this.vectorService.queryOrmVector('what is solana', 2, {
+    //   keyTopicId: 'solana',
     // });
-    // const data = await this.vectorService.embedDocument('what is lootbot');
+    // const data = await this.vectorService.embedDocument('what is solana');
     // const _data = await this.vectorService.queryVector(data, 2, {
-    //   keyTopicId: 'lootbot',
+    //   keyTopicId: 'solana',
     // });
     // const _data = await this.documentRepository.queryVector(data, 2, {
-    //   keyTopicId: 'lootbot',
+    //   keyTopicId: 'solana',
     // });
     // console.log(
     //   '🚀 ~ VectorStoreModule ~ onApplicationBootstrap ~ data:',
@@ -99,8 +99,8 @@ export class VectorStoreModule implements OnApplicationBootstrap {
     // );
     //   const dataMock = [
     //     {
-    //       keyTopicId: topicMock.LOOT.name,
-    //       docs: lootMock,
+    //       keyTopicId: topicMock.SOLANA.name,
+    //       docs: solanaMock,
     //     },
     // ];
     //   for (const { keyTopicId, docs } of dataMock) {

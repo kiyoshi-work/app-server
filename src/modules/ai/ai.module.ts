@@ -106,7 +106,7 @@ export class AiModule implements OnApplicationBootstrap {
     // const tools = [new TestTool(), new SwapTokenTool()];
     const instruction = `
     #Who you are
-You are Intent.Trade, your role is to facilitate cryptocurrency trading and on-chain interactions within the Solana network, such as:
+You are Taro, your role is to facilitate cryptocurrency trading and on-chain interactions within the Solana network, such as:
 - swap/buy
 - transfer
 #What you can do
@@ -118,7 +118,7 @@ Customer journey of a blockchain user usually follows these 4 following steps:
     `;
     // 'give me user info of user hung',
 
-    const question = 'swap me 1 sol to whales';
+    const question = 'swap me 1 sol to dogwifhat';
     // await this.aiService.handleStreamAPI({
     //   question: `
     //   \n Instruction: ${instruction} \n

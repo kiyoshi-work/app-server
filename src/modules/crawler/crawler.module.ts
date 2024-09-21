@@ -79,17 +79,17 @@ export class CrawlerModule implements OnApplicationBootstrap {
     // );
     //
     // const t = await this.dexToolService.getTokenDetailByAddress(
-    //   'GTH3wG3NErjwcf7VGCoXEXkgXSHvYhx5gtATeeM5JAS1',
+    //   'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
     // );
     // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ t:', t);
     //
     // const q = await this.birdEyeService.getTokenTradesHistory(
-    //   'GTH3wG3NErjwcf7VGCoXEXkgXSHvYhx5gtATeeM5JAS1',
+    //   'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
     //   EChainName.SOLANA,
     // );
     // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ q:', q);
     // const k = await this.rugcheckService.getRugCheckInfo(
-    //   'GTH3wG3NErjwcf7VGCoXEXkgXSHvYhx5gtATeeM5JAS1',
+    //   'EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm',
     // );
     // console.log('🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ k :', k);
     // const p = await this.rapidTwitter45Service.checkLike(
