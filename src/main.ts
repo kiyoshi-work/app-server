@@ -91,7 +91,7 @@ async function bootstrap() {
     // gameServer.listen(GAMESERVER_PORT);
 
     if (process.env.APP_ENV !== 'production') {
-      app.use('/', playground);
+      app.use('/game', playground);
     }
     /**
      * Use @colyseus/monitor
@@ -128,8 +128,8 @@ async function bootstrap() {
         .addBearerAuth()
         .build();
 
-      // const globalPrefix = 'docs';
-      // app.setGlobalPrefix(globalPrefix);
+      const globalPrefix = 'api';
+      app.setGlobalPrefix(globalPrefix);
       // app.enableVersioning({
       //   defaultVersion: DEFAULT_API_VERSION,
       //   type: VersioningType.URI,
