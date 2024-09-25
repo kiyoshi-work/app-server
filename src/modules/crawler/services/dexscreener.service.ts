@@ -1,7 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios, { AxiosRequestConfig } from 'axios';
-import UserAgent from 'user-agents';
+import { BaseRequestService } from './base-request.service';
 
 export interface DexScreenerPairResponse {
   chainId: string;
@@ -60,39 +59,16 @@ export interface DexScreenerPairResponse {
   };
 }
 @Injectable()
-export class DexScreenerService {
-  private readonly api_key: string;
-
+export class DexScreenerService extends BaseRequestService {
   constructor(private readonly configService: ConfigService) {
-    this.api_key = this.configService.get<string>(
-      'crawler.dexscreener.api_key',
-    );
-  }
-
-  private _buildHeader() {
-    return {
-      'user-agent': new UserAgent().toString(),
-    };
-  }
-
-  async sendRequest(options: AxiosRequestConfig) {
-    try {
-      const response = await axios.request({
-        ...{ headers: this._buildHeader() },
-        ...options,
-      });
-      return response.data;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+    super(configService.get<string>('crawler.dexscreener.api_host'));
   }
 
   async getBestPairsTokenByAddress(
     contractAddress: string,
   ): Promise<DexScreenerPairResponse> {
     try {
-      const url = `${this.api_key}/latest/dex/tokens/${contractAddress}`;
+      const url = `/latest/dex/tokens/${contractAddress}`;
       const result = await this.sendRequest({
         method: 'GET',
         url,

@@ -1,38 +1,19 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios, { AxiosRequestConfig } from 'axios';
 import BigNumber from 'bignumber.js';
-import UserAgent from 'user-agents';
+import { BaseRequestService } from './base-request.service';
 
 @Injectable()
-export class RugcheckService {
-  private readonly base_url: string;
-
+export class RugcheckService extends BaseRequestService {
   constructor(private readonly configService: ConfigService) {
-    this.base_url = this.configService.get<string>('crawler.rugcheck.base_url');
-  }
-
-  private _buildHeader() {
-    return {
-      'user-agent': new UserAgent().toString(),
-    };
-  }
-
-  async sendRequest(options: AxiosRequestConfig) {
-    try {
-      const response = await axios.request(options);
-      return response.data;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+    super(configService.get<string>('crawler.rugcheck.base_url'));
   }
 
   async getRugCheckInfo(address: string) {
     try {
       const options = {
         method: 'GET',
-        url: `${this.base_url}/v1/tokens/${address}/report`,
+        url: `/v1/tokens/${address}/report`,
       };
       const rug_check_info: any = await this.sendRequest(options);
       let totallpLockedUSD = new BigNumber(0);

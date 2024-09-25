@@ -88,7 +88,7 @@ import { SolanaService } from './services/solana.service';
     'NETWORK_CHAIN_ID',
     USDCContract,
     OrderbookContract,
-    SolanaService
+    SolanaService,
   ],
 })
 export class BlockchainModule implements OnApplicationBootstrap {
@@ -103,8 +103,7 @@ export class BlockchainModule implements OnApplicationBootstrap {
   async onApplicationBootstrap() {
     // const t = await this.orderbookContract.getConfigAccount();
     // console.log(t, 'orderbookContract.getConfigAccount');
-
-    const m = await this.solanaService.getTokenBalanceV2('AC5RDfQFmDS1deWZos921JfqscXdByf8BKHs5ACWjtW2');
-    console.log(JSON.stringify(m));
+    // const m = await this.solanaService.getTokenBalanceV2('AC5RDfQFmDS1deWZos921JfqscXdByf8BKHs5ACWjtW2');
+    // console.log(JSON.stringify(m));
   }
 }

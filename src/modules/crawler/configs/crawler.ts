@@ -49,6 +49,6 @@ export const configCrawler = registerAs('crawler', () => ({
     api_key: process.env.COINGECKO_API_KEY,
   },
   dexscreener: {
-    api_key: process.env.DEXSCREENER_HOST || 'https://api.dexscreener.com',
+    api_host: process.env.DEXSCREENER_HOST || 'https://api.dexscreener.com',
   },
 }));

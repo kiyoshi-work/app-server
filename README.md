@@ -73,8 +73,8 @@ This layer contains the core business logic and processing:
   - Performance monitoring with Langfuse: Tracks and optimizes AI model performance
 
 - **Game Services**
-  - Authorization service using Colyseus: Manages game session authentication
-  - Turn-based game lifecycle framework: Provides structure for implementing turn-based games
+  - Authorization game server using Colyseus: Manages game session authentication, ensures real-time synchronization of game state with clients.
+  - Turn-based game lifecycle framework: Provides structure for implementing core game loop for turn-based games
 
 ### 3. Data Layer
 

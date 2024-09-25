@@ -1,6 +1,6 @@
-import { Inject, Injectable } from '@nestjs/common';
+import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios, { AxiosRequestConfig } from 'axios';
+import { BaseRequestService } from './base-request.service';
 export type TTwitterUserMetadata = {
   description: string;
   image_url: string;
@@ -18,38 +18,28 @@ export type TTwitterUserInfo = {
   metadata?: TTwitterUserMetadata;
 };
 @Injectable()
-export class RapidTwitterService {
-  private _rapidKey?: string;
-  private _rapidHost?: string;
+export class RapidTwitterService extends BaseRequestService {
   constructor(private readonly configService: ConfigService) {
-    this._rapidKey = this.configService.get<string>('crawler.rapid_api.key');
-    this._rapidHost = `https://${this.configService.get<string>(
-      'crawler.rapid_api.twitter_host',
-    )}`;
+    super(
+      `https://${configService.get<string>('crawler.rapid_api.twitter_host')}`,
+      configService.get<string>('crawler.rapid_api.key'),
+    );
   }
 
-  _buildHeader() {
+  protected _buildHeader(): Record<string, string> {
     return {
-      'X-RapidAPI-Key': this._rapidKey,
-      'X-RapidAPI-Host': this.configService.get<string>(
-        'crawler.rapid_api.twitter_host',
-      ),
+      ...super._buildHeader(),
+      'X-RapidAPI-Key': this._apiKey,
+      // 'X-RapidAPI-Host': this.configService.get<string>(
+      //   'crawler.rapid_api.twitter_host',
+      // ),
     };
-  }
-  async sendRequest(options: AxiosRequestConfig) {
-    try {
-      const response = await axios.request(options);
-      return response.data;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
   }
 
   async getTweetsAnchor(username: string, cursor?: string) {
     const options = {
       method: 'GET',
-      url: `${this._rapidHost}/user-tweets`,
+      url: `/user-tweets`,
       params: {
         username: username,
         cursor: cursor,
@@ -135,7 +125,7 @@ export class RapidTwitterService {
   async getTweet(tweetId: string) {
     const options = {
       method: 'GET',
-      url: `${this._rapidHost}/get-tweet`,
+      url: `/get-tweet`,
       params: {
         tweet_id: tweetId,
       },
@@ -148,7 +138,7 @@ export class RapidTwitterService {
   async getFollowingAnchor(username: string, cursor?: string) {
     const options = {
       method: 'GET',
-      url: `${this._rapidHost}/user-following`,
+      url: `/user-following`,
       params: {
         username: username,
         cursor: cursor,
@@ -220,7 +210,7 @@ export class RapidTwitterService {
   async getFollowerAnchor(username: string, cursor?: string) {
     const options = {
       method: 'GET',
-      url: `${this._rapidHost}/user-followers`,
+      url: `/user-followers`,
       params: {
         username: username,
         cursor: cursor,
@@ -296,7 +286,7 @@ export class RapidTwitterService {
   ): Promise<TTwitterUserInfo[]> {
     // const options = {
     //   method: 'GET',
-    //   url: `${this._rapidHost}/following.php`,
+    //   url: `/following.php`,
     //   params: {
     //     screenname: screen_name,
     //   },
@@ -305,7 +295,7 @@ export class RapidTwitterService {
     // const { following } = await this.sendRequest(options);
     const options = {
       method: 'GET',
-      url: `${this._rapidHost}/user-followings`,
+      url: `/user-followings`,
       params: {
         userId: restId,
       },
@@ -327,7 +317,7 @@ export class RapidTwitterService {
       });
       data = await this.sendRequest({
         method: 'GET',
-        url: `${this._rapidHost}/user-followings`,
+        url: `/user-followings`,
         params: {
           userId: restId,
           cursor: cursor,
@@ -344,7 +334,7 @@ export class RapidTwitterService {
   async fetchTweets47(restId: string) {
     const options = {
       method: 'GET',
-      url: `${this._rapidHost}/user-tweets-and-replies`,
+      url: `/user-tweets-and-replies`,
       params: {
         userId: restId,
       },
@@ -395,7 +385,7 @@ export class RapidTwitterService {
     try {
       const data = await this.sendRequest({
         method: 'GET',
-        url: `${this._rapidHost}/get-user-by-id`,
+        url: `/get-user-by-id`,
         params: {
           user_id: restId,
         },

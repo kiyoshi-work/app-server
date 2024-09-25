@@ -55,6 +55,12 @@ export class CrawlerModule implements OnApplicationBootstrap {
     private readonly dexScreenerService: DexScreenerService,
   ) {}
   async onApplicationBootstrap() {
+    // const t = await this.dexScreenerService.getBestPairsTokenByAddress(
+    //   'Es9vMFrzaCERmJfrF4H2FYD4KCoNkY11McCe8BenwNYB',
+    // );
+    // console.log(t);
+    // const t = await this.dexToolService.getHotPools();
+    // console.log(t);
     // const m = await this.rapidTwitterService.getTweet('1790189394848092578');
     // console.log(
     //   '🚀 ~ CrawlerModule ~ onApplicationBootstrap ~ m:',

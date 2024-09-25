@@ -1,39 +1,31 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios, { AxiosRequestConfig } from 'axios';
+import { BaseRequestService } from './base-request.service';
 @Injectable()
-export class RapidTwitter45Service {
+export class RapidTwitter45Service extends BaseRequestService {
   private _rapidKey?: string;
   private _rapidHost?: string;
   constructor(private readonly configService: ConfigService) {
-    this._rapidKey = this.configService.get<string>('crawler.rapid_api_45.key');
-    this._rapidHost = `https://${this.configService.get<string>(
-      'crawler.rapid_api_45.host',
-    )}`;
+    super(
+      `https://${configService.get<string>('crawler.rapid_api_45.host')}`,
+      configService.get<string>('crawler.rapid_api_45.key'),
+    );
   }
 
-  _buildHeader() {
+  protected _buildHeader(): Record<string, string> {
     return {
-      'x-rapidapi-key': this._rapidKey,
-      'x-rapidapi-host': this.configService.get<string>(
-        'crawler.rapid_api_45.twitter_host',
-      ),
+      ...super._buildHeader(),
+      'X-RapidAPI-Key': this._apiKey,
+      // 'X-RapidAPI-Host': this.configService.get<string>(
+      //   'crawler.rapid_api_45.twitter_host',
+      // ),
     };
-  }
-  async sendRequest(options: AxiosRequestConfig) {
-    try {
-      const response = await axios.request(options);
-      return response.data;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
   }
 
   async checkLike(username: string, tweet_id: string) {
     const options = {
       method: 'GET',
-      url: `${this._rapidHost}/checklike.php`,
+      url: `/checklike.php`,
       params: {
         screenname: username,
         tweet_id: tweet_id,
@@ -47,7 +39,7 @@ export class RapidTwitter45Service {
   async checkRetweet(username: string, tweet_id: string) {
     const options = {
       method: 'GET',
-      url: `${this._rapidHost}/checkretweet.php`,
+      url: `/checkretweet.php`,
       params: {
         screenname: username,
         tweet_id: tweet_id,
@@ -61,7 +53,7 @@ export class RapidTwitter45Service {
   async checkFollow(username: string, follow: string) {
     const options = {
       method: 'GET',
-      url: `${this._rapidHost}/checkfollow.php`,
+      url: `/checkfollow.php`,
       params: {
         user: username,
         follows: follow,

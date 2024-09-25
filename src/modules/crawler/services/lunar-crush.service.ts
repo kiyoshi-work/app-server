@@ -1,6 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
-import axios, { AxiosRequestConfig } from 'axios';
+import { BaseRequestService } from './base-request.service';
 export type TTweet = {
   tweet_id: string;
   content: string;
@@ -10,28 +10,18 @@ export type TTweet = {
   interactions_total: number;
 };
 @Injectable()
-export class LunarCrushService {
-  private _token?: string;
-  private _host?: string;
+export class LunarCrushService extends BaseRequestService {
   constructor(private readonly configService: ConfigService) {
-    this._token = this.configService.get<string>('crawler.lunar_crush.token');
-    this._host = this.configService.get<string>('crawler.lunar_crush.host');
+    super(
+      configService.get<string>('crawler.lunar_crush.host'),
+      configService.get<string>('crawler.lunar_crush.token'),
+    );
   }
 
-  _buildHeader() {
-    return {
-      Authorization: `Bearer ${this._token}`,
-    };
-  }
-
-  async sendRequest(options: AxiosRequestConfig) {
-    try {
-      const response = await axios.request(options);
-      return response.data;
-    } catch (error) {
-      console.error(error);
-      throw error;
-    }
+  protected _buildHeader(): Record<string, string> {
+    const headers = super._buildHeader();
+    headers['Authorization'] = `Bearer ${this._apiKey}`; // Add the API key to the headers
+    return headers;
   }
 
   async fetchTweets(
@@ -41,7 +31,7 @@ export class LunarCrushService {
   ): Promise<TTweet[]> {
     const options = {
       method: 'GET',
-      url: `${this._host}/creator/twitter/${username}/posts/v1`,
+      url: `/creator/twitter/${username}/posts/v1`,
       params: {
         ...(start && { start: Math.round(new Date(start).getTime() / 1000) }),
         ...(end && { end: Math.round(new Date(end).getTime() / 1000) }),
