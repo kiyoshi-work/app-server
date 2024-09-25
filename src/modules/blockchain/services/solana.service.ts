@@ -40,6 +40,19 @@ export class SolanaService {
     );
     return balance;
   }
+
+  // [{
+  //     "isNative": false,
+  //     "mint": "8q3RM2eZM9BUe1eoVUkCn4crLYbXk2cSvxURf9mkyexq",
+  //     "owner": "EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm",
+  //     "state": "initialized",
+  //     "tokenAmount": {
+  //       "amount": "928581278",
+  //       "decimals": 6,
+  //       "uiAmount": 928.581278,
+  //       "uiAmountString": "928.581278"
+  //     }
+  //   }]
   async getTokenHoldings(address: string) {
     try {
       const [token, token2022] = await Promise.all([
@@ -78,13 +91,17 @@ export class SolanaService {
     );
     return nativeAmount;
   }
+
+  // [{
+  //   "tokenAddress": "8arEYgkmJgp6GDorP1wjby4z7JiR7VbVEpDZY1hCbBAr",
+  //   "balance": 29797,
+  //   "symbol": "",
+  //   "decimals": 9
+  // }]
   async getTokenBalance(walletAddress: string, isNative = false) {
     const listTokensInWallet = await this.getTokenHoldings(walletAddress);
-    // console.log("🚀 ~ BlockchainService ~ getTokenBalance ~ listTokensInWallet:", listTokensInWallet)
-
     const nativeAmount = await this.getNativeAmount(walletAddress);
     const result = listTokensInWallet.map((token) => {
-      // console.log('🚀 ~ BlockchainService ~ result ~ token:', token);
       return {
         tokenAddress: token.mint,
         balance: Number(token.tokenAmount.uiAmount) || 0,

@@ -104,7 +104,7 @@ export class BlockchainModule implements OnApplicationBootstrap {
     // const t = await this.orderbookContract.getConfigAccount();
     // console.log(t, 'orderbookContract.getConfigAccount');
 
-    const m = await this.solanaService.checkWalletAddress('EKpQGSJtjMFqKZ9KQanSqYXRcF8fBopzLHYxdM65zcjm');
-    console.log(m);
+    const m = await this.solanaService.getTokenBalanceV2('AC5RDfQFmDS1deWZos921JfqscXdByf8BKHs5ACWjtW2');
+    console.log(JSON.stringify(m));
   }
 }

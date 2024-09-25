@@ -6,6 +6,27 @@ import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios, { AxiosRequestConfig } from 'axios';
 import UserAgent from 'user-agents';
+
+export interface CoinData {
+  base: string;
+  target: string;
+  market: object;
+  last: number;
+  volume: number;
+  converted_last: object;
+  converted_volume: object;
+  trust_score: string;
+  bid_ask_spread_percentage: number;
+  timestamp: string;
+  last_traded_at: string;
+  last_fetch_at: string;
+  is_anomaly: boolean;
+  is_stale: boolean;
+  trade_url: string | null;
+  token_info_url: string | null;
+  coin_id: string;
+  target_coin_id: string;
+}[];
 @Injectable()
 export class CoingeckoService {
   private _coingeckoKey?: string;
@@ -44,7 +65,26 @@ export class CoingeckoService {
     }
   }
 
-  async getDataCoinGecko(contractAddresses: string) {
+//  [{
+//     base: 'WIF',
+//     target: 'USD',
+//     market: [Object],
+//     last: 1.693,
+//     volume: 51.923432,
+//     converted_last: [Object],
+//     converted_volume: [Object],
+//     trust_score: 'yellow',
+//     bid_ask_spread_percentage: 0.35482,
+//     timestamp: '2024-09-23T08:54:22+00:00',
+//     last_traded_at: '2024-09-23T08:54:22+00:00',
+//     last_fetch_at: '2024-09-23T08:54:22+00:00',
+//     is_anomaly: false,
+//     is_stale: false,
+//     trade_url: 'https://trade.cex.io/spot/WIF-USD',
+//     token_info_url: null,
+//     coin_id: 'dogwifcoin'
+//   }]
+  async getDataCoinGecko(contractAddresses: string): Promise<any> {
     try {
       const ids = 'solana';
       let url;
