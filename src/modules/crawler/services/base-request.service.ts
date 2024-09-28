@@ -14,7 +14,6 @@ export abstract class BaseRequestService {
     const childHeader = (this as any)._buildHeader
       ? (this as any)._buildHeader()
       : this._buildHeader();
-    console.log(this._scraperApiKey, 'this._scraperApiKey', childHeader);
 
     this.axiosInstance = axios.create({
       baseURL: this._apiHost, // Set the base URL

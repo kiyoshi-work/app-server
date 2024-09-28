@@ -26,7 +26,7 @@ This project is a comprehensive backend utility service built with NestJS, imple
 The project follows a 3-layer architecture:
 
 1. **Access (Gateway) Layer**
-2. **Executor (Business) Layer**
+2. **Business (Executor) Layer**
 3. **Data Layer**
 
 ### 1. Access (Gateway) Layer
@@ -45,7 +45,7 @@ This layer handles incoming requests and implements various middleware and utili
   - Pipes: For input validation and data transformation
 
 - **WebSocket Integration**
-  - Socket.IO: Enables real-time, bidirectional communication
+  - Socket.IO: Enables real-time, bidirectional communication with adapter
   - Channel management by rooms: Organizes connections for efficient message distribution
   - Message compression: Reduces bandwidth usage for real-time communications
 
@@ -81,6 +81,7 @@ This layer contains the core business logic and processing:
 This layer manages data storage and retrieval across multiple databases:
 
 - PostgreSQL: Primary relational database for structured data
+- TypeORM: An ORM for TypeScript that simplifies database interactions with PostgreSQL
 - TimescaleDB: Time-series database for handling time-based data efficiently
 - Redis: In-memory data structure store for caching and real-time operations
 - pgvector: Enables vector similarity search in PostgreSQL

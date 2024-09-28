@@ -2,7 +2,6 @@ import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
-import morgan from 'morgan';
 import { GCPubSubServer } from 'nestjs-google-pubsub-microservice';
 import { RedisIoAdapter } from './modules/websocket/services/redis.adapter';
 import { GlobalExceptionFilter } from './modules/api/filters/GlobalExceptionFilter';
@@ -11,6 +10,7 @@ import { GameService } from '@/game/game.service';
 import { playground } from '@colyseus/playground';
 import { monitor } from '@colyseus/monitor';
 import { useContainer } from 'class-validator';
+import { Logger as PinoLogger } from 'nestjs-pino';
 
 // const DEFAULT_API_VERSION = '1';
 const PORT = process.env.PORT || '3000';
@@ -22,7 +22,10 @@ const isApi = Boolean(Number(process.env.IS_API || 0));
 const isVM = Boolean(Number(process.env.IS_VM || 0));
 
 async function bootstrap() {
-  const app = await NestFactory.create(AppModule);
+  const app = await NestFactory.create(AppModule, {
+    logger: false,
+    bufferLogs: true,
+  });
   if (isWS) {
     // NOTE: redisadapter for socket
     // const redisIoAdapter = new RedisIoAdapter(app);
@@ -113,8 +116,7 @@ async function bootstrap() {
       // origin: corsOrigin,
       // credentials: true,
     });
-
-    app.use(morgan('tiny'));
+    app.useLogger(app.get(PinoLogger));
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
     app.useGlobalFilters(new GlobalExceptionFilter(true, true));
 
