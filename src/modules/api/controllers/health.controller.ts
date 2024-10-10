@@ -99,18 +99,18 @@ export class HealthController {
   }
 
   @Post('test-validator')
-  @ApiBearerAuth()
   @ApiBaseResponse(class {}, {
     statusCode: HttpStatus.OK,
     isArray: true,
     isPaginate: true,
   })
   @ResponseMessage('Get demo dto successfully')
+  @UseInterceptors(FormatResponseInterceptor)
   @UseInterceptors(HttpCacheInterceptor)
   @CacheTTL(3000)
-  @UseInterceptors(FormatResponseInterceptor)
   @UseGuards(CustomThrottlerGuard)
   @Throttle(10, 60)
+  @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
   async createCampaign(@Body(DemoValidatePipe) body: DemoDTO) {
     return body;

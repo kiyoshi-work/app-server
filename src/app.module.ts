@@ -14,6 +14,7 @@ import * as Sentry from '@sentry/node';
 import { MilvusModule } from './modules/milvus-db/milvus.module';
 import { CrawlerModule } from './modules/crawler/crawler.module';
 import { GameModule } from './modules/game/game.module';
+import { LoggerModule } from 'nestjs-pino';
 
 const isApi = Boolean(Number(process.env.IS_API || 0));
 const isWS = Boolean(Number(process.env.IS_WS || 0));
@@ -60,6 +61,41 @@ if (process.env.APP_ENV) {
     VectorStoreModule,
     MilvusModule,
     CrawlerModule,
+    LoggerModule.forRoot({
+      pinoHttp: {
+        level: process.env.APP_ENV === 'production' ? 'info' : 'debug',
+        transport: {
+          target: 'pino-pretty',
+          options: {
+            colorize: true,
+            singleLine: true,
+            ignore: 'pid,hostname',
+            messageFormat: '{msg}',
+            translateTime: 'SYS:standard',
+          },
+        },
+        // serializers: {
+        //   req: () => undefined,
+        //   res: () => undefined,
+        // },
+        customProps: (req, res) => ({
+          context: 'HTTP',
+        }),
+        customSuccessMessage: (req, res) => {
+          if (req && res) {
+            return `${req.method} ${req.url}`;
+          }
+          return 'Request completed';
+        },
+        customErrorMessage: (req, res, error) => {
+          if (req) {
+            return `${req.method} ${req.url} failed with error: ${error.message}`;
+          }
+          return 'Request failed';
+        },
+      },
+      exclude: [{ method: RequestMethod.ALL, path: 'health' }],
+    }),
     ..._modules,
   ],
   controllers: [],

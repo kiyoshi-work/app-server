@@ -26,6 +26,7 @@ async function bootstrap() {
     logger: false,
     bufferLogs: true,
   });
+  app.useLogger(app.get(PinoLogger));
   if (isWS) {
     // NOTE: redisadapter for socket
     // const redisIoAdapter = new RedisIoAdapter(app);
@@ -116,7 +117,6 @@ async function bootstrap() {
       // origin: corsOrigin,
       // credentials: true,
     });
-    app.useLogger(app.get(PinoLogger));
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
     app.useGlobalFilters(new GlobalExceptionFilter(true, true));
 

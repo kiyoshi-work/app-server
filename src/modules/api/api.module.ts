@@ -36,7 +36,6 @@ import {
   ValidateQuestContent,
 } from './dtos/demo-validator.dto';
 import { RabbitMQService } from '../transporter/services';
-import { LoggerModule } from 'nestjs-pino';
 
 const services = [AuthService, NotificationService];
 const validators = [ValidateCodeUppercase, ValidateQuestContent];
@@ -52,40 +51,6 @@ const validators = [ValidateCodeUppercase, ValidateQuestContent];
     ElasticSearchModule,
     TransporterModule,
     TelegramBotModule,
-    LoggerModule.forRoot({
-      pinoHttp: {
-        level: process.env.APP_ENV === 'production' ? 'info' : 'debug',
-        transport: {
-          target: 'pino-pretty',
-          options: {
-            colorize: true,
-            singleLine: true,
-            ignore: 'pid,hostname',
-            messageFormat: '{msg}',
-            translateTime: 'SYS:standard',
-          },
-        },
-        // serializers: {
-        //   req: () => undefined,
-        //   res: () => undefined,
-        // },
-        customProps: (req, res) => ({
-          context: 'HTTP',
-        }),
-        customSuccessMessage: (req, res) => {
-          if (req && res) {
-            return `${req.method} ${req.url}`;
-          }
-          return 'Request completed';
-        },
-        customErrorMessage: (req, res, error) => {
-          if (req) {
-            return `${req.method} ${req.url} failed with error: ${error.message}`;
-          }
-          return 'Request failed';
-        },
-      },
-    }),
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: process.env.APP_ENV === 'production' ? 60 : 600,
@@ -136,10 +101,10 @@ const validators = [ValidateCodeUppercase, ValidateQuestContent];
       provide: APP_GUARD,
       useClass: CustomThrottlerGuard,
     },
-    {
-      provide: APP_INTERCEPTOR,
-      useClass: FormatResponseInterceptor,
-    },
+    // {
+    //   provide: APP_INTERCEPTOR,
+    //   useClass: FormatResponseInterceptor,
+    // },
   ],
 })
 export class ApiModule implements OnApplicationBootstrap {

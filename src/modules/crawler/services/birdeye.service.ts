@@ -1,7 +1,7 @@
 import { Injectable } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import UserAgent from 'user-agents';
+import { BaseRequestService } from './base-request.service';
 
 export enum EChainName {
   SOLANA = 'solana',
@@ -13,44 +13,30 @@ interface DataPrice {
 }
 
 @Injectable()
-export class BirdEyeService {
-  private readonly birdeye_api_key: string;
+export class BirdEyeService extends BaseRequestService {
   private readonly base_url: string;
   constructor(private readonly configService: ConfigService) {
-    this.birdeye_api_key = this.configService.get<string>(
-      'crawler.birdeye.api_key',
+    super(
+      configService.get<string>('crawler.birdeye.base_url'),
+      configService.get<string>('crawler.birdeye.api_key'),
     );
+
     this.base_url = this.configService.get<string>('crawler.birdeye.base_url');
   }
 
-  private _buildHeader(chainName: string) {
+  protected _buildHeader(): Record<string, string> {
+    const headers = super._buildHeader();
     return {
-      accept: 'application/json, text/plain, */*',
-      'accept-language': 'en-US,en;q=0.9',
-      origin: 'https://raydium.io',
-      priority: 'u=1, i',
-      referer: 'https://raydium.io/',
-      'sec-ch-ua':
-        '"Google Chrome";v="125", "Chromium";v="125", "Not.A/Brand";v="24"',
-      'sec-ch-ua-mobile': '?0',
-      'sec-ch-ua-platform': '"macOS"',
-      'sec-fetch-dest': 'empty',
-      'sec-fetch-mode': 'cors',
-      'sec-fetch-site': 'cross-site',
-      'user-agent': new UserAgent().toString(),
-      'x-api-key': this.birdeye_api_key,
-      'x-chain': chainName,
+      ...headers,
+      'X-API-KEY': this._apiKey,
+      'x-chain': EChainName.SOLANA,
     };
   }
 
-  async getTokenPriceByAddress(
-    address: string,
-    chainName: string = EChainName.SOLANA,
-  ): Promise<DataPrice> {
-    const url = `${this.base_url}/defi/price?address=${address}`;
-    const headers = this._buildHeader(chainName);
+  async getTokenPriceByAddress(address: string): Promise<DataPrice> {
+    const url = `${this._apiHost}/defi/price?address=${address}`;
     try {
-      const response = await axios.get(url, { headers: headers });
+      const response = await axios.get(url);
       return response.data?.data;
     } catch (error) {
       console.error('[BirdeyeService] [getTokenPriceByAddress]', error);
@@ -61,11 +47,9 @@ export class BirdEyeService {
     address: string,
     chainName: string = EChainName.SOLANA,
   ) {
-    const url = `${this.base_url}/defi/token_overview?address=${address}`;
-    const headers = this._buildHeader(chainName);
-
+    const url = `${this._apiHost}/defi/token_overview?address=${address}`;
     try {
-      const response = await axios.get(url, { headers: headers });
+      const response = await axios.get(url);
       return response.data?.data;
     } catch (error) {
       console.error('Error fetching token price data:', error);
@@ -78,10 +62,9 @@ export class BirdEyeService {
     limit: number = 100,
     offset: number = 0,
   ) {
-    const url = `${this.base_url}/defi/txs/token?address=${address}&tx_type=all&offset=${offset}&limit=${limit}`;
-    const headers = this._buildHeader(chainName);
+    const url = `${this._apiHost}/defi/txs/token?address=${address}&tx_type=all&offset=${offset}&limit=${limit}`;
     try {
-      const response = await axios.get(url, { headers: headers });
+      const response = await axios.get(url);
       return response.data?.data;
     } catch (error) {
       console.error('Error fetching token price data:', error);
@@ -118,5 +101,23 @@ export class BirdEyeService {
       }
     }
     return { numQuery, txnLogs };
+  }
+
+  async getWalletTradesHistoryAnchor(
+    address: string,
+    chainName: EChainName = EChainName.SOLANA,
+    limit: number = 100,
+    before?: string,
+  ) {
+    const url = `${this.base_url}/wallet/tx_list/token?wallet=${address}&limit=${limit}${before ? `&before=${before}` : ''}`;
+    try {
+      const response = await this.sendRequest({
+        method: 'GET',
+        url: url,
+      });
+      return response.data;
+    } catch (error) {
+      console.error('Error fetching token price data:', error);
+    }
   }
 }
