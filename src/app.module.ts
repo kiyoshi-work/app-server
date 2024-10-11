@@ -15,6 +15,7 @@ import { MilvusModule } from './modules/milvus-db/milvus.module';
 import { CrawlerModule } from './modules/crawler/crawler.module';
 import { GameModule } from './modules/game/game.module';
 import { LoggerModule } from 'nestjs-pino';
+import { ResilienceModule } from 'nestjs-resilience';
 
 const isApi = Boolean(Number(process.env.IS_API || 0));
 const isWS = Boolean(Number(process.env.IS_WS || 0));
@@ -96,6 +97,7 @@ if (process.env.APP_ENV) {
       },
       exclude: [{ method: RequestMethod.ALL, path: 'health' }],
     }),
+    ResilienceModule.forRoot({}),
     ..._modules,
   ],
   controllers: [],

@@ -76,6 +76,9 @@ This layer contains the core business logic and processing:
   - Authorization game server using Colyseus: Manages game session authentication, ensures real-time synchronization of game state with clients.
   - Turn-based game lifecycle framework: Provides structure for implementing core game loop for turn-based games
 
+- **Resilience Patterns**
+  - Reliable patterns for building resilient applications using `nestjs-resilience`: Provides strategies to ensure that application can handle failures and recover quickly, improving the reliability and fault-tolerance of services.
+
 ### 3. Data Layer
 
 This layer manages data storage and retrieval across multiple databases:

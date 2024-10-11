@@ -32,6 +32,16 @@ import {
 import { CacheTTL } from '@nestjs/cache-manager';
 import { CustomThrottlerGuard } from '../guards/custom-throttler.guard';
 import { Throttle } from '@nestjs/throttler';
+import {
+  BulkheadStrategy,
+  CacheStrategy,
+  ResilienceFactory,
+  RetryStrategy,
+  sleep,
+  ThrottleStrategy,
+  TimeoutStrategy,
+  UseResilience,
+} from 'nestjs-resilience';
 
 @ApiTags('Health')
 @Controller('/health')
@@ -63,7 +73,7 @@ export class HealthController {
   @ResponseMessage('Health check')
   @Get('')
   async healthCheck() {
-    return 1;
+    return await this.health();
   }
 
   @Get('telegram-bot')
@@ -114,5 +124,19 @@ export class HealthController {
   @UseGuards(JwtAuthGuard)
   async createCampaign(@Body(DemoValidatePipe) body: DemoDTO) {
     return body;
+  }
+
+  @UseResilience(
+    // new TimeoutStrategy(1000),
+    new RetryStrategy({ maxRetries: 4 }),
+    new ThrottleStrategy({ ttl: 50000, limit: 2 }),
+    new CacheStrategy(3000),
+    new BulkheadStrategy({ maxConcurrent: 5, maxQueue: 2 }),
+  )
+  async health() {
+    // await sleep(1000);
+    console.log('object');
+    // throw new Error('hehe');
+    return 1;
   }
 }
