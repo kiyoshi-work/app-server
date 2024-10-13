@@ -41,11 +41,12 @@ This layer handles incoming requests and implements various middleware and utili
     - Response formatting: Ensures consistent API responses
     - Context awareness: Provides request-specific information to handlers
     - Swagger integration: Automatically generates API documentation
+    - Integrates structured logging into request and response cycles, allowing for better tracking and debugging of API calls.
   - Exception filters: Centralized error handling for consistent error responses
   - Pipes: For input validation and data transformation
 
 - **WebSocket Integration**
-  - Socket.IO: Enables real-time, bidirectional communication with adapter
+  - Socket.IO with Redis Adapter: Enables real-time, bidirectional communication with scalability, allowing multiple server instances for efficient message distribution.
   - Channel management by rooms: Organizes connections for efficient message distribution
   - Message compression: Reduces bandwidth usage for real-time communications
 
@@ -77,7 +78,7 @@ This layer contains the core business logic and processing:
   - Turn-based game lifecycle framework: Provides structure for implementing core game loop for turn-based games
 
 - **Resilience Patterns**
-  - Reliable patterns for building resilient applications using `nestjs-resilience`: Provides strategies to ensure that application can handle failures and recover quickly, improving the reliability and fault-tolerance of services.
+  - Reliable patterns for building resilient applications using `nestjs-resilience`: Provides strategies to ensure that application can handle failures and recover quickly, improving the reliability and fault-tolerance of services: Circuit Breaker, Retry, Timeout, Bulkhead, Fallback, Rate Limiting.
 
 ### 3. Data Layer
 
@@ -102,7 +103,7 @@ The project implements multiple methods for service communication:
 - Google Pub/Sub: Scalable, fully-managed messaging service for larger deployments
 
 #### Crawler Module
-Implements scraper proxies for data collection from various sources, enhancing the ability to gather and process information from external websites: BirdEye, DexTools, DexScreener, RapidAPI, Twitter, CoinGecko
+Implements scraper proxies for data collection from various sources, enhancing the ability to gather and process information from external websites: BirdEye, DexTools, DexScreener, RapidAPI, Twitter, CoinGecko, ...
 
 #### Docker Support
 
@@ -111,21 +112,10 @@ The project includes Docker configurations for all services and monitoring tools
 ## Technologies Used
 
 - NestJS: A progressive Node.js framework for building efficient and scalable server-side applications
-- TypeScript: Adds static typing to JavaScript for improved developer experience and code quality
-- Socket.IO: Enables real-time, bidirectional and event-based communication
 - BullMQ: Redis-based queue for handling distributed jobs and messages
 - LangChain.js: Framework for developing applications powered by language models
 - Colyseus: Multiplayer game framework for Node.js
-- PostgreSQL: Open-source relational database
-- TimescaleDB: Time-series database built on PostgreSQL
-- Redis: In-memory data structure store used as a database, cache, and message broker
-- pgvector: PostgreSQL extension for vector similarity search
-- Milvus: Open-source vector database for embedding similarity search and AI applications
-- Firestore: NoSQL document database by Google
 - Elasticsearch: Distributed search and analytics engine
-- RabbitMQ: Open-source message broker
-- Google Pub/Sub: Fully-managed real-time messaging service
-- Docker: Platform for developing, shipping, and running applications in containers
 - OneSignal: Cross-platform push notification service
 - Google Cloud Storage: Object storage service by Google Cloud
 

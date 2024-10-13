@@ -7,7 +7,7 @@ import { ClientRepository } from '@/database/repositories';
 import {
   GetNotificationDTO,
   PushNotificationDto,
-} from '../dtos/notification.dto';
+} from '@/api/dtos/notification.dto';
 import { UserNotificationRepository } from '@/modules/database/repositories/user-notification.repository';
 import { EventManager } from '@/modules/event/event.manager';
 import { SendNotiExternalEvent } from '@/modules/event/impls/sent-noti-external.event';

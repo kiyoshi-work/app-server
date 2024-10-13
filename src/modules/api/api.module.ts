@@ -6,14 +6,9 @@ import {
   NotificationController,
 } from '@/api/controllers';
 import { ConfigModule, ConfigService } from '@nestjs/config';
-import { AuthService } from '@/api/services';
 import { AppFirestoreRepository, FirebaseModule } from '@/modules/firebase';
 import { configCache, configFirebase } from '@/modules/api/configs';
-import { OnesignalModule } from '../onesignal/onesignal.module';
-import { NotificationService } from './services/notification.service';
 import { HealthController } from './controllers/health.controller';
-import { Notification } from '@/onesignal/http/v1/notification';
-import { EventModule } from '@/modules/event/event.module';
 import { CacheModule, CacheStore } from '@nestjs/cache-manager';
 import { TimescaleDBModule } from '@/modules/timescale-db';
 import { UploadFileModule } from '../upload-file/upload-file.module';
@@ -26,7 +21,6 @@ import { redisStore } from 'cache-manager-redis-store';
 import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { CustomThrottlerGuard } from './guards/custom-throttler.guard';
 import { ThrottlerModule } from '@nestjs/throttler';
-import { configTwitterAuth } from './configs/twitter-auth';
 import { ElasticSearchModule } from '@/elasticsearch/elasticsearch.module';
 import { TransporterModule } from '@/transporter/transporter.module';
 import { TelegramBotModule } from '../telegram-bot';
@@ -36,14 +30,12 @@ import {
   ValidateQuestContent,
 } from './dtos/demo-validator.dto';
 import { RabbitMQService } from '../transporter/services';
+import { BusinessModule } from '@/business/business.module';
 
-const services = [AuthService, NotificationService];
 const validators = [ValidateCodeUppercase, ValidateQuestContent];
 @Module({
   imports: [
     DatabaseModule,
-    OnesignalModule,
-    EventModule,
     TimescaleDBModule,
     QueueModule,
     UploadFileModule,
@@ -51,6 +43,7 @@ const validators = [ValidateCodeUppercase, ValidateQuestContent];
     ElasticSearchModule,
     TransporterModule,
     TelegramBotModule,
+    BusinessModule,
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: process.env.APP_ENV === 'production' ? 60 : 600,
@@ -64,7 +57,7 @@ const validators = [ValidateCodeUppercase, ValidateQuestContent];
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
-      load: [configFirebase, configCache, configAuth, configTwitterAuth],
+      load: [configFirebase, configCache, configAuth],
     }),
     JwtModule.registerAsync({
       useFactory: (configService: ConfigService) => ({
@@ -95,7 +88,6 @@ const validators = [ValidateCodeUppercase, ValidateQuestContent];
     AssistantController,
   ],
   providers: [
-    ...services,
     ...validators,
     {
       provide: APP_GUARD,
@@ -111,7 +103,6 @@ export class ApiModule implements OnApplicationBootstrap {
   constructor(
     @Inject('APP_FIRESTORE')
     private appFirestoreRepository: AppFirestoreRepository,
-    private readonly oneSignalNotification: Notification,
 
     @Inject(QueueService)
     private queueService: QueueService,
@@ -126,13 +117,6 @@ export class ApiModule implements OnApplicationBootstrap {
     // await this.queueService.testLock2(1000);
     // await this.queueService.testFail(4);
     // await this.appFirestoreRepository.test();
-    // await this.oneSignalNotification.sendToAll({
-    //   title: 'testnoti',
-    //   launchUrl: '/ccccc',
-    //   content: 'casca',
-    //   onesignalAppId: '611f78ab-1f2b-40e0-9e7b-c5eef7ce8ca0',
-    //   onesignalApiKey: 'YzE4NmRmNDUtY2NkOC00OGVkLWIxODktNTk3YTgxM2FhYmJm',
-    // });
     // const m = await this.rabbitMQService.send('TEST_MQ_EVENT', {
     //   test: 1,
     // });

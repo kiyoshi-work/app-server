@@ -23,7 +23,7 @@ const isVM = Boolean(Number(process.env.IS_VM || 0));
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
-    logger: false,
+    // logger: false,
     bufferLogs: true,
   });
   app.useLogger(app.get(PinoLogger));

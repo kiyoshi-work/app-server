@@ -2,12 +2,10 @@ import { Inject, Injectable } from '@nestjs/common';
 import OAuth from 'oauth';
 import { ConfigService } from '@nestjs/config';
 import axios from 'axios';
-import { Cache } from 'cache-manager';
-import { CACHE_MANAGER } from '@nestjs/cache-manager';
 import { TJWTPayload } from '@/shared/types';
-import { TwitterOauthDto } from '../dtos/login.dto';
 import { JwtService } from '@nestjs/jwt';
-import { UserRepository } from '@/modules/database/repositories';
+import { UserRepository } from '@/database/repositories';
+import { TwitterOauthDto } from '@/api/dtos/login.dto';
 
 @Injectable()
 export class AuthService {
@@ -15,7 +13,6 @@ export class AuthService {
   constructor(
     private readonly configService: ConfigService,
     private readonly userRepository: UserRepository,
-    @Inject(CACHE_MANAGER) private readonly cache: Cache,
     private readonly jwtService: JwtService,
   ) {
     this.oauth = new OAuth.OAuth(

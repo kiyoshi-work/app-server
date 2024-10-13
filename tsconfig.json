@@ -33,6 +33,7 @@
       "@/blockchain/*": ["modules/blockchain/*"],
       "@/api": ["modules/api/index"],
       "@/api/*": ["modules/api/*"],
+      "@/business/*": ["modules/business/*"],
       "@/logger": ["modules/logger/index"],
       "@/logger/*": ["modules/logger/*"],
       "@/worker": ["modules/worker/index"],

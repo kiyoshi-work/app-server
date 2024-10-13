@@ -12,7 +12,7 @@ import {
   GetNotificationDTO,
   PushNotificationDto,
 } from '../dtos/notification.dto';
-import { NotificationService } from '../services/notification.service';
+import { NotificationService } from '@/business/services/notification.service';
 import { CacheTTL } from '@nestjs/cache-manager';
 import { ApiBaseResponse } from '@/shared/swagger/decorator/api-response.decorator';
 import { ResponseMessage } from '@/shared/decorators/response-message.decorator';

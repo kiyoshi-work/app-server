@@ -7,7 +7,7 @@ import {
   Post,
 } from '@nestjs/common';
 import { ApiOperation, ApiTags } from '@nestjs/swagger';
-import { AuthService } from '@/api/services/auth.service';
+import { AuthService } from '@/business/services/auth.service';
 import { ApiBaseResponse } from '@/shared/swagger/decorator/api-response.decorator';
 import { TwitterOauthDto } from '../dtos/login.dto';
 
