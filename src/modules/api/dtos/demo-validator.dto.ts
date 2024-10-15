@@ -138,6 +138,13 @@ export enum QuestType {
 })
 @Injectable()
 export class ValidateQuestContent implements ValidatorConstraintInterface {
+  /**
+   * Validates the quest content based on the specified platform and quest type.
+   * This function determines the appropriate class for validation using the platform and type
+   * provided in the validation arguments, creates an instance of that class with the given value,
+   * and checks for validation errors. If the platform/type combination is unsupported or if
+   * validation fails, it throws an error; otherwise, it returns true indicating successful validation.
+   */
   async validate(
     value: any,
     validationArguments?: ValidationArguments,
@@ -286,6 +293,7 @@ export class CreateQuestDto {
 export class DemoDTO extends ContextAwareDTO {
   @ApiProperty({
     required: true,
+    example: '2020-01-01',
   })
   @IsDateString()
   start_date: Date;
@@ -293,6 +301,16 @@ export class DemoDTO extends ContextAwareDTO {
   @ApiProperty({
     required: true,
     type: [CreateQuestDto],
+    example: [
+      {
+        quest_content: {
+          post_id: '1234567890',
+          url: 'https://facebook.com/example-post',
+        },
+        platform: Platform.Facebook,
+        type: QuestType.Likes,
+      },
+    ],
   })
   // @Validate(ValidateCampaignQuest)
   // TIP: use ValidateNested + Type to validate nested array, execute from down->up

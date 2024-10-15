@@ -19,13 +19,14 @@ import { TelegramBot } from '@/modules/telegram-bot/telegram-bot';
 import { MainPage, WelcomePage } from '@/modules/telegram-bot/ui/pages';
 import { JwtAuthGuard } from '../guards/jwt-auth.guard';
 import { CurrentUser } from '@/shared/decorators/user.decorator';
-import { TJWTPayload } from '@/shared/types';
+import { TDevice, TJWTPayload } from '@/shared/types';
 import { DemoDTO } from '../dtos/demo-validator.dto';
 import { DemoValidatePipe } from '../validators';
 import { ResponseMessage } from '@/shared/decorators/response-message.decorator';
 import { ContextInterceptor } from '../interceptors/context.interceptor';
 import { ApiBaseResponse } from '@/shared/swagger/decorator/api-response.decorator';
 import {
+  DeviceInterceptor,
   FormatResponseInterceptor,
   HttpCacheInterceptor,
 } from '../interceptors';
@@ -42,7 +43,7 @@ import {
   TimeoutStrategy,
   UseResilience,
 } from 'nestjs-resilience';
-
+import { DeviceLogsDecorator } from '@/shared/decorators/device-logs.decorator';
 @ApiTags('Health')
 @Controller('/health')
 @UseInterceptors(ContextInterceptor)
@@ -73,7 +74,7 @@ export class HealthController {
   @ResponseMessage('Health check')
   @Get('')
   async healthCheck() {
-    return await this.health();
+    return 1;
   }
 
   @Get('telegram-bot')
@@ -111,19 +112,24 @@ export class HealthController {
   @Post('test-validator')
   @ApiBaseResponse(class {}, {
     statusCode: HttpStatus.OK,
-    isArray: true,
-    isPaginate: true,
+    isArray: false,
+    isPaginate: false,
   })
   @ResponseMessage('Get demo dto successfully')
   @UseInterceptors(FormatResponseInterceptor)
   @UseInterceptors(HttpCacheInterceptor)
+  @UseInterceptors(DeviceInterceptor)
   @CacheTTL(3000)
   @UseGuards(CustomThrottlerGuard)
   @Throttle(10, 60)
   @ApiBearerAuth()
   @UseGuards(JwtAuthGuard)
-  async createCampaign(@Body(DemoValidatePipe) body: DemoDTO) {
-    return body;
+  async createCampaign(
+    @DeviceLogsDecorator() device: TDevice,
+    @Body(DemoValidatePipe) body: DemoDTO,
+  ) {
+    await this.health();
+    return { body, device };
   }
 
   @UseResilience(

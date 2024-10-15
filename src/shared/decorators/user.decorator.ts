@@ -6,7 +6,7 @@ export const CurrentUser = createParamDecorator(
     const request = ctx.switchToHttp().getRequest();
     return (
       request?.user || {
-        sub: 'd470ccc9-fa52-4e51-8ee5-46f8992b9ab7',
+        sub: 'cad5500d-7cd4-4fb2-8da0-d12b8bd815a8',
         address: '',
       }
     );

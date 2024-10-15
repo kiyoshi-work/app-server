@@ -26,7 +26,10 @@ export class JwtAuthGuard implements CanActivate {
       return true;
     }
     const request = context.switchToHttp().getRequest();
-    const token = this.extractTokenFromHeader(request);
+    let token = this.extractTokenFromCookies(request);
+    if (!token) {
+      token = this.extractTokenFromHeader(request);
+    }
     if (!token) {
       throw new UnauthorizedException();
     }
@@ -34,7 +37,7 @@ export class JwtAuthGuard implements CanActivate {
       const payload: TJWTPayload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('auth.key.jwt_secret_key'),
       });
-      if (!(await this.userRepository.exist({ where: { id: payload.sub } }))) {
+      if (!(await this.userRepository.exists({ where: { id: payload.sub } }))) {
         throw {
           status_code: HttpStatus.UNAUTHORIZED,
           message: `Not found user`,
@@ -53,5 +56,10 @@ export class JwtAuthGuard implements CanActivate {
   private extractTokenFromHeader(request: Request): string | undefined {
     const [type, token] = request.headers.authorization?.split(' ') ?? [];
     return type === 'Bearer' ? token : undefined;
+  }
+
+  private extractTokenFromCookies(request: Request): string | undefined {
+    const cookies = request?.['cookies'];
+    return cookies?.access_token;
   }
 }

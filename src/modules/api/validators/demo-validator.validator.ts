@@ -21,7 +21,6 @@ export class DemoValidatePipe implements PipeTransform<any> {
   }
 
   async transform(data: DemoDTO, metadata: ArgumentMetadata) {
-    console.log(this.request, 'iiim');
     if (this.validateToken(data.start_date.toString())) {
       return data;
     } else {

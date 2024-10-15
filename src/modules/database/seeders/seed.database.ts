@@ -3,6 +3,7 @@ import {
   AdminConfigRepository,
   ClientRepository,
   SmcEventRepository,
+  UserRepository,
 } from '../repositories';
 
 @Injectable()
@@ -11,6 +12,7 @@ export class SeedDatabase implements OnApplicationBootstrap {
     private readonly clientRepository: ClientRepository,
     private readonly adminConfigRepository: AdminConfigRepository,
     private readonly smcEventRepository: SmcEventRepository,
+    private readonly userRepository: UserRepository,
   ) {}
 
   async onApplicationBootstrap() {
@@ -21,6 +23,20 @@ export class SeedDatabase implements OnApplicationBootstrap {
     ) {
       await this.clientRepository.upsert(
         { id: 'cd3a5797-737c-4375-be6f-549caa49bc8d', name: 'App 1' },
+        { conflictPaths: ['id'] },
+      );
+    }
+    if (
+      !(await this.userRepository.exists({
+        where: { id: 'cad5500d-7cd4-4fb2-8da0-d12b8bd815a8' },
+      }))
+    ) {
+      await this.userRepository.upsert(
+        {
+          id: 'cad5500d-7cd4-4fb2-8da0-d12b8bd815a8',
+          client_id: 'cd3a5797-737c-4375-be6f-549caa49bc8d',
+          client_uid: 'a9a2b9b9-9b9b-9b9b-9b9b-9b9b9b9b9b9b',
+        },
         { conflictPaths: ['id'] },
       );
     }

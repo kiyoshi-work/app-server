@@ -5,6 +5,11 @@ export type TJWTPayload = {
   address?: string;
 };
 
+export type TDevice = {
+  user_agent: string;
+  ip: string;
+};
+
 export type TMessage<T> = {
   type: EMainRoomPhase;
   data: T;
