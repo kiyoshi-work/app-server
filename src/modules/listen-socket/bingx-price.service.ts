@@ -2,7 +2,7 @@ import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { Interval } from '@nestjs/schedule';
 import WebSocket from 'ws';
 import zlib from 'zlib';
-import { GCPubSubService } from '../publisher/services/google-pubsub.service';
+import { GCPubSubService } from '@/transporter/services/google-pubsub.service';
 
 @Injectable()
 export class BingXPriceService implements OnApplicationBootstrap {

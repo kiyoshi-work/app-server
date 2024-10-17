@@ -3,13 +3,13 @@ import { DatabaseModule } from '@/database';
 import { ConfigModule } from '@nestjs/config';
 import { ScheduleModule } from '@nestjs/schedule';
 import { BingXPriceService } from './bingx-price.service';
-import { PublisherModule } from '../publisher';
+import { TransporterModule } from '@/transporter/transporter.module';
 
 @Module({
   imports: [
     DatabaseModule,
     ScheduleModule.forRoot(),
-    PublisherModule,
+    TransporterModule,
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
@@ -20,7 +20,7 @@ import { PublisherModule } from '../publisher';
   exports: [BingXPriceService],
 })
 export class ListenSocketModule implements OnApplicationBootstrap {
-  constructor() { }
+  constructor() {}
   async onApplicationBootstrap() {
     // const t = await this.tokenStatRepository.find();
     // console.log(t);
