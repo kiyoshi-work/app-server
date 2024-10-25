@@ -52,6 +52,7 @@
       "@/transporter/*": ["modules/transporter/*"],
       "@/game/*": ["modules/game/*"],
       "@/queue/*": ["modules/queue/*"],
+      "@/worker-thread/*": ["modules/worker-thread/*"],
       "@/redis-cache/*": ["modules/redis-cache/*"]
     }
   },

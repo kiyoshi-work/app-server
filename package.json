@@ -87,7 +87,8 @@
     "rxjs": "^7.8.1",
     "socket.io-client": "^4.7.2",
     "typeorm": "^0.3.17",
-    "user-agents": "^1.1.232"
+    "user-agents": "^1.1.232",
+    "worker-thread": "^1.1.0"
   },
   "devDependencies": {
     "@colyseus/loadtest": "^0.15.0",

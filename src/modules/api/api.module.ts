@@ -31,6 +31,7 @@ import {
 } from './dtos/demo-validator.dto';
 import { RabbitMQService } from '../transporter/services';
 import { BusinessModule } from '@/business/business.module';
+import { WorkerThreadModule } from '@/worker-thread/worker-thread.module';
 
 const validators = [ValidateCodeUppercase, ValidateQuestContent];
 @Module({
@@ -44,6 +45,7 @@ const validators = [ValidateCodeUppercase, ValidateQuestContent];
     TransporterModule,
     TelegramBotModule,
     BusinessModule,
+    WorkerThreadModule,
     ThrottlerModule.forRoot({
       ttl: 60,
       limit: process.env.APP_ENV === 'production' ? 60 : 600,

@@ -15,8 +15,11 @@ This project is a comprehensive backend utility service built with NestJS, imple
     - [3. Data Layer](#3-data-layer)
     - [4. Others](#4-others)
       - [Service Communication](#service-communication)
+      - [Worker Thread Integration](#worker-thread-integration)
+      - [Resilience Patterns](#resilience-patterns)
       - [Crawler Module](#crawler-module)
       - [Docker Support](#docker-support)
+      - [Google Cloud Build](#google-cloud-build)
   - [Technologies Used](#technologies-used)
   - [Getting Started](#getting-started)
   - [Contact](#contact)
@@ -45,7 +48,7 @@ This layer handles incoming requests and implements various middleware and utili
   - Exception filters: Centralized error handling for consistent error responses
   - Pipes: For input validation and data transformation
 
-- **WebSocket Integration**
+- **WebSocket Gateway**
   - Socket.IO with Redis Adapter: Enables real-time, bidirectional communication with scalability, allowing multiple server instances for efficient message distribution.
   - Channel management by rooms: Organizes connections for efficient message distribution
   - Message compression: Reduces bandwidth usage for real-time communications
@@ -77,9 +80,6 @@ This layer contains the core business logic and processing:
   - Authorization game server using Colyseus: Manages game session authentication, ensures real-time synchronization of game state with clients.
   - Turn-based game lifecycle framework: Provides structure for implementing core game loop for turn-based games
 
-- **Resilience Patterns**
-  - Reliable patterns for building resilient applications using `nestjs-resilience`: Provides strategies to ensure that application can handle failures and recover quickly, improving the reliability and fault-tolerance of services: Circuit Breaker, Retry, Timeout, Bulkhead, Fallback, Rate Limiting.
-
 ### 3. Data Layer
 
 This layer manages data storage and retrieval across multiple databases:
@@ -102,12 +102,22 @@ The project implements multiple methods for service communication:
 - Redis Pub/Sub: For lightweight, real-time messaging between services
 - Google Pub/Sub: Scalable, fully-managed messaging service for larger deployments
 
+#### Worker Thread Integration
+To enhance performance and prevent blocking the main event loop, the project incorporates a worker thread for thread pool (heavy computations, file I/O, CPU-bound, ...) tasks. This ensures that the main thread remains responsive to I/O and network requests. The worker thread implementation leverages Node.js's `worker_threads` module, enabling parallel execution and improved application throughput.
+
+#### Resilience Patterns
+
+Reliable patterns for building resilient applications using `nestjs-resilience`: Provides strategies to ensure that application can handle failures and recover quickly, improving the reliability and fault-tolerance of services: Circuit Breaker, Retry, Timeout, Bulkhead, Fallback, Rate Limiting.
+
 #### Crawler Module
 Implements scraper proxies for data collection from various sources, enhancing the ability to gather and process information from external websites: BirdEye, DexTools, DexScreener, RapidAPI, Twitter, CoinGecko, ...
 
 #### Docker Support
 
 The project includes Docker configurations for all services and monitoring tools in the `docker-compose.yml` file, enabling easy deployment and scaling of the entire application stack.
+
+#### Google Cloud Build
+Includes `cloudbuild.yaml` file for triggering Google Cloud Build, facilitating containerization for deployment on Cloud Run and virtual machines (VMs). The configuration automates the build process, ensuring that the application is packaged and deployed efficiently.
 
 ## Technologies Used
 

@@ -44,6 +44,8 @@ import {
   UseResilience,
 } from 'nestjs-resilience';
 import { DeviceLogsDecorator } from '@/shared/decorators/device-logs.decorator';
+import { WorkerThreadService } from '@/worker-thread/worker-thread.service';
+
 @ApiTags('Health')
 @Controller('/health')
 @UseInterceptors(ContextInterceptor)
@@ -54,6 +56,7 @@ export class HealthController {
     private readonly rabbitMqService: RabbitMQService,
     private readonly queueService: QueueService,
     private readonly redisMQService: RedisMQService,
+    private readonly workerThreadService: WorkerThreadService,
     private readonly bot: TelegramBot,
   ) {}
 
@@ -144,5 +147,10 @@ export class HealthController {
     console.log('object');
     // throw new Error('hehe');
     return 1;
+  }
+
+  @Get('/test-worker-thread')
+  async testWorkerThread() {
+    return this.workerThreadService.runPrimesWorker(100000);
   }
 }
