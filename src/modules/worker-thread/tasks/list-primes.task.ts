@@ -3,7 +3,7 @@ import { workerData, parentPort } from 'worker_threads';
 import { WorkerThreadModule } from '../worker-thread.module';
 import { WorkerThreadService } from '../worker-thread.service';
 
-const primes = (n: number) => {
+export const primes = (n: number) => {
   const primes: number[] = [];
 
   for (let i = 2; i <= n; i++) {
@@ -18,13 +18,13 @@ const primes = (n: number) => {
       primes.push(i);
     }
   }
-  return primes;
+  return primes[primes.length - 1];
 };
 
 const loop = () => {
   const st = Date.now();
   while (true) {
-    if (Date.now() - st > 10000) {
+    if (Date.now() - st > 20000) {
       break;
     }
   }
@@ -35,11 +35,12 @@ async function run() {
   const workerThread =
     await NestFactory.createApplicationContext(WorkerThreadModule);
   const workerThreadService = workerThread.get(WorkerThreadService);
-  workerThreadService.checkMainThread();
-
-  const numPrimes: number = workerData;
-  const listPrimes = primes(numPrimes);
-  parentPort.postMessage(listPrimes);
+  if (!workerThreadService.checkMainThread()) {
+    const numPrimes: number = workerData;
+    const prime = primes(numPrimes);
+    // const listPrimes = loop();
+    parentPort.postMessage(prime);
+  }
 }
 
 run();

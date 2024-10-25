@@ -11,6 +11,7 @@ export class WorkerThreadService {
       'Are we on the main thread here?',
       isMainThread ? 'Yes.' : 'No.',
     );
+    return isMainThread;
   }
 
   runWorker(filepath: string, data: any): Promise<any> {

@@ -45,6 +45,7 @@ import {
 } from 'nestjs-resilience';
 import { DeviceLogsDecorator } from '@/shared/decorators/device-logs.decorator';
 import { WorkerThreadService } from '@/worker-thread/worker-thread.service';
+import { primes } from '@/modules/worker-thread/tasks/list-primes.task';
 
 @ApiTags('Health')
 @Controller('/health')
@@ -151,6 +152,7 @@ export class HealthController {
 
   @Get('/test-worker-thread')
   async testWorkerThread() {
-    return this.workerThreadService.runPrimesWorker(100000);
+    // return primes(10000000);
+    return this.workerThreadService.runPrimesWorker(10000000);
   }
 }
