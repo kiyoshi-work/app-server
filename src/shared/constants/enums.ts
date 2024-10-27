@@ -14,12 +14,16 @@ export enum EOrderStatus {
   Cancel = 'CANCEL',
 }
 
-export enum EPriceRange {
-  R_5ME = '5ME',
-  R_1D = '1D',
-  R_7D = '7D',
-  R_1M = '1M',
-  R_1Y = '1Y',
+export enum EPriceInterval {
+  Second1 = 'Second1',
+  Min1 = 'Min1',
+  Min5 = 'Min5',
+  Min15 = 'Min15',
+  Hour1 = 'Hour1',
+  Hour4 = 'Hour4',
+  Day1 = 'Day1',
+  // Week1 = 'Week1',
+  // Month1 = 'Month1',
 }
 
 export enum EAIModel {

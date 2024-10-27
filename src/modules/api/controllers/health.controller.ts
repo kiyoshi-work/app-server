@@ -71,7 +71,9 @@ export class HealthController {
   }
 
   async funErr() {
-    const response = await fetch('https://api.example.com/data');
+    const response = await fetch('https://example.com/');
+    const resp = await response.json();
+    console.log(resp);
     // throw new ForbiddenException('TEST SENTRY 111');
   }
 
@@ -153,6 +155,6 @@ export class HealthController {
   @Get('/test-worker-thread')
   async testWorkerThread() {
     // return primes(10000000);
-    return this.workerThreadService.runPrimesWorker(10000000);
+    return this.workerThreadService.runPrimesWorker(1000000);
   }
 }

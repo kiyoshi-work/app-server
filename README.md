@@ -110,7 +110,7 @@ To enhance performance and prevent blocking the main event loop, the project inc
 Reliable patterns for building resilient applications using `nestjs-resilience`: Provides strategies to ensure that application can handle failures and recover quickly, improving the reliability and fault-tolerance of services: Circuit Breaker, Retry, Timeout, Bulkhead, Fallback, Rate Limiting.
 
 #### Crawler Module
-Implements scraper proxies for data collection from various sources, enhancing the ability to gather and process information from external websites: BirdEye, DexTools, DexScreener, RapidAPI, Twitter, CoinGecko, ...
+Implements scraper proxies for data collection from various sources, enhancing the ability to gather and process information from external websites: DexTools, DexScreener, RapidAPI, Twitter, CoinGecko, ...
 
 #### Docker Support
 

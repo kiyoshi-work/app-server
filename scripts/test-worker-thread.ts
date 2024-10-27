@@ -33,12 +33,16 @@ import axios from 'axios';
   // 9999991 22279
   // 9999991 24514
 
-  //   await Promise.all(
-  //     Array.from({ length: 10 }).map(async (dt) => {
-  //       const res = await axios.get(
-  //         'http://localhost:8000/api/health/test-worker-thread',
-  //       );
-  //       console.log(res.data, dt);
-  //     }),
-  //   );
+  // await Promise.all([
+  //   ...Array.from({ length: 10 }).map(async (dt) => {
+  //     const res = await axios.get(
+  //       'http://localhost:8000/api/health/test-worker-thread',
+  //     );
+  //     console.log(res.data, dt);
+  //   }),
+  //   (async () => {
+  //     const res = await fetch('https://example.com/');
+  //     const t = await res.json();
+  //   })(),
+  // ]);
 })();

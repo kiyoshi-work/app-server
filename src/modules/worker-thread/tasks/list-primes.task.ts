@@ -1,5 +1,5 @@
 import { NestFactory } from '@nestjs/core';
-import { workerData, parentPort } from 'worker_threads';
+import { workerData, parentPort, isMainThread } from 'worker_threads';
 import { WorkerThreadModule } from '../worker-thread.module';
 import { WorkerThreadService } from '../worker-thread.service';
 
@@ -32,10 +32,10 @@ const loop = () => {
 };
 
 async function run() {
-  const workerThread =
-    await NestFactory.createApplicationContext(WorkerThreadModule);
-  const workerThreadService = workerThread.get(WorkerThreadService);
-  if (!workerThreadService.checkMainThread()) {
+  // const workerThread =
+  //   await NestFactory.createApplicationContext(WorkerThreadModule);
+  // const workerThreadService = workerThread.get(WorkerThreadService);
+  if (!isMainThread) {
     const numPrimes: number = workerData;
     const prime = primes(numPrimes);
     // const listPrimes = loop();

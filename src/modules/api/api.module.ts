@@ -91,10 +91,10 @@ const validators = [ValidateCodeUppercase, ValidateQuestContent];
   ],
   providers: [
     ...validators,
-    {
-      provide: APP_GUARD,
-      useClass: CustomThrottlerGuard,
-    },
+    // {
+    //   provide: APP_GUARD,
+    //   useClass: CustomThrottlerGuard,
+    // },
     // {
     //   provide: APP_INTERCEPTOR,
     //   useClass: FormatResponseInterceptor,
