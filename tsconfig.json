@@ -53,6 +53,7 @@
       "@/game/*": ["modules/game/*"],
       "@/queue/*": ["modules/queue/*"],
       "@/worker-thread/*": ["modules/worker-thread/*"],
+      "@/jrpc/*": ["modules/jrpc/*"],
       "@/redis-cache/*": ["modules/redis-cache/*"]
     }
   },

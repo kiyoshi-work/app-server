@@ -19,6 +19,7 @@ const GAMESERVER_PORT = Number(process.env.GAMESERVER_PORT || '3000');
 const isGameServer = Boolean(Number(process.env.IS_GAME_SERVER || 0));
 const isWS = Boolean(Number(process.env.IS_WS || 0));
 const isApi = Boolean(Number(process.env.IS_API || 0));
+const isJRpc = Boolean(Number(process.env.IS_JRPC || 0));
 const isVM = Boolean(Number(process.env.IS_VM || 0));
 
 async function bootstrap() {
@@ -105,7 +106,7 @@ async function bootstrap() {
     app.use('/colyseus', monitor());
   }
 
-  if (isApi) {
+  if (isApi || isJRpc) {
     // TIP: to inject class-validator
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
     const corsOrigin = process.env.CORS_ORIGIN.split(',') || [

@@ -16,8 +16,10 @@ import { CrawlerModule } from './modules/crawler/crawler.module';
 import { GameModule } from './modules/game/game.module';
 import { LoggerModule } from 'nestjs-pino';
 import { ResilienceModule } from 'nestjs-resilience';
+import { JRPCModule } from './modules/jrpc';
 
 const isApi = Boolean(Number(process.env.IS_API || 0));
+const isJRpc = Boolean(Number(process.env.IS_JRPC || 0));
 const isWS = Boolean(Number(process.env.IS_WS || 0));
 const isVM = Boolean(Number(process.env.IS_VM || 0));
 const isGameServer = Boolean(Number(process.env.IS_GAME_SERVER || 0));
@@ -28,6 +30,9 @@ if (isWS) {
 }
 if (isApi) {
   _modules = [..._modules, ApiModule];
+}
+if (isJRpc) {
+  _modules = [..._modules, JRPCModule];
 }
 if (isVM) {
   _modules = [

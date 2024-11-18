@@ -121,6 +121,24 @@ export class CoingeckoService extends BaseRequestService {
     }
   }
 
+  async getTokenPriceBasic(address: string, network: string = 'solana') {
+    try {
+      // const url = `/onchain/simple/networks/${network}/token_price/${address}`;
+      const url = `/simple/token_price/${network}`;
+      const response = await this.sendRequest({
+        method: 'GET',
+        url: url,
+        params: {
+          contract_addresses: address,
+          vs_currencies: 'usd',
+        },
+      });
+      return Number(response?.[address]?.['usd']);
+    } catch (error) {
+      throw error;
+    }
+  }
+
   async fetchCryptoData(ids: string[] = ['ethereum', 'bitcoin']) {
     const url = `/coins/markets?vs_currency=usd&order=market_cap_desc&sparkline=false&locale=en&ids=${ids.join(', ')}%2Cbitcoin`;
     try {
