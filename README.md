@@ -11,7 +11,15 @@ This project is a comprehensive backend utility service built with NestJS, imple
   - [Table of Contents](#table-of-contents)
   - [Architecture](#architecture)
     - [1. Access (Gateway) Layer](#1-access-gateway-layer)
+      - [**Restful API Implementation**](#restful-api-implementation)
+      - [**WebSocket Gateway**](#websocket-gateway)
+      - [**JSON-RPC**](#json-rpc)
+      - [**Telegram Bot Integration**](#telegram-bot-integration)
     - [2. Executor (Business) Layer](#2-executor-business-layer)
+      - [**Worker Processes**](#worker-processes)
+      - [**Blockchain Integration**](#blockchain-integration)
+      - [**AI Capabilities**](#ai-capabilities)
+      - [**Game Services**](#game-services)
     - [3. Data Layer](#3-data-layer)
     - [4. Others](#4-others)
       - [Service Communication](#service-communication)
@@ -36,7 +44,7 @@ The project follows a 3-layer architecture:
 
 This layer handles incoming requests and implements various middleware and utilities:
 
-- **API Implementation**
+#### **Restful API Implementation**
   - Guards: JWT authentication and RBAC (Role-Based Access Control) for secure access
   - Rate Limiter: Prevents API abuse by limiting request frequency
   - Interceptors:
@@ -48,12 +56,16 @@ This layer handles incoming requests and implements various middleware and utili
   - Exception filters: Centralized error handling for consistent error responses
   - Pipes: For input validation and data transformation
 
-- **WebSocket Gateway**
+#### **WebSocket Gateway**
   - Socket.IO with Redis Adapter: Enables real-time, bidirectional communication with scalability, allowing multiple server instances for efficient message distribution.
   - Channel management by rooms: Organizes connections for efficient message distribution
   - Message compression: Reduces bandwidth usage for real-time communications
 
-- **Telegram Bot Integration**
+#### **JSON-RPC**
+  - The `JRPCModule` provides a JSON-RPC interface for the application. It is configured to handle requests at the `/rpc` endpoint.
+  - **Handlers**: `DomainHandler` which acts like a controller in a RESTful API to manage requests.
+
+#### **Telegram Bot Integration**
   - Socket-based listener and responder: Enables real-time interaction with Telegram
   - Multiple interactive functions: Provides various bot commands and features
   - Internationalization (i18n) support: Allows multi-language bot responses
@@ -62,21 +74,20 @@ This layer handles incoming requests and implements various middleware and utili
 
 This layer contains the core business logic and processing:
 
-- **Worker Processes**
+#### **Worker Processes**
   - Schedulers: Manage time-based tasks and recurring jobs
   - BullMQ consumers: Handle background processing and job queues
-
-- **Blockchain Integration**
+#### **Blockchain Integration**
   - Smart contract interactions: Allows the service to interact with blockchain-based applications
   - Transaction synchronization: Keeps the service in sync with blockchain state
 
-- **AI Capabilities**
+#### **AI Capabilities**
   - RAG (Retrieval-Augmented Generation) pipeline: Enhances AI responses with relevant retrieved information
   - LLM (Large Language Model) integration: Enables advanced natural language processing
   - Function calling with LangChain.js: Allows dynamic execution of functions based on AI input
   - Performance monitoring with Langfuse: Tracks and optimizes AI model performance
 
-- **Game Services**
+#### **Game Services**
   - Authorization game server using Colyseus: Manages game session authentication, ensures real-time synchronization of game state with clients.
   - Turn-based game lifecycle framework: Provides structure for implementing core game loop for turn-based games
 
