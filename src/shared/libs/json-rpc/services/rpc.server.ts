@@ -110,7 +110,10 @@ export class JsonRpcServer {
       switchMap((body) =>
         this.resolveWaitingResponse(body, request, response, next),
       ),
-      catchError((err) => of(err)),
+      catchError((err) => {
+        console.error('Error occurred in lifecycle:', err); // Log the error
+        return of(err);
+      }),
       map((result) =>
         this.resolveResponseOrNullIfNotification(result, request.body),
       ),

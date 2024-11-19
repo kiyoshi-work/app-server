@@ -31,7 +31,7 @@ export class JwtAuthGuard implements CanActivate {
       token = this.extractTokenFromHeader(request);
     }
     if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('access token not found');
     }
     try {
       const payload: TJWTPayload = await this.jwtService.verifyAsync(token, {

@@ -22,22 +22,22 @@ export class JwtJRPCAuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    if (!process.env.APP_ENV || process.env.APP_ENV === 'local') {
-      return true;
-    }
-    const request = context.switchToHttp().getRequest();
-    let token = this.extractTokenFromCookies(request);
+    // if (!process.env.APP_ENV || process.env.APP_ENV === 'local') {
+    //   return true;
+    // }
+    const request = context.switchToRpc().getData();
+    const token = this.extractTokenFromParams(request);
     if (!token) {
-      token = this.extractTokenFromParams(request);
-    }
-    if (!token) {
-      throw new UnauthorizedException();
+      throw new UnauthorizedException('access token not found');
     }
     try {
       const payload: TJWTPayload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('auth.key.jwt_secret_key'),
       });
-      if (!(await this.userRepository.exists({ where: { id: payload.sub } }))) {
+      if (
+        !payload.sub ||
+        !(await this.userRepository.exists({ where: { id: payload.sub } }))
+      ) {
         throw {
           status_code: HttpStatus.UNAUTHORIZED,
           message: `Not found user`,
@@ -54,11 +54,6 @@ export class JwtJRPCAuthGuard implements CanActivate {
   }
 
   private extractTokenFromParams(request: Request): string | undefined {
-    return request?.params?.access_token;
-  }
-
-  private extractTokenFromCookies(request: Request): string | undefined {
-    const cookies = request?.['cookies'];
-    return cookies?.access_token;
+    return request?.body?.params?.access_token;
   }
 }

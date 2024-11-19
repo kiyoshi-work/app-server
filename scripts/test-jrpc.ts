@@ -5,13 +5,13 @@ axios
     'http://localhost:8000/rpc',
     {
       jsonrpc: '2.0',
-      method: 'health.check',
-      // method: 'health.guard',
+      // method: 'health.check',
+      method: 'health.guard',
       // method: 'health.signin',
       id: 2,
       params: {
         test: 1,
-        token:
+        access_token:
           'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpZCI6IiIsImlhdCI6MTczMTkyNTA5OH0.vNaeQG7pr-OOczpB0qW1sCZ4lBwAbPM-IlVRnnkYjT4',
       },
     },
