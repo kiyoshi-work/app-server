@@ -53,7 +53,7 @@ This layer handles incoming requests and implements various middleware and utili
     - Context awareness: Provides request-specific information to handlers
     - Swagger integration: Automatically generates API documentation
     - Integrates structured logging into request and response cycles, allowing for better tracking and debugging of API calls.
-  - Exception filters: Centralized error handling for consistent error responses
+  - Exception filters: Customize error handling for consistent error responses
   - Pipes: For input validation and data transformation
 
 #### **WebSocket Gateway**
