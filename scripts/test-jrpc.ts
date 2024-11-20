@@ -5,8 +5,8 @@ axios
     'http://localhost:8000/rpc',
     {
       jsonrpc: '2.0',
-      // method: 'health.check',
-      method: 'health.guard',
+      method: 'health.check',
+      // method: 'health.guard',
       // method: 'health.signin',
       id: 2,
       params: {

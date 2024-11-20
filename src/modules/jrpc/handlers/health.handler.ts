@@ -9,6 +9,7 @@ import {
 import { NotFoundException, UseGuards } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
 import { JwtJRPCAuthGuard } from '../guards/jwt-auth-jrpc.guard';
+import { ForbiddenException } from '@/shared/exceptions';
 
 @RpcHandler({ method: 'health' })
 export class HealthHandler {
@@ -21,6 +22,14 @@ export class HealthHandler {
     @RpcId() id: number | string,
     @RpcMethod() method: string,
   ) {
+    // try {
+    //   const response = await fetch('https://example.com/');
+    //   const resp = await response.json();
+    //   console.log(resp);
+    // } catch (error) {
+    //   // throw error.message;
+    //   throw ForbiddenException.FORBIDDEN(error.message);
+    // }
     return 1;
   }
 

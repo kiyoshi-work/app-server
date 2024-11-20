@@ -181,6 +181,7 @@ export class JsonRpcServer {
     { jsonrpc = '2.0', method, id }: Partial<RpcRequestInterface>,
     error: RpcException,
   ): RpcErrorInterface {
+    console.log(error, 'result');
     return {
       jsonrpc,
       error,

@@ -4,7 +4,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { GCPubSubServer } from 'nestjs-google-pubsub-microservice';
 import { RedisIoAdapter } from './modules/websocket/services/redis.adapter';
-import { GlobalExceptionFilter } from './modules/api/filters/GlobalExceptionFilter';
 import { RedisOptions, RmqOptions, Transport } from '@nestjs/microservices';
 import { GameService } from '@/game/game.service';
 import { playground } from '@colyseus/playground';
@@ -119,7 +118,6 @@ async function bootstrap() {
       // credentials: true,
     });
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
-    app.useGlobalFilters(new GlobalExceptionFilter(true, true));
 
     // app.useStaticAssets(join(__dirname, '.', 'public'));
     // app.setBaseViewsDir(join(__dirname, '.', 'views'));

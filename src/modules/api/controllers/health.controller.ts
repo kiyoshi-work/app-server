@@ -2,7 +2,6 @@ import { AppFirestoreRepository } from '@/modules/firebase';
 import {
   Body,
   Controller,
-  ForbiddenException,
   Get,
   HttpStatus,
   Inject,
@@ -46,6 +45,7 @@ import {
 import { DeviceLogsDecorator } from '@/shared/decorators/device-logs.decorator';
 import { WorkerThreadService } from '@/worker-thread/worker-thread.service';
 import { primes } from '@/modules/worker-thread/tasks/list-primes.task';
+import { ForbiddenException } from '@/shared/exceptions';
 
 @ApiTags('Health')
 @Controller('/health')
@@ -71,10 +71,14 @@ export class HealthController {
   }
 
   async funErr() {
-    const response = await fetch('https://example.com/');
-    const resp = await response.json();
-    console.log(resp);
-    // throw new ForbiddenException('TEST SENTRY 111');
+    try {
+      const response = await fetch('https://example.com/');
+      const resp = await response.json();
+      console.log(resp);
+    } catch (error) {
+      // throw error;
+      throw ForbiddenException.FORBIDDEN(error.message);
+    }
   }
 
   @ResponseMessage('Health check')

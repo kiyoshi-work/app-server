@@ -18,7 +18,7 @@ import { configAuth } from './configs/auth';
 import { JwtModule } from '@nestjs/jwt';
 import { AiModule } from '../ai/ai.module';
 import { redisStore } from 'cache-manager-redis-store';
-import { APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
+import { APP_FILTER, APP_GUARD, APP_INTERCEPTOR } from '@nestjs/core';
 import { CustomThrottlerGuard } from './guards/custom-throttler.guard';
 import { ThrottlerModule } from '@nestjs/throttler';
 import { ElasticSearchModule } from '@/elasticsearch/elasticsearch.module';
@@ -32,6 +32,14 @@ import {
 import { RabbitMQService } from '../transporter/services';
 import { BusinessModule } from '@/business/business.module';
 import { WorkerThreadModule } from '@/worker-thread/worker-thread.module';
+import {
+  AllExceptionsFilter,
+  BadRequestExceptionFilter,
+  ForbiddenExceptionFilter,
+  NotFoundExceptionFilter,
+  UnauthorizedExceptionFilter,
+  ValidationExceptionFilter,
+} from './filters';
 
 const validators = [ValidateCodeUppercase, ValidateQuestContent];
 @Module({
@@ -99,6 +107,20 @@ const validators = [ValidateCodeUppercase, ValidateQuestContent];
     //   provide: APP_INTERCEPTOR,
     //   useClass: FormatResponseInterceptor,
     // },
+    {
+      provide: APP_FILTER,
+      useFactory: () => {
+        return new AllExceptionsFilter(
+          process.env.APP_ENV !== 'production',
+          false,
+        );
+      },
+    },
+    { provide: APP_FILTER, useClass: ValidationExceptionFilter },
+    { provide: APP_FILTER, useClass: BadRequestExceptionFilter },
+    { provide: APP_FILTER, useClass: UnauthorizedExceptionFilter },
+    { provide: APP_FILTER, useClass: ForbiddenExceptionFilter },
+    { provide: APP_FILTER, useClass: NotFoundExceptionFilter },
   ],
 })
 export class ApiModule implements OnApplicationBootstrap {

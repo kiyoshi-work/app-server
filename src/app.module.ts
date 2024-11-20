@@ -17,6 +17,9 @@ import { GameModule } from './modules/game/game.module';
 import { LoggerModule } from 'nestjs-pino';
 import { ResilienceModule } from 'nestjs-resilience';
 import { JRPCModule } from './modules/jrpc';
+import * as crypto from 'crypto';
+import { IncomingMessage } from 'http';
+import { ServerResponse } from 'http';
 
 const isApi = Boolean(Number(process.env.IS_API || 0));
 const isJRpc = Boolean(Number(process.env.IS_JRPC || 0));
@@ -69,36 +72,36 @@ if (process.env.APP_ENV) {
     CrawlerModule,
     LoggerModule.forRoot({
       pinoHttp: {
-        level: process.env.APP_ENV === 'production' ? 'info' : 'debug',
+        genReqId: () => crypto.randomUUID(),
+        level: 'info',
         transport: {
           target: 'pino-pretty',
           options: {
             colorize: true,
             singleLine: true,
             ignore: 'pid,hostname',
-            messageFormat: '{msg}',
             translateTime: 'SYS:standard',
           },
         },
-        // serializers: {
-        //   req: () => undefined,
-        //   res: () => undefined,
-        // },
+        serializers: {
+          req(request: IncomingMessage) {
+            return {
+              method: request.method,
+              url: request.url,
+              id: request.id,
+              // Including the headers in the log could be in violation of privacy laws, e.g. GDPR.
+              // headers: request.headers,
+            };
+          },
+          res(reply: ServerResponse) {
+            return {
+              statusCode: reply.statusCode,
+            };
+          },
+        },
         customProps: (req, res) => ({
           context: 'HTTP',
         }),
-        customSuccessMessage: (req, res) => {
-          if (req && res) {
-            return `${req.method} ${req.url}`;
-          }
-          return 'Request completed';
-        },
-        customErrorMessage: (req, res, error) => {
-          if (req) {
-            return `${req.method} ${req.url} failed with error: ${error.message}`;
-          }
-          return 'Request failed';
-        },
       },
       exclude: [{ method: RequestMethod.ALL, path: 'health' }],
     }),

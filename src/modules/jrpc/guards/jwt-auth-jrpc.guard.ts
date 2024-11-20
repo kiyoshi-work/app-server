@@ -1,4 +1,5 @@
 import { UserRepository } from '@/database/repositories';
+import { UnauthorizedException } from '@/shared/exceptions';
 import { TJWTPayload } from '@/shared/types';
 import {
   CanActivate,
@@ -6,7 +7,7 @@ import {
   HttpStatus,
   Inject,
   Injectable,
-  UnauthorizedException,
+  // UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
@@ -28,7 +29,8 @@ export class JwtJRPCAuthGuard implements CanActivate {
     const request = context.switchToRpc().getData();
     const token = this.extractTokenFromParams(request);
     if (!token) {
-      throw new UnauthorizedException('access token not found');
+      throw UnauthorizedException.JSON_WEB_TOKEN_ERROR();
+      // throw new UnauthorizedException('access token not found');
     }
     try {
       const payload: TJWTPayload = await this.jwtService.verifyAsync(token, {
@@ -38,6 +40,7 @@ export class JwtJRPCAuthGuard implements CanActivate {
         !payload.sub ||
         !(await this.userRepository.exists({ where: { id: payload.sub } }))
       ) {
+        throw UnauthorizedException.UNAUTHORIZED_ACCESS();
         throw {
           status_code: HttpStatus.UNAUTHORIZED,
           message: `Not found user`,
