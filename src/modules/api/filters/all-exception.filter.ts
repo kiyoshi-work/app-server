@@ -3,15 +3,15 @@ import {
   Catch,
   ExceptionFilter,
   HttpStatus,
+  Logger,
 } from '@nestjs/common';
 import { Request, Response } from 'express';
 // import { JsonLogger, LoggerFactory } from 'json-logger-service';
-import { v1 as uuidv1 } from 'uuid';
-import { IntegrationError } from './IntegrationError';
+import { IntegrationError } from './integration-error';
 
 // https://github.com/marciopd/nestjs-exceptions
 @Catch()
-export class GlobalExceptionFilter implements ExceptionFilter {
+export class AllExceptionsFilter implements ExceptionFilter {
   private static extractIntegrationErrorDetails(error: any): string {
     if (!(error instanceof IntegrationError)) {
       return undefined;
@@ -37,8 +37,9 @@ export class GlobalExceptionFilter implements ExceptionFilter {
   }
 
   // private logger: JsonLogger = LoggerFactory.createLogger(
-  //   GlobalExceptionFilter.name,
+  //   AllExceptionsFilter.name,
   // );
+  private readonly logger = new Logger(AllExceptionsFilter.name);
 
   public constructor(
     private readonly sendClientInternalServerErrorCause: boolean = false,
@@ -50,7 +51,6 @@ export class GlobalExceptionFilter implements ExceptionFilter {
     const ctx = host.switchToHttp();
     const response = ctx.getResponse<Response>();
     const request = ctx.getRequest<Request>();
-
     const responseStatus = exception.status
       ? exception.status
       : HttpStatus.INTERNAL_SERVER_ERROR;
@@ -58,64 +58,28 @@ export class GlobalExceptionFilter implements ExceptionFilter {
       exception,
       responseStatus,
     );
-    let errorId = undefined;
-    let integrationErrorDetails = undefined;
-
-    if (responseStatus === HttpStatus.INTERNAL_SERVER_ERROR) {
-      errorId = uuidv1();
-      integrationErrorDetails =
-        GlobalExceptionFilter.extractIntegrationErrorDetails(exception);
-
-      console.error(
-        {
-          errorId: errorId,
-          route: request.url,
-          integrationErrorDetails,
-          stack:
-            exception.stack && JSON.stringify(exception.stack, ['stack'], 4),
-        },
-        messageObject,
-      );
-    } else if (
+    const errorObject = {
+      traceId: request.id,
+      route: request.url,
+      timestamp: new Date().toISOString(),
+      ...messageObject,
+      integrationErrorDetails:
+        responseStatus === HttpStatus.INTERNAL_SERVER_ERROR
+          ? AllExceptionsFilter.extractIntegrationErrorDetails(exception)
+          : undefined,
+      stack: exception.stack && JSON.stringify(exception.stack, ['stack'], 4),
+    };
+    if (
       this.logAllErrors ||
       this.logErrorsWithStatusCode.indexOf(responseStatus) !== -1
     ) {
-      console.error(
-        {
-          route: request.url,
-          stack: exception.stack && JSON.stringify(exception.stack),
-        },
-        messageObject,
-      );
+      this.logger.warn(errorObject);
     }
-
-    response.status(responseStatus).json({
-      errorId: errorId,
-      ...this.getClientResponseMessage(responseStatus, exception),
-      integrationErrorDetails:
-        responseStatus === HttpStatus.INTERNAL_SERVER_ERROR &&
-        this.sendClientInternalServerErrorCause
-          ? integrationErrorDetails
-          : undefined,
-    });
-  }
-
-  private getClientResponseMessage(
-    responseStatus: number,
-    exception: any,
-  ): any {
-    if (
-      responseStatus !== HttpStatus.INTERNAL_SERVER_ERROR ||
-      (responseStatus === HttpStatus.INTERNAL_SERVER_ERROR &&
-        this.sendClientInternalServerErrorCause)
-    ) {
-      return this.getBackwardsCompatibleMessageObject(
-        exception,
-        responseStatus,
-      );
+    if (!this.sendClientInternalServerErrorCause) {
+      delete errorObject.stack;
+      delete errorObject.integrationErrorDetails;
     }
-
-    return 'Internal server error.';
+    response.status(responseStatus).json(errorObject);
   }
 
   private getBackwardsCompatibleMessageObject(

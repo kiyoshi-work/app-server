@@ -40,8 +40,6 @@
       "@/worker/*": ["modules/worker/*"],
       "@/shared/*": ["shared/*"],
       "@/event/*": ["modules/event/*"],
-      "@/publisher": ["modules/publisher/index"],
-      "@/publisher/*": ["modules/publisher/*"],
       "@/listen-socket/*": ["modules/listen-socket/*"],
       "@/sync-contract/*": ["modules/sync-contract/*"],
       "@/onesignal": ["modules/onesignal"],
@@ -54,6 +52,8 @@
       "@/transporter/*": ["modules/transporter/*"],
       "@/game/*": ["modules/game/*"],
       "@/queue/*": ["modules/queue/*"],
+      "@/worker-thread/*": ["modules/worker-thread/*"],
+      "@/jrpc/*": ["modules/jrpc/*"],
       "@/redis-cache/*": ["modules/redis-cache/*"]
     }
   },

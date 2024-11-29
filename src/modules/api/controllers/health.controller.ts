@@ -2,7 +2,6 @@ import { AppFirestoreRepository } from '@/modules/firebase';
 import {
   Body,
   Controller,
-  ForbiddenException,
   Get,
   HttpStatus,
   Inject,
@@ -44,6 +43,10 @@ import {
   UseResilience,
 } from 'nestjs-resilience';
 import { DeviceLogsDecorator } from '@/shared/decorators/device-logs.decorator';
+import { WorkerThreadService } from '@/worker-thread/worker-thread.service';
+import { primes } from '@/modules/worker-thread/tasks/list-primes.task';
+import { ForbiddenException } from '@/shared/exceptions';
+
 @ApiTags('Health')
 @Controller('/health')
 @UseInterceptors(ContextInterceptor)
@@ -54,6 +57,7 @@ export class HealthController {
     private readonly rabbitMqService: RabbitMQService,
     private readonly queueService: QueueService,
     private readonly redisMQService: RedisMQService,
+    private readonly workerThreadService: WorkerThreadService,
     private readonly bot: TelegramBot,
   ) {}
 
@@ -67,8 +71,14 @@ export class HealthController {
   }
 
   async funErr() {
-    const response = await fetch('https://api.example.com/data');
-    // throw new ForbiddenException('TEST SENTRY 111');
+    try {
+      const response = await fetch('https://example.com/');
+      const resp = await response.json();
+      console.log(resp);
+    } catch (error) {
+      // throw error;
+      throw ForbiddenException.FORBIDDEN(error.message);
+    }
   }
 
   @ResponseMessage('Health check')
@@ -144,5 +154,11 @@ export class HealthController {
     console.log('object');
     // throw new Error('hehe');
     return 1;
+  }
+
+  @Get('/test-worker-thread')
+  async testWorkerThread() {
+    // return primes(10000000);
+    return this.workerThreadService.runPrimesWorker(1000000);
   }
 }

@@ -3,6 +3,8 @@ import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
 import { configRabbitMq } from './configs/rabbitmq.config';
 import { RabbitMQService, RedisMQService } from './services';
+import { configGCPubSub } from './configs/gcpubsub.config';
+import { GCPubSubService } from './services/google-pubsub.service';
 
 // https://github.com/jmaicaaan/tutorial-nestjs-rabbitmq
 @Module({
@@ -10,7 +12,7 @@ import { RabbitMQService, RedisMQService } from './services';
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
-      load: [configRabbitMq],
+      load: [configRabbitMq, configGCPubSub],
     }),
     ClientsModule.register([
       {
@@ -35,7 +37,7 @@ import { RabbitMQService, RedisMQService } from './services';
       },
     ]),
   ],
-  providers: [RabbitMQService, RedisMQService],
-  exports: [RabbitMQService, RedisMQService],
+  providers: [RabbitMQService, RedisMQService, GCPubSubService],
+  exports: [RabbitMQService, RedisMQService, GCPubSubService],
 })
 export class TransporterModule {}

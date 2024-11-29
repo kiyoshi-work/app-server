@@ -1,4 +1,5 @@
 import { UserRepository } from '@/database/repositories';
+import { UnauthorizedException } from '@/shared/exceptions';
 import { TJWTPayload } from '@/shared/types';
 import {
   CanActivate,
@@ -6,14 +7,14 @@ import {
   HttpStatus,
   Inject,
   Injectable,
-  UnauthorizedException,
+  // UnauthorizedException,
 } from '@nestjs/common';
 import { ConfigService } from '@nestjs/config';
 import { JwtService } from '@nestjs/jwt';
 import { Request } from 'express';
 
 @Injectable()
-export class JwtAuthGuard implements CanActivate {
+export class JwtJRPCAuthGuard implements CanActivate {
   @Inject(UserRepository)
   private userRepository: UserRepository;
   constructor(
@@ -22,22 +23,24 @@ export class JwtAuthGuard implements CanActivate {
   ) {}
 
   async canActivate(context: ExecutionContext): Promise<boolean> {
-    if (!process.env.APP_ENV || process.env.APP_ENV === 'local') {
-      return true;
-    }
-    const request = context.switchToHttp().getRequest();
-    let token = this.extractTokenFromCookies(request);
+    // if (!process.env.APP_ENV || process.env.APP_ENV === 'local') {
+    //   return true;
+    // }
+    const request = context.switchToRpc().getData();
+    const token = this.extractTokenFromParams(request);
     if (!token) {
-      token = this.extractTokenFromHeader(request);
-    }
-    if (!token) {
-      throw new UnauthorizedException('access token not found');
+      throw UnauthorizedException.JSON_WEB_TOKEN_ERROR();
+      // throw new UnauthorizedException('access token not found');
     }
     try {
       const payload: TJWTPayload = await this.jwtService.verifyAsync(token, {
         secret: this.configService.get<string>('auth.key.jwt_secret_key'),
       });
-      if (!(await this.userRepository.exists({ where: { id: payload.sub } }))) {
+      if (
+        !payload.sub ||
+        !(await this.userRepository.exists({ where: { id: payload.sub } }))
+      ) {
+        throw UnauthorizedException.UNAUTHORIZED_ACCESS();
         throw {
           status_code: HttpStatus.UNAUTHORIZED,
           message: `Not found user`,
@@ -53,13 +56,7 @@ export class JwtAuthGuard implements CanActivate {
     return true;
   }
 
-  private extractTokenFromHeader(request: Request): string | undefined {
-    const [type, token] = request.headers.authorization?.split(' ') ?? [];
-    return type === 'Bearer' ? token : undefined;
-  }
-
-  private extractTokenFromCookies(request: Request): string | undefined {
-    const cookies = request?.['cookies'];
-    return cookies?.access_token;
+  private extractTokenFromParams(request: Request): string | undefined {
+    return request?.body?.params?.access_token;
   }
 }

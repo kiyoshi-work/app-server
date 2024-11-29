@@ -4,7 +4,6 @@ import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { GCPubSubServer } from 'nestjs-google-pubsub-microservice';
 import { RedisIoAdapter } from './modules/websocket/services/redis.adapter';
-import { GlobalExceptionFilter } from './modules/api/filters/GlobalExceptionFilter';
 import { RedisOptions, RmqOptions, Transport } from '@nestjs/microservices';
 import { GameService } from '@/game/game.service';
 import { playground } from '@colyseus/playground';
@@ -19,6 +18,7 @@ const GAMESERVER_PORT = Number(process.env.GAMESERVER_PORT || '3000');
 const isGameServer = Boolean(Number(process.env.IS_GAME_SERVER || 0));
 const isWS = Boolean(Number(process.env.IS_WS || 0));
 const isApi = Boolean(Number(process.env.IS_API || 0));
+const isJRpc = Boolean(Number(process.env.IS_JRPC || 0));
 const isVM = Boolean(Number(process.env.IS_VM || 0));
 
 async function bootstrap() {
@@ -105,7 +105,7 @@ async function bootstrap() {
     app.use('/colyseus', monitor());
   }
 
-  if (isApi) {
+  if (isApi || isJRpc) {
     // TIP: to inject class-validator
     useContainer(app.select(AppModule), { fallbackOnErrors: true });
     const corsOrigin = process.env.CORS_ORIGIN.split(',') || [
@@ -118,7 +118,6 @@ async function bootstrap() {
       // credentials: true,
     });
     app.useGlobalPipes(new ValidationPipe({ transform: true }));
-    app.useGlobalFilters(new GlobalExceptionFilter(true, true));
 
     // app.useStaticAssets(join(__dirname, '.', 'public'));
     // app.setBaseViewsDir(join(__dirname, '.', 'views'));
