@@ -54,8 +54,8 @@ export class ChatGateway
   }
 
   @SubscribeMessage('ping')
-  ping() {
-    this.wss.emit('pong');
+  ping(@ConnectedSocket() client: Socket) {
+    client.emit('pong');
   }
 
   emitChatResponse(clientId: string, data: any) {

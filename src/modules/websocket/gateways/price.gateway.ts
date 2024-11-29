@@ -60,8 +60,8 @@ export class PriceGateway
   }
 
   @SubscribeMessage('ping')
-  ping() {
-    this.wss.emit('pong');
+  ping(@ConnectedSocket() client: Socket) {
+    client.emit('pong');
   }
 
   @SubscribeMessage('message')

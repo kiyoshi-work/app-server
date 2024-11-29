@@ -78,7 +78,8 @@ export class QueueService {
       {},
       {
         attempts: attempts,
-        delay: 10000,
+        backoff: 4000,
+        // delay: 10000,
         removeOnComplete: 20,
         removeOnFail: true,
       },
