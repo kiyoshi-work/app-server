@@ -4,6 +4,9 @@ import { ConfigModule, ConfigService } from '@nestjs/config';
 import { configQueue } from './configs';
 import { QueueService } from './queue.service';
 import { QUEUE_NAME } from '@/shared/constants/queue';
+import { BullBoardModule } from '@bull-board/nestjs';
+import { ExpressAdapter } from '@bull-board/express';
+import { BullAdapter } from '@bull-board/api/bullAdapter';
 
 @Module({
   imports: [
@@ -34,6 +37,10 @@ import { QUEUE_NAME } from '@/shared/constants/queue';
       //   duration: 10000,
       // },
     }),
+    BullBoardModule.forFeature({
+      name: QUEUE_NAME.USER,
+      adapter: BullAdapter,
+    }),
     BullModule.registerQueue({
       name: QUEUE_NAME.TELEGRAM_BOT,
     }),
@@ -41,6 +48,10 @@ import { QUEUE_NAME } from '@/shared/constants/queue';
       isGlobal: true,
       expandVariables: true,
       load: [configQueue],
+    }),
+    BullBoardModule.forRoot({
+      route: '/admin/queues',
+      adapter: ExpressAdapter,
     }),
   ],
   controllers: [],

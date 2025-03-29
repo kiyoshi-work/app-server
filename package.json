@@ -23,6 +23,10 @@
     "test:e2e": "jest --config ./test/jest-e2e.json"
   },
   "dependencies": {
+    "@bull-board/api": "^6.7.10",
+    "@bull-board/express": "^6.7.10",
+    "@bull-board/nestjs": "^6.7.10",
+    "@bull-board/ui": "^6.7.10",
     "@colyseus/command": "^0.2.1",
     "@colyseus/monitor": "^0.15.0",
     "@colyseus/playground": "^0.15.3",
