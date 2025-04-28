@@ -1,0 +1,4 @@
+export enum SessionState {
+  NONE = 'NONE',
+  INPUT_INVITATION_CODE_STATUS = 'INPUT_INVITATION_CODE_STATUS',
+}

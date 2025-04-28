@@ -2,8 +2,7 @@ import { Inject, Injectable } from '@nestjs/common';
 import { COMMAND_KEYS } from '@/telegram-bot/constants/command-keys';
 import {
   Handler,
-  StartHandler,
-  ComingSoonHandler,
+   ComingSoonHandler,
   VerifySignatureCodeButtonHandler,
   UserAgreeToTermsHandlers,
   UserDisagreeToTermsHandlers,
@@ -12,9 +11,6 @@ import { UserInputHandler } from '../handlers/user-input.handler';
 
 @Injectable()
 export class HandlerService {
-  @Inject(StartHandler)
-  private startHandler: StartHandler;
-
   @Inject(ComingSoonHandler)
   private comingSoonHandler: ComingSoonHandler;
 
@@ -32,7 +28,6 @@ export class HandlerService {
 
   getHandlers(): Record<string, Handler> {
     return {
-      [COMMAND_KEYS.START]: this.startHandler,
       [COMMAND_KEYS.USER_INPUT]: this.userInputHandler,
       [COMMAND_KEYS.COMMING_SOON]: this.comingSoonHandler,
       [COMMAND_KEYS.VERIFY_SIGNATURE_CODE]:

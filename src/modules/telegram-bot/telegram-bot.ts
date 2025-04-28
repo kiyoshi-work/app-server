@@ -12,15 +12,10 @@ import {
   parserMessageTelegram,
 } from './utils';
 import { Handler } from '@/telegram-bot/handlers';
-import { Menu, PageResponse, PhotoResponse } from './types';
+import { Menu, PageResponse, PhotoResponse, TelegramBotState } from './types';
 import { QueueService } from '@/queue/queue.service';
+import { SessionService } from './services/session.service';
 
-export type TelegramBotState = {
-  language_code?: string;
-  updated_at?: number;
-  chain_id?: number;
-  user_action?: EUserAction;
-};
 export const MAX_TIME_STATE_OUT_DATE = 60 * 1000; //1 minute
 
 @Injectable()
@@ -33,6 +28,9 @@ export class TelegramBot {
 
   @Inject('TELEGRAM_BOT_STATE')
   private botStateStore: Redis;
+
+  @Inject(SessionService)
+  private sessionService: SessionService;
 
   private state: Record<string, TelegramBotState>;
 
@@ -58,6 +56,7 @@ export class TelegramBot {
     } else {
       this.bot = new TelegramBotApi(token, { polling: false });
     }
+    this.bot.getMe().then((bot) => console.log('---- BOT INFO: ----', bot));
     this.bot.on('polling_error', (msg) => console.log(msg));
     this.state = {};
   }
@@ -134,12 +133,6 @@ export class TelegramBot {
     }
   }
 
-  setupStartCommand(callback: any) {
-    this.bot.onText(/\/start/, (msg) => {
-      callback(parserMessageTelegram(msg));
-    });
-  }
-
   userReply(callback: any) {
     this.bot.on('message', (msg) => {
       callback(parserMessageTelegram(msg));
@@ -147,14 +140,15 @@ export class TelegramBot {
   }
 
   setupMenuCallback(callback: any) {
-    this.bot.on('callback_query', (query) => {
+    this.bot.on('callback_query', async (query) => {
       const { data: action } = query;
       const data = parserCallbackMessageTelegram(query);
       const chatId = data.chatId.toString();
-      if (this.state[chatId]?.language_code != query.from?.language_code) {
-        this.setState(data.chatId.toString(), {
+      const session = await this.sessionService.getSession(chatId);
+      if (session?.data?.language_code != query.from?.language_code) {
+        this.sessionService.setState(data.chatId.toString(), undefined, {
           language_code: query.from.language_code,
-        }).then();
+        });
       }
       callback(action, data);
     });
@@ -162,16 +156,6 @@ export class TelegramBot {
 
   registerHandlers(handlers: Record<string, Handler>) {
     this.handlers = handlers;
-  }
-
-  async setState(telegramId: string, state: TelegramBotState) {
-    const storageState = await this.getState(telegramId);
-    state.updated_at = Date.now();
-    this.state[telegramId] = { ...storageState, ...state };
-    await this.botStateStore.hset(
-      'telegram_bot_state:chat:' + telegramId,
-      state,
-    );
   }
 
   async getState(telegramId: string, isNow = false): Promise<TelegramBotState> {
@@ -199,16 +183,13 @@ export class TelegramBot {
     }
   }
   async start() {
-    const startHandler = this.handlers[COMMAND_KEYS.START];
-
-    if (startHandler) {
-      this.setupStartCommand(startHandler.handler);
-    }
-    const userInputHandler = this.handlers[COMMAND_KEYS.USER_INPUT];
-    if (userInputHandler) {
-      this.userReply(this.handlers[COMMAND_KEYS.USER_INPUT].handler);
-    }
-
+    this.userReply((data) => {
+      return this.queueService.addCommandToQueue(
+        COMMAND_KEYS.USER_INPUT,
+        undefined,
+        data,
+      );
+    });
     this.setupMenuCallback((cmd, data) => {
       console.log('🚀 ~ REQUEST COMMAND:', { cmd });
       const { cmd: _cmd, params } = parseCommand(cmd);
