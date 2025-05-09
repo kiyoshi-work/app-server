@@ -149,3 +149,12 @@ async function bootstrap() {
   }
 }
 bootstrap();
+process.on('uncaughtException', function (err) {
+  console.error(new Date().toUTCString() + ' uncaughtException:', err.message);
+  console.error(err.stack);
+  process.exit(1);
+});
+
+process.on('unhandledRejection', (reason, promise) => {
+  console.warn('Unhandled Rejection at:', promise, 'reason:', reason);
+});
