@@ -516,7 +516,33 @@ services:
   #     interval: 10s
   #     timeout: 5s
   #     retries: 3
-  
+  n8n:
+    container_name: app-n8n
+    image: n8nio/n8n:latest
+    restart: unless-stopped
+    ports:
+      - "5678:5678"
+    environment:
+      - N8N_PORT=5678
+      - N8N_PROTOCOL=http
+      - N8N_HOST=localhost
+      - N8N_EDITOR_BASE_URL=http://localhost:5678
+      - DB_TYPE=postgresdb
+      - DB_POSTGRESDB_HOST=database
+      - DB_POSTGRESDB_PORT=5432
+      - DB_POSTGRESDB_DATABASE=n8n
+      - DB_POSTGRESDB_USER=root
+      - DB_POSTGRESDB_PASSWORD=123456
+      - WEBHOOK_URL=http://localhost:5678/
+      - EXECUTIONS_PROCESS=main
+      - GENERIC_TIMEZONE=UTC
+    volumes:
+      - app-n8n-data:/home/node/.n8n
+    networks:
+      - app-server-network
+    depends_on:
+      - database
+
 networks:
   app-server-network:
     driver: bridge
@@ -541,6 +567,8 @@ volumes:
   app-clickhouse-data:
     driver: local
   app-clickhouse-logs:
+    driver: local
+  app-n8n-data:
     driver: local
 
 # https://docs.timescale.com/self-hosted/latest/install/installation-docker/
