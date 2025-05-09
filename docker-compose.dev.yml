@@ -35,14 +35,22 @@ services:
     volumes:
       - app-redis:/data
       # - redis-conf:/usr/local/etc/redis/redis.conf
+    healthcheck:
+      test: redis-cli ping
+      interval: 5s
+      timeout: 1s
+      retries: 5
 
-  # redis:
-  #   container_name: app-redis
-  #   image: redis
-  #   restart: unless-stopped
+
+  # redis-commander:
+  #   container_name: app-redis-commander
+  #   hostname: redis-commander
+  #   image: ghcr.io/joeferner/redis-commander:latest
+  #   restart: always
+  #   environment:
+  #     - REDIS_HOSTS=local:redis:6379
   #   ports:
-  #     - 6379:6379
-  #   command: redis-server --save 20 1 --loglevel warning
+  #     - 8081:8081
   #   networks:
   #     - app-server-network
   #   volumes:
@@ -64,6 +72,12 @@ services:
       POSTGRES_PASSWORD: 123456
     ports:
       - 5432:5432
+    healthcheck:
+        test: pg_isready -U postgres
+        start_period: 10s
+        timeout: 1s
+        retries: 5
+        interval: 5s
     networks:
       - app-server-network
 
@@ -384,7 +398,7 @@ services:
       - app-server-network
     ports:
       # - "127.0.0.1:8080:8080"
-      - "8080:8080"
+      - "32768:8080"
     volumes:
       - ./docker/searxng:/etc/searxng:rw
     environment:
@@ -401,6 +415,108 @@ services:
         max-size: "1m"
         max-file: "1"
 
+
+  # metabase:
+  #   container_name: app-metabase
+  #   image: metabase/metabase:v0.45.2
+  #   platform: linux/amd64
+  #   ports:
+  #     - "3456:3000"
+  #   environment:
+  #     - MB_DB_TYPE=postgres
+  #     - MB_DB_DBNAME=metabase
+  #     - MB_DB_PORT=5432
+  #     - MB_DB_USER=root
+  #     - MB_DB_PASS=123456
+  #     - MB_DB_HOST=database
+  #   networks:
+  #     - app-server-network
+  #   depends_on:
+  #     - database
+
+  # eventeum:
+  #   container_name: app-eventeum
+  #   image: eventeum/eventeum:latest
+  #   depends_on:
+  #     - mongodb
+  #     - rabbitmq
+  #   platform: linux/amd64
+  #   environment:
+  #     BROADCASTER_TYPE: RABBIT
+  #     RABBIT_ADDRESS: amqp://root:123456@rabbitmq:5672
+  #     # RABBIT_EXCHANGE: amq.direct
+  #     SPRING_DATA_MONGODB_PORT: 27017
+  #     SPRING_DATA_MONGODB_HOST: mongodb
+  #     ETHEREUM_NODE_URL: https://sepolia.blast.io
+  #   networks:
+  #     - app-server-network
+
+  # mongodb:
+  #   container_name: app-mongodb
+  #   image: mongo:latest
+  #   ports:
+  #     - "27017:27017"
+  #   volumes:
+  #     - ./db:/data/db
+  #   networks:
+  #     - app-server-network
+
+  # open-webui:
+  #   image: open-webui:latest
+  #   ports:
+  #     - "8080:8080"
+  #   environment:
+  #     - OPENAI_API_KEY=sk-proj-...
+  #   volumes:
+  #     - app-open-webui:/app/backend/data
+  #   networks:
+  #     - app-server-network
+
+  # langgraph-api:
+  #   image: langgraph-api:1.0.0-dev
+  #   container_name: langgraph-api-dev
+  #   build:
+  #     context: .
+  #     dockerfile: docker/langgraph/dev.dockerfile
+  #   ports:
+  #       - "8123:8000"
+  #   depends_on:
+  #       redis:
+  #           condition: service_healthy
+  #       database:
+  #           condition: service_healthy
+  #   env_file:
+  #       - .env
+  #   environment:
+  #       REDIS_URI: redis://redis:6379
+  #       LANGSMITH_API_KEY: lsv2_pt_...
+  #       POSTGRES_URI: postgres://root:123456@database:5432/postgres?sslmode=disable
+  #   networks:
+  #     - app-server-network
+
+  # clickhouse:
+  #   container_name: app-clickhouse
+  #   image: clickhouse:latest
+  #   restart: unless-stopped
+  #   ports:
+  #     - "8123:8123"   # HTTP interface
+  #     - "9002:9000"   # Native interface
+  #     - "9009:9009"   # Interserver communication port
+  #   volumes:
+  #     - app-clickhouse-data:/var/lib/clickhouse
+  #     - app-clickhouse-logs:/var/log/clickhouse-server
+  #   environment:
+  #     - CLICKHOUSE_USER=root
+  #     - CLICKHOUSE_PASSWORD=123456
+  #     - CLICKHOUSE_DB=app_clickhouse
+  #   networks:
+  #     - app-server-network
+  #   healthcheck:
+  #     test: wget --no-verbose --tries=1 --spider http://localhost:8123/ping || exit 1
+  #     interval: 10s
+  #     timeout: 5s
+  #     retries: 3
+  
 networks:
   app-server-network:
     driver: bridge
@@ -419,6 +535,12 @@ volumes:
   app-minio:
     driver: local
   app-etcd:
+    driver: local
+  app-open-webui:
+    driver: local
+  app-clickhouse-data:
+    driver: local
+  app-clickhouse-logs:
     driver: local
 
 # https://docs.timescale.com/self-hosted/latest/install/installation-docker/

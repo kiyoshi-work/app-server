@@ -7,7 +7,6 @@ import Redis from 'ioredis';
 import { HandlerService } from '@/telegram-bot/services/handler.service';
 import {
   ComingSoonHandler,
-  StartHandler,
   UserAgreeToTermsHandlers,
   UserDisagreeToTermsHandlers,
   VerifySignatureCodeButtonHandler,
@@ -17,10 +16,18 @@ import { AcceptLanguageResolver, I18nModule, QueryResolver } from 'nestjs-i18n';
 import * as path from 'path';
 import { UserInputHandler } from './handlers/user-input.handler';
 import { QueueModule } from '../queue/queue.module';
+import {
+  InputInvitationCodeCommand,
+  LogCommand,
+  StartCommand,
+} from './commands';
+import { SessionService } from './services/session.service';
+import { CommandChain } from './commands/command-chain';
+import { ScheduleModule } from '@nestjs/schedule';
 
 const handlers = [
   HandlerService,
-  StartHandler,
+  SessionService,
   ComingSoonHandler,
   UserInputHandler,
   VerifySignatureCodeButtonHandler,
@@ -28,11 +35,19 @@ const handlers = [
   UserDisagreeToTermsHandlers,
 ];
 
+const commands = [
+  CommandChain,
+  StartCommand,
+  LogCommand,
+  InputInvitationCodeCommand,
+];
+
 @Module({
   imports: [
     DatabaseModule,
     BlockchainModule,
     QueueModule,
+    ScheduleModule.forRoot(),
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
@@ -53,6 +68,7 @@ const handlers = [
   controllers: [],
   providers: [
     ...handlers,
+    ...commands,
     TelegramBot,
     {
       provide: 'TELEGRAM_BOT_STATE',

@@ -41,3 +41,29 @@ export const toNumber = (a: number | string, precision = 9) => {
     .toNearest(1 / 10 ** precision, Decimal.ROUND_DOWN)
     .toNumber();
 };
+
+export function cloneDeep<T>(obj: T): T {
+  if (obj === null || typeof obj !== 'object') {
+    return obj;
+  }
+
+  if (obj instanceof Date) {
+    return new Date(obj.getTime()) as any;
+  }
+
+  if (obj instanceof Array) {
+    return obj.map((item) => cloneDeep(item)) as any;
+  }
+
+  if (obj instanceof Object) {
+    const copy = {} as any;
+    for (const key in obj) {
+      if (Object.prototype.hasOwnProperty.call(obj, key)) {
+        copy[key] = cloneDeep(obj[key]);
+      }
+    }
+    return copy;
+  }
+
+  return obj;
+}

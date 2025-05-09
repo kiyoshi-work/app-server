@@ -20,6 +20,7 @@ This project is a comprehensive backend utility service built with NestJS, imple
       - [**Blockchain Integration**](#blockchain-integration)
       - [**AI Capabilities**](#ai-capabilities)
       - [**Game Services**](#game-services)
+      - [**Telegram Bot**](#telegram-bot)
     - [3. Data Layer](#3-data-layer)
     - [4. Others](#4-others)
       - [Service Communication](#service-communication)
@@ -90,6 +91,13 @@ This layer contains the core business logic and processing:
 #### **Game Services**
   - Authorization game server using Colyseus: Manages game session authentication, ensures real-time synchronization of game state with clients.
   - Turn-based game lifecycle framework: Provides structure for implementing core game loop for turn-based games
+
+#### **Telegram Bot**
+- **UI Components**: Custom keyboards, inline buttons with callback_query handling and pattern matching
+- **Request Processing**: Queue-based system for handling Telegram API requests
+- **Stateful Conversation Management**:
+  - User session with Redis for persistent state storage
+  - Finite State Machine (FSM) implementation for complex conversation flows
 
 ### 3. Data Layer
 
