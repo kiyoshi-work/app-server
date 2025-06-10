@@ -59,7 +59,8 @@ export class AllExceptionsFilter implements ExceptionFilter {
       responseStatus,
     );
     const errorObject = {
-      traceId: request.id,
+      traceId:
+        (request as any).id || request.headers['x-request-id'] || 'unknown',
       route: request.url,
       timestamp: new Date().toISOString(),
       ...messageObject,

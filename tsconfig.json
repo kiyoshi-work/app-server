@@ -27,6 +27,8 @@
       "@/timescale-db/*": ["modules/timescale-db/*"],
       "@/websocket": ["modules/websocket/index"],
       "@/websocket/*": ["modules/websocket/*"],
+      "@/graphql": ["modules/graphql/index"],
+      "@/graphql/*": ["modules/graphql/*"],
       "@/telegram-bot": ["modules/telegram-bot/index"],
       "@/telegram-bot/*": ["modules/telegram-bot/*"],
       "@/blockchain": ["modules/blockchain/index"],

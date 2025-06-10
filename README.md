@@ -14,6 +14,7 @@ This project is a comprehensive backend utility service built with NestJS, imple
       - [**Restful API Implementation**](#restful-api-implementation)
       - [**WebSocket Gateway**](#websocket-gateway)
       - [**JSON-RPC**](#json-rpc)
+      - [**GraphQL API**](#graphql-api)
       - [**Telegram Bot Integration**](#telegram-bot-integration)
     - [2. Executor (Business) Layer](#2-executor-business-layer)
       - [**Worker Processes**](#worker-processes)
@@ -65,6 +66,9 @@ This layer handles incoming requests and implements various middleware and utili
 #### **JSON-RPC**
   - The `JRPCModule` provides a JSON-RPC interface for the application. It is configured to handle requests at the `/rpc` endpoint.
   - **Handlers**: `DomainHandler` which acts like a controller in a RESTful API to manage requests.
+
+#### **GraphQL API**
+  - Apollo Server integration with NestJS: Provides a powerful GraphQL API endpoint at `/graphql`
 
 #### **Telegram Bot Integration**
   - Socket-based listener and responder: Enables real-time interaction with Telegram

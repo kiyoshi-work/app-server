@@ -247,7 +247,7 @@ export class MilvusDocumentRepository
     limit: number = 10,
     filter?: string,
     isExactPoint: boolean = false,
-  ) {
+  ): Promise<Document[]> {
     try {
       const vector = await this.embeddingModel.embedQuery(q);
       const results = await this.similaritySearchVectorWithScore(

@@ -1,5 +1,5 @@
-import { Schema, Context } from '@colyseus/schema';
-const type = Context.create(); // this is your @type() decorator bound to a context
+import { Schema, type } from '@colyseus/schema';
+
 export class QueueEntity extends Schema {
   @type('string') id: string = '';
   constructor(id: string) {

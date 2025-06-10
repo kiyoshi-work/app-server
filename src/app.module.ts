@@ -17,13 +17,17 @@ import { GameModule } from './modules/game/game.module';
 import { LoggerModule } from 'nestjs-pino';
 import { ResilienceModule } from 'nestjs-resilience';
 import { JRPCModule } from './modules/jrpc';
-import * as crypto from 'crypto';
 import { IncomingMessage } from 'http';
 import { ServerResponse } from 'http';
+import { GraphqlModule } from '@/graphql';
+import { GraphQLModule } from '@nestjs/graphql';
+import { ApolloDriver, ApolloDriverConfig } from '@nestjs/apollo';
+import { GraphQLJSON, GraphQLDateTime } from 'graphql-scalars';
 
 const isApi = Boolean(Number(process.env.IS_API || 0));
 const isJRpc = Boolean(Number(process.env.IS_JRPC || 0));
 const isWS = Boolean(Number(process.env.IS_WS || 0));
+const isGraphql = Boolean(Number(process.env.IS_GRAPHQL || 0));
 const isVM = Boolean(Number(process.env.IS_VM || 0));
 const isGameServer = Boolean(Number(process.env.IS_GAME_SERVER || 0));
 
@@ -37,6 +41,67 @@ if (isApi) {
 if (isJRpc) {
   _modules = [..._modules, JRPCModule];
 }
+if (isGraphql) {
+  _modules.push(
+    // GraphQL configuration
+    GraphQLModule.forRootAsync<ApolloDriverConfig>({
+      driver: ApolloDriver,
+      useFactory: () => {
+        const isDevelopment = process.env.APP_ENV !== 'production';
+        return {
+          // autoSchemaFile: 'schema.gql',
+          autoSchemaFile: true,
+          playground: true,
+          subscription: true,
+          path: '/graphql',
+          context: (request: any) => {
+            return {
+              user: request.user,
+              headers: request.headers,
+            };
+          },
+          buildSchemaOptions: {
+            fieldMiddleware: [],
+            dateScalarMode: 'isoDate',
+            numberScalarMode: 'integer',
+          },
+          resolvers: {
+            JSON: GraphQLJSON,
+            DateTime: GraphQLDateTime,
+          },
+          errorFormatter: (execution) => {
+            // Custom error formatter to prevent leaking internal errors
+            if (!isDevelopment) {
+              // In production, don't expose error details
+              return {
+                statusCode: 500,
+                response: {
+                  errors: execution.errors.map((err) => ({
+                    message: 'Internal server error',
+                    locations: err.locations,
+                    path: err.path,
+                  })),
+                },
+              };
+            }
+            // In development, show the full error
+            return {
+              statusCode: 500,
+              response: execution,
+            };
+          },
+          security: {
+            maxDepth: 7, // Limit query depth
+            maxOperations: 10, // Limit batch operations
+          },
+        };
+      },
+      inject: [],
+    }),
+    GraphqlModule,
+  );
+}
+
 if (isVM) {
   _modules = [
     ..._modules,
@@ -88,9 +153,6 @@ if (process.env.APP_ENV) {
             return {
               method: request.method,
               url: request.url,
-              id: request.id,
-              // Including the headers in the log could be in violation of privacy laws, e.g. GDPR.
-              // headers: request.headers,
             };
           },
           res(reply: ServerResponse) {
@@ -99,7 +161,7 @@ if (process.env.APP_ENV) {
             };
           },
         },
-        customProps: (req, res) => ({
+        customProps: () => ({
           context: 'HTTP',
         }),
       },

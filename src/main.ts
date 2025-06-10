@@ -20,6 +20,7 @@ const isWS = Boolean(Number(process.env.IS_WS || 0));
 const isApi = Boolean(Number(process.env.IS_API || 0));
 const isJRpc = Boolean(Number(process.env.IS_JRPC || 0));
 const isVM = Boolean(Number(process.env.IS_VM || 0));
+const isGraphql = Boolean(Number(process.env.IS_GRAPHQL || 0));
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule, {
@@ -144,6 +145,11 @@ async function bootstrap() {
   } else if (isGameServer) {
     app.listen(GAMESERVER_PORT);
     Logger.log(`🚀 Gameserver is running in port ${GAMESERVER_PORT}`);
+  } else if (isGraphql) {
+    await app.listen(PORT);
+    Logger.log(
+      `🚀 GraphQL Endpoint available at: http://localhost:${PORT}/graphql`,
+    );
   } else {
     await app.init();
   }

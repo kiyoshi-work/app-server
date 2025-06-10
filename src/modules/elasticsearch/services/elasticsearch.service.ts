@@ -1,4 +1,4 @@
-import { Inject, Injectable, OnApplicationBootstrap } from '@nestjs/common';
+import { Injectable, OnApplicationBootstrap } from '@nestjs/common';
 import { ElasticsearchService } from '@nestjs/elasticsearch';
 import {
   ELASTICSEARCH_INDEX,
@@ -8,7 +8,11 @@ import {
 
 @Injectable()
 export class ESService implements OnApplicationBootstrap {
-  constructor(private readonly elasticsearchService: ElasticsearchService) { }
+  constructor(private readonly elasticsearchService: ElasticsearchService) {}
+
+  private get client() {
+    return this.elasticsearchService['esClient'];
+  }
 
   private buildQueryFilter = (filters: ElasticSearchFilter) => {
     const query = {};
@@ -25,11 +29,11 @@ export class ESService implements OnApplicationBootstrap {
   // create game index
   async createExampleIndex(id: string) {
     const indexName = `${ELASTICSEARCH_INDEX.EXAMPLE_BY_ID}${id}`;
-    const exists = await this.elasticsearchService.indices.exists({
+    const exists = await this.client.indices.exists({
       index: indexName,
     });
     if (!exists) {
-      await this.elasticsearchService.indices.create({
+      await this.client.indices.create({
         index: indexName,
         body: {
           mappings: {
@@ -62,17 +66,15 @@ export class ESService implements OnApplicationBootstrap {
     id: string,
     filter: ElasticSearchFilter,
   ): Promise<ESExampleDataIndex[]> {
-    const { hits } = await this.elasticsearchService.search<ESExampleDataIndex>(
-      {
-        index: ELASTICSEARCH_INDEX.EXAMPLE_BY_ID + id,
-        query: this.buildQueryFilter(filter),
-      },
-    );
+    const { hits } = await this.client.search<ESExampleDataIndex>({
+      index: ELASTICSEARCH_INDEX.EXAMPLE_BY_ID + id,
+      query: this.buildQueryFilter(filter),
+    });
     return hits.hits.map((item) => item._source);
   }
 
   async createIndexGame(id: string, data: any) {
-    return await this.elasticsearchService.index<ESExampleDataIndex>({
+    return await this.client.index<ESExampleDataIndex>({
       index: ELASTICSEARCH_INDEX.EXAMPLE_BY_ID + id,
       id: data.id,
       document: data,
