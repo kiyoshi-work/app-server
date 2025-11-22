@@ -1,10 +1,16 @@
 import { Module } from '@nestjs/common';
 import { ConfigModule } from '@nestjs/config';
 import { ClientsModule, Transport } from '@nestjs/microservices';
+import { RedisStreamsClientModule } from '@stijlbreuk/nestjs-redis-streams-transport';
 import { configRabbitMq } from './configs/rabbitmq.config';
-import { RabbitMQService, RedisMQService } from './services';
+import {
+  RabbitMQService,
+  RedisMQService,
+  RedisStreamsService,
+} from './services';
 import { configGCPubSub } from './configs/gcpubsub.config';
 import { GCPubSubService } from './services/google-pubsub.service';
+import { configRedisStreams } from './configs/redis-streams.config';
 
 // https://github.com/jmaicaaan/tutorial-nestjs-rabbitmq
 @Module({
@@ -12,7 +18,7 @@ import { GCPubSubService } from './services/google-pubsub.service';
     ConfigModule.forRoot({
       isGlobal: true,
       expandVariables: true,
-      load: [configRabbitMq, configGCPubSub],
+      load: [configRabbitMq, configGCPubSub, configRedisStreams],
     }),
     ClientsModule.register([
       {
@@ -36,8 +42,23 @@ import { GCPubSubService } from './services/google-pubsub.service';
         },
       },
     ]),
+    RedisStreamsClientModule.register({
+      url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+      password: process.env.REDIS_PASSWORD,
+      db: Number(process.env.REDIS_DATABASE),
+    }),
   ],
-  providers: [RabbitMQService, RedisMQService, GCPubSubService],
-  exports: [RabbitMQService, RedisMQService, GCPubSubService],
+  providers: [
+    RabbitMQService,
+    RedisMQService,
+    GCPubSubService,
+    RedisStreamsService,
+  ],
+  exports: [
+    RabbitMQService,
+    RedisMQService,
+    GCPubSubService,
+    RedisStreamsService,
+  ],
 })
 export class TransporterModule {}

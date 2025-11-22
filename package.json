@@ -59,6 +59,7 @@
     "@socket.io/redis-adapter": "^7.2.0",
     "@solana/spl-token": "^0.4.8",
     "@solana/web3.js": "^1.95.0",
+    "@stijlbreuk/nestjs-redis-streams-transport": "^10.0.4",
     "@types/ws": "^8.5.10",
     "@zilliz/milvus2-sdk-node": "^2.4.1",
     "amqp-connection-manager": "^4.1.14",

@@ -3,6 +3,7 @@ import { AppModule } from './app.module';
 import { DocumentBuilder, SwaggerModule } from '@nestjs/swagger';
 import { Logger, ValidationPipe, VersioningType } from '@nestjs/common';
 import { GCPubSubServer } from 'nestjs-google-pubsub-microservice';
+import { RedisStreamStrategy } from '@stijlbreuk/nestjs-redis-streams-transport';
 import { RedisIoAdapter } from './modules/websocket/services/redis.adapter';
 import { RedisOptions, RmqOptions, Transport } from '@nestjs/microservices';
 import { GameService } from '@/game/game.service';
@@ -59,6 +60,15 @@ async function bootstrap() {
         password: process.env.REDIS_PASSWORD,
         db: Number(process.env.REDIS_DATABASE),
       },
+    });
+    app.connectMicroservice({
+      strategy: new RedisStreamStrategy({
+        url: `redis://${process.env.REDIS_HOST}:${process.env.REDIS_PORT}`,
+        password: process.env.REDIS_PASSWORD,
+        db: Number(process.env.REDIS_DATABASE),
+        consumerGroup: process.env.REDIS_CONSUMER_GROUP || 'nestjs-group',
+        consumer: process.env.REDIS_CONSUMER_NAME || 'nestjs-consumer',
+      }),
     });
   }
 
