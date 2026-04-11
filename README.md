@@ -35,7 +35,122 @@ This project is a comprehensive backend utility service built with NestJS, imple
   - [Contact](#contact)
 
 ## Architecture
+```mermaid
+flowchart TD
+    %% External Clients
+    ClientAPI["API Client"]:::external
+    ClientWS["WebSocket Client"]:::external
+    ClientRPC["JSON-RPC Client"]:::external
+    ClientTelegram["Telegram User"]:::external
 
+    %% Access Layer
+    subgraph "Access Layer"
+        REST["REST API Endpoints"]:::access
+        WS["WebSocket Gateway"]:::access
+        RPC["JSON-RPC Interface"]:::access
+        Telegram["Telegram Bot"]:::access
+    end
+
+    %% Executor Layer
+    subgraph "Executor Layer"
+        Worker["Worker Processes & Schedulers"]:::executor
+        WorkerThread["Worker Thread Integration"]:::executor
+        Blockchain["Blockchain Module"]:::executor
+        AI["AI Capabilities"]:::executor
+        Game["Game Services"]:::executor
+        Crawler["Crawler Module"]:::executor
+        ServiceComm["Service Communication"]:::executor
+        Resilience["Resilience Patterns"]:::executor
+    end
+
+    %% Data Layer
+    subgraph "Data Layer"
+        Postgres["PostgreSQL/TypeORM"]:::data
+        Timescale["TimescaleDB"]:::data
+        Milvus["Milvus"]:::data
+        Redis["Redis Cache & Pub/Sub"]:::data
+        Firestore["Firestore"]:::data
+        Elastic["Elasticsearch"]:::data
+        GCS["Google Cloud Storage"]:::data
+    end
+
+    %% Deployment / CI
+    Deploy["Docker & Cloud Build"]:::deployment
+
+    %% External Clients to Access Layer
+    ClientAPI -->|"REST_call"| REST
+    ClientWS -->|"Socket_connect"| WS
+    ClientRPC -->|"RPC_call"| RPC
+    ClientTelegram -->|"Bot_message"| Telegram
+
+    %% Access Layer to Executor Layer
+    REST -->|"API_request"| Worker
+    WS -->|"Socket_msg"| Worker
+    RPC -->|"RPC_request"| Worker
+    Telegram -->|"Bot_command"| Worker
+
+    %% Executor Internal Interactions
+    Worker -->|"schedules"| WorkerThread
+    Worker -->|"triggers_blockchain"| Blockchain
+    Worker -->|"invokes_AI"| AI
+    Worker -->|"game_logic"| Game
+    Worker -->|"initiates_crawl"| Crawler
+    Worker -->|"communicates"| ServiceComm
+    ServiceComm -->|"messaging"| Worker
+    Resilience -.->|"middleware"| Worker
+
+    %% Executor to Data Layer Interactions
+    Blockchain -->|"stores_state"| Postgres
+    AI -->|"persists_results"| Postgres
+    Game -->|"game_data"| Postgres
+    Worker -->|"transaction_data"| Postgres
+
+    Worker -->|"timeseries"| Timescale
+    AI -->|"analytics"| Elastic
+
+    Worker -->|"vectors"| Milvus
+    Worker -->|"cache_session"| Redis
+    Blockchain -->|"state_sync"| Firestore
+    ServiceComm -->|"pubsub"| Redis
+    Crawler -->|"logs"| Elastic
+    Worker -->|"file_uploads"| GCS
+
+    ServiceComm -->|"integrates_timescale"| Timescale
+    ServiceComm -->|"integrates_firestore"| Firestore
+
+    %% Deployment connections
+    Worker -.->|"CI_CD"| Deploy
+    REST -.->|"CI_CD"| Deploy
+    Postgres -.->|"container"| Deploy
+
+    %% Click Events for Components
+    click REST "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/api"
+    click WS "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/websocket"
+    click RPC "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/jrpc"
+    click Telegram "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/telegram-bot"
+    click Worker "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/worker"
+    click WorkerThread "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/worker-thread"
+    click Blockchain "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/blockchain"
+    click AI "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/ai"
+    click Game "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/game"
+    click Crawler "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/crawler"
+    click ServiceComm "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/transporter"
+    click Postgres "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/database"
+    click Timescale "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/timescale-db"
+    click Milvus "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/milvus-db"
+    click Redis "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/redis-cache"
+    click Firestore "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/firebase"
+    click Elastic "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/elasticsearch"
+    click GCS "https://github.com/kiyoshi-work/app-server/tree/main/src/modules/upload-file"
+    click Deploy "https://github.com/kiyoshi-work/app-server/blob/main/docker-compose.yml"
+
+    %% Styles
+    classDef external fill:#ffcc00,stroke:#333,stroke-width:2px;
+    classDef access fill:#ccffcc,stroke:#333,stroke-width:2px;
+    classDef executor fill:#cce5ff,stroke:#333,stroke-width:2px;
+    classDef data fill:#ffcccc,stroke:#333,stroke-width:2px;
+    classDef deployment fill:#e6ccff,stroke:#333,stroke-width:2px;
+```
 The project follows a 3-layer architecture:
 
 1. **Access (Gateway) Layer**
